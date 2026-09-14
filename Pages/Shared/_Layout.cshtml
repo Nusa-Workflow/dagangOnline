@@ -1,0 +1,216 @@
+@using Microsoft.AspNetCore.Identity
+@using dagangOnline.Domain
+@using dagangOnline.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    string IsActive(string pageName) => currentPage.Equals(pageName, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - dagangOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/dagangOnline.styles.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+    <!-- Modern Sticky Header -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-modern">
+            <div class="container">
+                <!-- Brand Logo & Name -->
+                <a class="brand-container" asp-page="/Index">
+                    <div class="brand-icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-layers-fill" viewBox="0 0 16 16">
+                            <path d="M7.765 1.559a.5.5 0 0 1 .47 0l6.5 3.5a.5.5 0 0 1 0 .882l-6.5 3.5a.5.5 0 0 1-.47 0l-6.5-3.5a.5.5 0 0 1 0-.882l6.5-3.5z"/>
+                            <path d="m2.126 8.046 5.639 3.037a.5.5 0 0 0 .47 0l5.639-3.037.76.409a.5.5 0 0 1 0 .882l-6.5 3.5a.5.5 0 0 1-.47 0l-6.5-3.5a.5.5 0 0 1 0-.882l.76-.409z"/>
+                            <path d="m2.126 11.046 5.639 3.037a.5.5 0 0 0 .47 0l5.639-3.037.76.409a.5.5 0 0 1 0 .882l-6.5 3.5a.5.5 0 0 1-.47 0l-6.5-3.5a.5.5 0 0 1 0-.882l.76-.409z"/>
+                        </svg>
+                    </div>
+                    <span class="brand-title">
+                        dagang<span class="accent">Online</span>
+                        <span class="brand-badge d-none d-sm-inline-block">Ecosystem</span>
+                    </span>
+                </a>
+
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler border-0 p-2 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMainContent"
+                        aria-controls="navbarMainContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navigation Content -->
+                <div class="collapse navbar-collapse" id="navbarMainContent">
+                    <!-- Center Links -->
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-1">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/Index")" asp-page="/Index">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/Services")" asp-page="/Services">Layanan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/Portfolio")" asp-page="/Portfolio">Portofolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/Partnership")" asp-page="/Partnership">
+                                <span>Partnership</span>
+                                <span class="badge bg-warning bg-opacity-25 text-dark rounded-pill small" style="font-size: 0.65rem;">Mitra</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/About")" asp-page="/About">Tentang Kami</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern @IsActive("/Contact")" asp-page="/Contact">Kontak</a>
+                        </li>
+                    </ul>
+
+                    <!-- Right Side Actions & Authentication -->
+                    <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                        <!-- Quick Search Icon -->
+                        <a class="btn-nav-search" asp-page="/Search" title="Pencarian Cepat">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </a>
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            var userInitial = (User.Identity?.Name?.Length > 0 ? User.Identity.Name.Substring(0, 1).ToUpper() : "U");
+                            <div class="dropdown">
+                                <a href="#" class="user-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-avatar-circle">
+                                        @userInitial
+                                    </div>
+                                    <span class="user-meta-name d-none d-md-inline">
+                                        @(User.Identity?.Name?.Split('@')[0] ?? "Akun")
+                                    </span>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-2 py-1 small" style="font-size: 0.65rem;">Admin</span>
+                                    }
+                                    else if (User.IsInRole("Mitra"))
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-2 py-1 small" style="font-size: 0.65rem;">Mitra</span>
+                                    }
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern">
+                                    <li class="px-3 py-2 border-bottom mb-1">
+                                        <div class="fw-bold text-dark small">@User.Identity?.Name</div>
+                                        <span class="text-muted small" style="font-size: 0.75rem;">
+                                            @(User.IsInRole("Admin") ? "Super Administrator" : User.IsInRole("Mitra") ? "Mitra Terdaftar" : "Pengguna Terdaftar")
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-modern" asp-page="/Dashboard/User/Index">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grid text-primary" viewBox="0 0 16 16">
+                                                <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+                                            </svg>
+                                            Dashboard Saya
+                                        </a>
+                                    </li>
+                                    @if (User.IsInRole("Mitra"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-modern" asp-page="/Dashboard/Mitra/Index">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shop text-warning" viewBox="0 0 16 16">
+                                                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h1a.5.5 0 0 1 0 1H0a.5.5 0 0 1 0-1h1V9a.5.5 0 0 1 .5-.5zm2 .5a.5.5 0 0 1 .5.5V13h8V9.5a.5.5 0 0 1 1 0V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .5-.5z"/>
+                                                </svg>
+                                                Portal Mitra
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-modern" asp-page="/Admin/Dashboard/Index">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock text-danger" viewBox="0 0 16 16">
+                                                    <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                                                    <path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 1.99-1.415z"/>
+                                                </svg>
+                                                Admin Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-modern" href="/ApiManagement">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal text-success" viewBox="0 0 16 16">
+                                                    <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 0 1 0 .708L1.707 7l2.147 2.146a.5.5 0 0 1-.708.708l-2.5-2.5a.5.5 0 0 1 0-.708l2.5-2.5a.5.5 0 0 1 .708 0z"/>
+                                                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                                                </svg>
+                                                API Management
+                                            </a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-modern" asp-page="/Account/Profile">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person text-secondary" viewBox="0 0 16 16">
+                                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                            </svg>
+                                            Profil Akun
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-modern text-danger" asp-page="/Account/Logout">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right text-danger" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                            </svg>
+                                            Keluar (Logout)
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn-nav-login" asp-page="/Account/Login">Masuk</a>
+                            <a class="btn-nav-register" asp-page="/Account/Register">
+                                <span>Daftar</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                </svg>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container py-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Modern Minimalist Footer -->
+    <footer class="bg-white border-top py-4 mt-auto">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center text-muted small">
+            <div class="d-flex align-items-center gap-2 mb-2 mb-md-0">
+                <span class="fw-bold text-dark">dagang<span class="text-primary">Online</span></span>
+                <span>&copy; 2026. Platform Solusi Digital Terintegrasi.</span>
+            </div>
+            <ul class="nav">
+                <li class="nav-item"><a asp-page="/Privacy" class="nav-link px-2 text-muted">Kebijakan Privasi</a></li>
+                <li class="nav-item"><a asp-page="/Partnership" class="nav-link px-2 text-muted">Kemitraan</a></li>
+                <li class="nav-item"><a asp-page="/Contact" class="nav-link px-2 text-muted">Bantuan</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

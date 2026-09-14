@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+option csharp_namespace = "dagangOnline.Protos";
+
+package catalog;
+
+service CatalogGrpc {
+  rpc GetPublishedServices (GetServicesRequest) returns (GetServicesResponse);
+  rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  rpc GetFeaturedPortfolio (GetPortfolioRequest) returns (GetPortfolioResponse);
+  rpc SearchCatalog (SearchCatalogRequest) returns (SearchCatalogResponse);
+}
+
+message GetServicesRequest {
+  string category = 1;
+}
+
+message ServiceItem {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string summary = 4;
+  string description = 5;
+  bool is_featured = 6;
+}
+
+message GetServicesResponse {
+  repeated ServiceItem services = 1;
+}
+
+message GetProductsRequest {
+  string category = 1;
+}
+
+message ProductItem {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string summary = 4;
+  double price = 5;
+  string currency = 6;
+  string category = 7;
+}
+
+message GetProductsResponse {
+  repeated ProductItem products = 1;
+}
+
+message GetPortfolioRequest {
+}
+
+message PortfolioItem {
+  string id = 1;
+  string title = 2;
+  string summary = 3;
+  string problem = 4;
+  string solution = 5;
+  string result = 6;
+  bool is_featured = 7;
+}
+
+message GetPortfolioResponse {
+  repeated PortfolioItem items = 1;
+}
+
+message SearchCatalogRequest {
+  string query = 1;
+}
+
+message SearchResultItemMessage {
+  string title = 1;
+  string description = 2;
+  string type = 3;
+  string url = 4;
+}
+
+message SearchCatalogResponse {
+  repeated SearchResultItemMessage results = 1;
+}

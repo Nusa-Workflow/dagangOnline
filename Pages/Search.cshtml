@@ -1,0 +1,75 @@
+@page
+@model dagangOnline.Pages.SearchModel
+@{
+    ViewData["Title"] = "Pencarian";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 text-center">
+            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Eksplorasi</span>
+            <h1 class="display-5 fw-bold mb-3">Pencarian Platform</h1>
+            <p class="lead text-muted">Cari solusi layanan, studi kasus portfolio, atau produk digital kami</p>
+
+            <form method="get" class="mt-4">
+                <div class="input-group input-group-lg shadow-sm">
+                    <input type="text" name="q" value="@Model.Q" class="form-control border-end-0" placeholder="Ketik kata kunci pencarian (cth: web, umkm, cloud)..." />
+                    <button class="btn btn-primary px-4" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search me-1" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                        Cari
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Q))
+    {
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h2 class="h5 text-muted mb-0">
+                Menampilkan hasil pencarian untuk: <span class="fw-bold text-dark">"@Model.Q"</span>
+            </h2>
+            <span class="badge bg-secondary">@Model.Results.Count item ditemukan</span>
+        </div>
+
+        @if (Model.Results.Any())
+        {
+            <div class="row g-4">
+                @foreach (var item in Model.Results)
+                {
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title fw-bold mb-0">@item.Title</h5>
+                                    <span class="badge @(item.Type == "Service" ? "bg-info text-dark" : item.Type == "Portfolio" ? "bg-success" : "bg-warning text-dark")">
+                                        @item.Type
+                                    </span>
+                                </div>
+                                <p class="card-text text-muted mb-3">@item.Description</p>
+                                <a href="@item.Url" class="btn btn-sm btn-outline-primary">Lihat Detail &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 bg-light rounded-3">
+                <p class="text-muted fs-5 mb-3">Tidak ditemukan hasil yang cocok dengan pencarian Anda.</p>
+                <p class="text-muted small mb-0">Coba gunakan kata kunci yang lebih umum atau periksa ejaan kata kunci.</p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center text-muted py-4">
+                <p>Masukkan kata kunci di atas untuk mulai mencari layanan, proyek, atau informasi terkait dagangOnline.</p>
+            </div>
+        </div>
+    }
+</div>

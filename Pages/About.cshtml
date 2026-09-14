@@ -1,0 +1,110 @@
+@page
+@model dagangOnline.Pages.AboutModel
+@{
+    ViewData["Title"] = Model.AboutPage?.Title ?? "Tentang Kami";
+}
+
+<div class="container py-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">Tentang dagangOnline</span>
+            <h1 class="display-5 fw-bold mb-3">@(Model.AboutPage?.Title ?? "Transformasi Digital untuk Masa Depan Bisnis & UMKM")</h1>
+            <p class="lead text-muted">
+                @(Model.AboutPage?.MetaDescription ?? "dagangOnline adalah platform ekosistem teknologi yang menghubungkan pelaku usaha, mitra profesional, dan solusi perangkat lunak handal dalam satu jaringan terintegrasi.")
+            </p>
+        </div>
+    </div>
+
+    @if (Model.AboutPage != null && !string.IsNullOrWhiteSpace(Model.AboutPage.Content))
+    {
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-9">
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="card-body">
+                        @Html.Raw(Model.AboutPage.Content)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Visi & Misi Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm p-4 bg-light">
+                    <div class="card-body">
+                        <div class="text-primary mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-compass" viewBox="0 0 16 16">
+                                <path d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+                                <path d="m6.94 7.44 4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"/>
+                            </svg>
+                        </div>
+                        <h3 class="h4 fw-bold">Visi Kami</h3>
+                        <p class="text-muted">
+                            Menjadi penggerak utama akselerasi ekonomi digital inklusif yang memberdayakan bisnis lokal dan skala menengah agar mampu berdaya saing global melalui teknologi modern dan aman.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm p-4 bg-light">
+                    <div class="card-body">
+                        <div class="text-success mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-bullseye" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10zm0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
+                                <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                                <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="h4 fw-bold">Misi Kami</h3>
+                        <ul class="text-muted ps-3 mb-0">
+                            <li class="mb-2">Menyediakan arsitektur piranti lunak berstandar enterprise yang terjangkau dan scalable.</li>
+                            <li class="mb-2">Membangun kolaborasi simbiosis antara mitra pengembang, penyedia jasa, dan pelaku usaha.</li>
+                            <li>Menjamin kepatuhan standar keamanan data serta reliabilitas platform tingkat tinggi.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Values -->
+        <div class="mb-5">
+            <div class="text-center mb-4">
+                <h2 class="h3 fw-bold">Pilar & Nilai Utama</h2>
+                <p class="text-muted">Komitmen kami dalam setiap baris kode dan solusi yang kami hadirkan</p>
+            </div>
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="p-4 border rounded shadow-sm h-100 bg-white">
+                        <h5 class="fw-bold">Integritas & Keamanan</h5>
+                        <p class="text-muted small">Proteksi data menyeluruh dengan implementasi RBAC, rate-limiting, dan audit trail berlapis.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded shadow-sm h-100 bg-white">
+                        <h5 class="fw-bold">Performa Andal</h5>
+                        <p class="text-muted small">Dibangun di atas fondasi .NET 10 modern untuk kinerja secepat kilat dan efisiensi memori optimal.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded shadow-sm h-100 bg-white">
+                        <h5 class="fw-bold">Kemitraan Berkelanjutan</h5>
+                        <p class="text-muted small">Dukungan teknis dan konsultasi komprehensif dari ide awal hingga implementasi produksi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- CTA Section -->
+    <div class="p-5 text-center bg-primary text-white rounded-3 shadow">
+        <h2 class="fw-bold mb-3">Siap Memulai Perjalanan Digital Anda?</h2>
+        <p class="lead mb-4">Konsultasikan kebutuhan platform, integrasi sistem, atau digitalisasi layanan Anda bersama tim ahli kami.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-page="/Contact" class="btn btn-light btn-lg px-4 fw-semibold text-primary">Hubungi Kami</a>
+            <a asp-page="/Services" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
+        </div>
+    </div>
+</div>

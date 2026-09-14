@@ -1,0 +1,481 @@
+@page
+@using dagangOnline.Domain
+@model dagangOnline.Pages.Admin.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container py-4">
+    <!-- Header Banner -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold mb-0">Platform Admin Dashboard</h1>
+                <span class="badge bg-danger">Root Admin</span>
+            </div>
+            <p class="text-muted mb-0">Pengawasan sistem, tata kelola pengguna, audit trail keamanan, dan operasional layanan.</p>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-sm-0">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAnnouncementModal">
+                + Terbitkan Pengumuman
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-info alert-dismissible fade show shadow-sm mb-4" role="alert">
+            @Model.StatusMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- KPI Summary Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                            <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 1 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Total Pengguna</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalUsersCount</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-shop" viewBox="0 0 16 16">
+                            <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h1a.5.5 0 0 1 0 1H0a.5.5 0 0 1 0-1h1V9a.5.5 0 0 1 .5-.5zm2 .5a.5.5 0 0 1 .5.5V13h8V9.5a.5.5 0 0 1 1 0V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Profil Mitra</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalMitraCount</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-inbox" viewBox="0 0 16 16">
+                            <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4H4.98zm-1.17-.404A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.596l3.642 4.553A1 1 0 0 1 16 8.75V13a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8.75a1 1 0 0 1 .168-.568L3.81 3.596zM2 9v4a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9H10.5a2.5 2.5 0 0 1-5 0H2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Inquiri Publik</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalInquiriesCount</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
+                            <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                            <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Audit Security Logs</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalAuditLogsCount</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-pills mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold" id="users-tab" data-bs-toggle="pill" data-bs-target="#users-pane" type="button" role="tab">
+                Pengguna (@Model.Users.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="audit-tab" data-bs-toggle="pill" data-bs-target="#audit-pane" type="button" role="tab">
+                Audit Trail (@Model.AuditLogs.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="inquiries-tab" data-bs-toggle="pill" data-bs-target="#inquiries-pane" type="button" role="tab">
+                Inquiri Masuk (@Model.Inquiries.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="requests-tab" data-bs-toggle="pill" data-bs-target="#requests-pane" type="button" role="tab">
+                Permintaan Layanan (@Model.ServiceRequests.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="announcements-tab" data-bs-toggle="pill" data-bs-target="#announcements-pane" type="button" role="tab">
+                Pengumuman
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="about-tab" data-bs-toggle="pill" data-bs-target="#about-pane" type="button" role="tab">
+                Kustomisasi About
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Tab 1: Users Management -->
+        <div class="tab-pane fade show active" id="users-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Daftar Pengguna Terdaftar</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nama / Email</th>
+                                    <th>Role Akses</th>
+                                    <th>Status</th>
+                                    <th>Terdaftar Pada</th>
+                                    <th>Aksi Tata Kelola</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in Model.Users)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="d-block text-dark">@u.DisplayName</strong>
+                                            <small class="text-muted">@u.Email</small>
+                                        </td>
+                                        <td>
+                                            @if (u.Roles.Contains("Admin"))
+                                            {
+                                                <span class="badge bg-danger">Admin</span>
+                                            }
+                                            else if (u.Roles.Contains("Mitra"))
+                                            {
+                                                <span class="badge bg-warning text-dark">Mitra</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">User</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (u.IsActive)
+                                            {
+                                                <span class="badge bg-success">Aktif</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Nonaktif</span>
+                                            }
+                                        </td>
+                                        <td class="text-muted small">@u.CreatedAt.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="ToggleUserActive" asp-route-userId="@u.Id" class="d-inline">
+                                                <button type="submit" class="btn btn-sm @(u.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                                    @(u.IsActive ? "Nonaktifkan" : "Aktifkan")
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Audit Trail -->
+        <div class="tab-pane fade" id="audit-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Log Audit & Keamanan Terkini</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Severity</th>
+                                    <th>Aksi</th>
+                                    <th>Entitas</th>
+                                    <th>Dilakukan Oleh</th>
+                                    <th>Keterangan / Detail</th>
+                                    <th>Waktu (UTC)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in Model.AuditLogs)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (log.Severity == "Critical")
+                                            {
+                                                <span class="badge bg-danger">Critical</span>
+                                            }
+                                            else if (log.Severity == "Warning")
+                                            {
+                                                <span class="badge bg-warning text-dark">Warning</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-info text-dark">Info</span>
+                                            }
+                                        </td>
+                                        <td class="fw-semibold">@log.Action</td>
+                                        <td><span class="badge bg-light text-dark border">@log.EntityName</span></td>
+                                        <td class="small">@(log.PerformedByUserName ?? log.PerformedByUserId ?? "System")</td>
+                                        <td class="small text-muted">@log.Details</td>
+                                        <td class="small text-muted">@log.CreatedAt.ToString("dd MMM yyyy HH:mm:ss")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Contact Inquiries -->
+        <div class="tab-pane fade" id="inquiries-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Manajemen Inquiri Masuk</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Pengirim & Email</th>
+                                    <th>Subjek & Pesan</th>
+                                    <th>Kategori</th>
+                                    <th>Status Saat Ini</th>
+                                    <th>Ubah Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var inq in Model.Inquiries)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="d-block text-dark">@inq.Name</strong>
+                                            <small class="text-muted">@inq.Email</small>
+                                        </td>
+                                        <td>
+                                            <strong>@inq.Subject</strong>
+                                            <p class="text-muted small mb-0">@inq.Message</p>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">@inq.Category</span></td>
+                                        <td>
+                                            <span class="badge @(inq.Status == InquiryStatus.New ? "bg-primary" : inq.Status == InquiryStatus.InReview ? "bg-warning text-dark" : "bg-success")">
+                                                @inq.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <form method="post" asp-page-handler="UpdateInquiryStatus" asp-route-id="@inq.Id" asp-route-status="@InquiryStatus.InReview" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-warning btn-sm me-1">Review</button>
+                                                </form>
+                                                <form method="post" asp-page-handler="UpdateInquiryStatus" asp-route-id="@inq.Id" asp-route-status="@InquiryStatus.Replied" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-success btn-sm">Balas</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Service Requests -->
+        <div class="tab-pane fade" id="requests-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Semua Permintaan Layanan Klien</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Klien</th>
+                                    <th>Judul & Layanan</th>
+                                    <th>Budget</th>
+                                    <th>Status</th>
+                                    <th>Ubah Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var req in Model.ServiceRequests)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="d-block text-dark">@(req.ClientName ?? req.UserName)</strong>
+                                            <small class="text-muted">@req.ClientEmail | @req.ClientPhone</small>
+                                        </td>
+                                        <td>
+                                            <strong>@req.Title</strong>
+                                            <span class="d-block small text-muted">Layanan: @(req.Service?.Name ?? "Kustom")</span>
+                                        </td>
+                                        <td>@(string.IsNullOrWhiteSpace(req.BudgetRange) ? "-" : req.BudgetRange)</td>
+                                        <td><span class="badge bg-info text-dark">@req.Status</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <form method="post" asp-page-handler="UpdateServiceRequestStatus" asp-route-id="@req.Id" asp-route-status="In Progress" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm me-1">Proses</button>
+                                                </form>
+                                                <form method="post" asp-page-handler="UpdateServiceRequestStatus" asp-route-id="@req.Id" asp-route-status="Completed" class="d-inline">
+                                                    <button type="submit" class="btn btn-outline-success btn-sm">Selesai</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Announcements -->
+        <div class="tab-pane fade" id="announcements-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Pengumuman Platform</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newAnnouncementModal">
+                        + Tambah Pengumuman
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Isi Ringkas</th>
+                                    <th>Status</th>
+                                    <th>Dipin?</th>
+                                    <th>Waktu Terbit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ann in Model.Announcements)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@ann.Title</td>
+                                        <td class="text-muted small">@ann.Content</td>
+                                        <td><span class="badge bg-success">@ann.Status</span></td>
+                                        <td>@(ann.IsPinned ? "📌 Ya" : "Tidak")</td>
+                                        <td class="text-muted small">@ann.PublishedAt?.ToString("dd MMM yyyy HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 6: About Page Customizer -->
+        <div class="tab-pane fade" id="about-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1">Kustomisasi Halaman "Tentang Kami" (About)</h5>
+                        <p class="text-muted small mb-0">Ubah judul, ringkasan, dan konten halaman publik About secara instan tanpa perlu deploy ulang kode.</p>
+                    </div>
+                    <a asp-page="/About" target="_blank" class="btn btn-sm btn-outline-primary">
+                        Lihat Halaman Publik &rarr;
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" asp-page-handler="SaveAboutPage">
+                        <div class="mb-3">
+                            <label asp-for="AboutInput.Title" class="form-label fw-semibold">Judul Utama Halaman <span class="text-danger">*</span></label>
+                            <input asp-for="AboutInput.Title" class="form-control" placeholder="cth: Transformasi Digital untuk Masa Depan Bisnis" />
+                            <span asp-validation-for="AboutInput.Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AboutInput.MetaDescription" class="form-label fw-semibold">Subjudul / Deskripsi Singkat</label>
+                            <input asp-for="AboutInput.MetaDescription" class="form-control" placeholder="cth: Platform ekosistem teknologi terintegrasi..." />
+                            <span asp-validation-for="AboutInput.MetaDescription" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="AboutInput.Content" class="form-label fw-semibold">Isi Konten Halaman (Mendukung Format HTML) <span class="text-danger">*</span></label>
+                            <textarea asp-for="AboutInput.Content" class="form-control font-monospace" rows="10" placeholder="<p>Tuliskan cerita, visi, profil perusahaan atau informasi tambahan...</p>"></textarea>
+                            <div class="form-text small text-muted">
+                                Anda dapat menggunakan tag HTML seperti &lt;p&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;, dsb. untuk mengatur format tampilan.
+                            </div>
+                            <span asp-validation-for="AboutInput.Content" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary fw-semibold px-4">
+                                Simpan & Publikasikan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Terbitkan Pengumuman -->
+<div class="modal fade" id="newAnnouncementModal" tabindex="-1" aria-labelledby="newAnnouncementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="newAnnouncementModalLabel">Terbitkan Pengumuman Platform</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateAnnouncement">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="NewAnnouncement.Title" class="form-label fw-semibold">Judul Pengumuman <span class="text-danger">*</span></label>
+                        <input asp-for="NewAnnouncement.Title" class="form-control" placeholder="cth: Pemeliharaan Sistem Terjadwal" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewAnnouncement.Content" class="form-label fw-semibold">Isi Pengumuman</label>
+                        <textarea asp-for="NewAnnouncement.Content" class="form-control" rows="4" placeholder="Detail informasi pengumuman..."></textarea>
+                    </div>
+
+                    <div class="form-check">
+                        <input asp-for="NewAnnouncement.IsPinned" class="form-check-input" type="checkbox" id="pinnedCheck" />
+                        <label class="form-check-label" for="pinnedCheck">
+                            Sematkan di bagian atas (Pinned)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary fw-semibold">Terbitkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

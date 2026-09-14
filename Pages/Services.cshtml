@@ -1,0 +1,42 @@
+@page
+@model dagangOnline.Pages.ServicesModel
+@{
+    ViewData["Title"] = "Layanan Kami";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">Layanan Kami</h1>
+            <p class="lead text-muted">Solusi digital lengkap untuk transformasi bisnis Anda</p>
+        </div>
+
+        @if (Model.PublishedServices.Any())
+        {
+            <div class="row g-4">
+                @foreach (var service in Model.PublishedServices)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fw-semibold">@service.Name</h5>
+                                <p class="card-text text-muted flex-grow-1">@service.Summary</p>
+                                @if (service.IsFeatured)
+                                {
+                                    <span class="badge bg-primary mb-2 align-self-start">Featured</span>
+                                }
+                                <a href="#" class="btn btn-outline-primary mt-auto">Pelajari Selengkapnya</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted fs-5">Belum ada layanan yang tersedia saat ini.</p>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,81 @@
+@page
+@model dagangOnline.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Masuk ke Akun";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4 text-center">
+                    <span class="badge bg-white text-primary px-3 py-1 rounded-pill mb-2 fw-semibold">dagangOnline Portal</span>
+                    <h3 class="fw-bold mb-1">Selamat Datang</h3>
+                    <p class="text-white-50 small mb-0">Masuk untuk mengakses layanan, kemitraan, atau panel admin</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control" id="emailInput" placeholder="name@example.com" autocomplete="username" />
+                            <label asp-for="Input.Email">Alamat Email</label>
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" type="password" class="form-control" id="passwordInput" placeholder="Password" autocomplete="current-password" />
+                            <label asp-for="Input.Password">Kata Sandi</label>
+                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="Input.RememberMe" class="form-check-input" id="rememberMeCheck" />
+                                <label asp-for="Input.RememberMe" class="form-check-label small text-muted" for="rememberMeCheck">Ingat Saya</label>
+                            </div>
+                            <a href="#" class="small text-decoration-none text-muted">Lupa sandi?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold shadow-sm mb-3">
+                            Masuk Sekarang
+                        </button>
+                    </form>
+
+                    <!-- Quick Demo Credential Helper -->
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="fw-bold text-muted">Demo Credentials:</small>
+                            <button type="button" class="btn btn-sm btn-outline-primary py-0" onclick="fillDemo('admin@dagangonline.local', 'Admin@123')">
+                                Isi Akun Admin
+                            </button>
+                        </div>
+                        <div class="small text-muted font-monospace">
+                            <div>Email: <strong>admin@dagangonline.local</strong></div>
+                            <div>Password: <strong>Admin@123</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-muted small">Belum memiliki akun?</span>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <a asp-page="/Account/Register" class="btn btn-sm btn-outline-secondary">Daftar Pengguna</a>
+                            <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-sm btn-outline-success">Daftar Mitra Bisnis</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillDemo(email, pass) {
+            document.getElementById('emailInput').value = email;
+            document.getElementById('passwordInput').value = pass;
+        }
+    </script>
+}

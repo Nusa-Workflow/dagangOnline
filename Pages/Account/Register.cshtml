@@ -1,0 +1,120 @@
+@page
+@model dagangOnline.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Pendaftaran Akun Baru";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4 text-center">
+                    <span class="badge bg-white text-primary px-3 py-1 rounded-pill mb-2 fw-semibold">Registrasi Platform</span>
+                    <h3 class="fw-bold mb-1">Buat Akun dagangOnline</h3>
+                    <p class="text-white-50 small mb-0">Pilih tipe akun yang sesuai dengan kebutuhan Anda</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                        <!-- Tipe Akun Selector -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Tipe Akun:</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="Input.AccountType" id="typeUser" value="user" @(Model.Input.AccountType == "user" ? "checked" : "") onchange="toggleMitraFields(false)" />
+                                    <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center" for="typeUser">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person mb-1" viewBox="0 0 16 16">
+                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                                        </svg>
+                                        <strong class="small">Pengguna / Klien</strong>
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="Input.AccountType" id="typeMitra" value="mitra" @(Model.Input.AccountType == "mitra" ? "checked" : "") onchange="toggleMitraFields(true)" />
+                                    <label class="btn btn-outline-success w-100 py-2 d-flex flex-column align-items-center" for="typeMitra">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-briefcase mb-1" viewBox="0 0 16 16">
+                                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
+                                        </svg>
+                                        <strong class="small">Mitra Bisnis (Partnership)</strong>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Pribadi -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.DisplayName" class="form-control" id="nameInput" placeholder="Nama Lengkap" />
+                            <label asp-for="Input.DisplayName">Nama Lengkap Penanggung Jawab</label>
+                            <span asp-validation-for="Input.DisplayName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" type="email" class="form-control" id="emailInput" placeholder="name@example.com" />
+                            <label asp-for="Input.Email">Alamat Email</label>
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Bagian Khusus Mitra Bisnis -->
+                        <div id="mitraFieldsContainer" style="@(Model.Input.AccountType == "mitra" ? "display:block;" : "display:none;")" class="p-3 bg-light rounded-3 border mb-3">
+                            <h6 class="fw-bold text-success mb-3">Informasi Kemitraan (Partnership)</h6>
+                            <div class="mb-3">
+                                <label asp-for="Input.BusinessName" class="form-label small fw-semibold">Nama Perusahaan / Usaha / Brand <span class="text-danger">*</span></label>
+                                <input asp-for="Input.BusinessName" class="form-control" placeholder="cth: CV Swandaru Digital Solusi" />
+                                <span asp-validation-for="Input.BusinessName" class="text-danger small"></span>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label asp-for="Input.BusinessType" class="form-label small fw-semibold">Bidang Industri</label>
+                                    <input asp-for="Input.BusinessType" class="form-control" placeholder="cth: Software House / IT" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Input.City" class="form-label small fw-semibold">Kota / Domisili</label>
+                                    <input asp-for="Input.City" class="form-control" placeholder="cth: Jakarta" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Fields -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Input.Password" type="password" class="form-control" id="passInput" placeholder="Password" />
+                                    <label asp-for="Input.Password">Kata Sandi</label>
+                                </div>
+                                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" id="confirmPassInput" placeholder="Konfirmasi" />
+                                    <label asp-for="Input.ConfirmPassword">Ulangi Sandi</label>
+                                </div>
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold shadow-sm mb-3">
+                            Daftar Sekarang
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <span class="text-muted small">Sudah memiliki akun?</span>
+                        <a asp-page="/Account/Login" class="ms-1 small fw-semibold text-primary">Masuk di sini</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleMitraFields(isMitra) {
+            const container = document.getElementById('mitraFieldsContainer');
+            container.style.display = isMitra ? 'block' : 'none';
+        }
+    </script>
+}

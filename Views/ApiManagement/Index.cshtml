@@ -1,0 +1,353 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "API & Endpoint Management";
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold mb-0">API & Endpoint Management Console</h1>
+                <span class="badge bg-primary">REST v1</span>
+                <span class="badge bg-success">gRPC</span>
+                <span class="badge bg-info text-dark">MVC</span>
+            </div>
+            <p class="text-muted mb-0">Pusat dokumentasi, tata kelola, dan pengujian interaktif endpoint REST API dan internal gRPC.</p>
+        </div>
+        <div>
+            <a href="/openapi/v1.json" target="_blank" class="btn btn-outline-primary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filetype-json me-1" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM3.5 12.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5v-3Z"/>
+                </svg>
+                OpenAPI Spec (JSON)
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <span class="text-muted small fw-semibold">Total REST Controllers</span>
+                    <h3 class="fw-bold text-primary mb-0">5</h3>
+                    <small class="text-muted">Services, Products, Portfolio, Contact, Search</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <span class="text-muted small fw-semibold">CRUD Methods Supported</span>
+                    <h3 class="fw-bold text-success mb-0">GET, POST, PUT, DELETE, PATCH</h3>
+                    <small class="text-muted">Full HTTP Semantics & ProblemDetails</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <span class="text-muted small fw-semibold">gRPC Internal RPCs</span>
+                    <h3 class="fw-bold text-info mb-0">4 Procedures</h3>
+                    <small class="text-muted">CatalogGrpc (HTTP/2 Binary)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <span class="text-muted small fw-semibold">Security & Rate Limiting</span>
+                    <h3 class="fw-bold text-warning mb-0">RBAC Enforced</h3>
+                    <small class="text-muted">Admin / Mitra / Public Rate-Limit</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Testing Sandbox -->
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Interactive API Sandbox & Live Tester</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/services')">GET Services</button>
+                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/products')">GET Products</button>
+                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/portfolio')">GET Portfolio</button>
+                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/search?q=digital')">GET Search</button>
+                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/contact/inquiries')">GET Inquiries</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">HTTP Method</label>
+                    <select id="apiMethod" class="form-select fw-bold">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="PATCH">PATCH</option>
+                    </select>
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label fw-semibold">Endpoint URL</label>
+                    <input type="text" id="apiUrl" class="form-control font-monospace" value="/api/v1/services" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100 fw-semibold" id="btnExecuteApi" onclick="executeApiTest()">
+                        Kirim Request
+                    </button>
+                </div>
+
+                <div class="col-12" id="requestBodyContainer" style="display:none;">
+                    <label class="form-label fw-semibold">Request Body (JSON)</label>
+                    <textarea id="apiBody" class="form-control font-monospace" rows="4" placeholder='{"name": "...", "price": 1000}'></textarea>
+                </div>
+
+                <!-- Result Box -->
+                <div class="col-12 mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label fw-semibold mb-0">Response Result:</label>
+                        <span id="responseStatusBadge" class="badge bg-secondary">Menunggu request...</span>
+                    </div>
+                    <pre id="apiResponseBox" class="bg-dark text-light p-3 rounded font-monospace small" style="max-height: 350px; overflow-y: auto;">Klik tombol "Kirim Request" atau pilih salah satu preset di atas untuk menguji endpoint secara langsung.</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endpoints Directory Table -->
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Katalog REST API Endpoints (/api/v1)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px;">Method</th>
+                            <th>Endpoint Route</th>
+                            <th>Deskripsi Fungsional</th>
+                            <th>Otorisasi / Kebijakan</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Services -->
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/services</code></td>
+                            <td>Mengambil daftar layanan terbitan (opsional filter <code>isFeatured</code>)</td>
+                            <td><span class="badge bg-light text-dark border">Publik</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/services')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/services/{id}</code></td>
+                            <td>Mengambil detail satu layanan berdasarkan UUID</td>
+                            <td><span class="badge bg-light text-dark border">Publik</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/services/00000000-0000-0000-0000-000000000000')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-primary">POST</span></td>
+                            <td><code>/api/v1/services</code></td>
+                            <td>Membuat entri layanan baru (CRUD: Create)</td>
+                            <td><span class="badge bg-danger">RequireAdmin</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('POST', '/api/v1/services', '{\n  \"name\": \"Cloud DevOps Architecture\",\n  \"summary\": \"Modernisasi infrastruktur cloud containerized\",\n  \"description\": \"Full CI/CD pipeline, monitoring, and auto-scaling support.\",\n  \"isFeatured\": true\n}')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-warning text-dark">PUT</span></td>
+                            <td><code>/api/v1/services/{id}</code></td>
+                            <td>Memperbarui data layanan secara menyeluruh (CRUD: Update)</td>
+                            <td><span class="badge bg-danger">RequireAdmin</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('PUT', '/api/v1/services/00000000-0000-0000-0000-000000000000')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-danger">DELETE</span></td>
+                            <td><code>/api/v1/services/{id}</code></td>
+                            <td>Menghapus data layanan dari database (CRUD: Delete)</td>
+                            <td><span class="badge bg-danger">RequireAdmin</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('DELETE', '/api/v1/services/00000000-0000-0000-0000-000000000000')">Test</button></td>
+                        </tr>
+
+                        <!-- Products -->
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/products</code></td>
+                            <td>Katalog produk mitra & platform (filter <code>category</code>, <code>maxPrice</code>)</td>
+                            <td><span class="badge bg-light text-dark border">Publik</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/products')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-primary">POST</span></td>
+                            <td><code>/api/v1/products</code></td>
+                            <td>Mendaftarkan produk baru (CRUD: Create)</td>
+                            <td><span class="badge bg-warning text-dark">RequireMitraOrAdmin</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('POST', '/api/v1/products', '{\n  \"name\": \"SaaS POS Restoran Modern\",\n  \"summary\": \"Sistem kasir real-time dengan inventori terpusat\",\n  \"price\": 1500000,\n  \"category\": 1\n}')">Test</button></td>
+                        </tr>
+
+                        <!-- Portfolio -->
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/portfolio</code></td>
+                            <td>Daftar studi kasus proyek portfolio yang dipublikasikan</td>
+                            <td><span class="badge bg-light text-dark border">Publik</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/portfolio')">Test</button></td>
+                        </tr>
+
+                        <!-- Contact -->
+                        <tr>
+                            <td><span class="badge bg-primary">POST</span></td>
+                            <td><code>/api/v1/contact/inquiries</code></td>
+                            <td>Pengiriman inquiri publik (Dilindungi Rate-Limiter 5 req/10m)</td>
+                            <td><span class="badge bg-light text-dark border">Publik (Rate-Limited)</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('POST', '/api/v1/contact/inquiries', '{\n  \"name\": \"Budi Test\",\n  \"email\": \"budi@example.com\",\n  \"subject\": \"Tanya Paket\",\n  \"message\": \"Apakah ada diskon volume?\",\n  \"consentAccepted\": true\n}')">Test</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/contact/inquiries</code></td>
+                            <td>Rekapitulasi seluruh pesan & inquiri masuk</td>
+                            <td><span class="badge bg-danger">RequireAdmin</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/contact/inquiries')">Test</button></td>
+                        </tr>
+
+                        <!-- Search -->
+                        <tr>
+                            <td><span class="badge bg-success">GET</span></td>
+                            <td><code>/api/v1/search?q={query}</code></td>
+                            <td>Pencarian terpadu lintas layanan, produk, dan portofolio</td>
+                            <td><span class="badge bg-light text-dark border">Publik</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary" onclick="setPreset('GET', '/api/v1/search?q=web')">Test</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- gRPC Architecture Section -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Internal gRPC Service Specification (HTTP/2 Protobuf)</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small">
+                Service gRPC digunakan untuk pertukaran data internal antar-subsistem dengan skema strongly-typed dan serialisasi binary efisien tinggi.
+            </p>
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>RPC Procedure Name</th>
+                            <th>Request Message</th>
+                            <th>Response Message</th>
+                            <th>Tujuan & Implementasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>CatalogGrpc.GetPublishedServices</code></td>
+                            <td><code>GetServicesRequest (category)</code></td>
+                            <td><code>GetServicesResponse (repeated ServiceItem)</code></td>
+                            <td>Query berkecepatan tinggi katalog layanan aktif</td>
+                        </tr>
+                        <tr>
+                            <td><code>CatalogGrpc.GetProducts</code></td>
+                            <td><code>GetProductsRequest (category)</code></td>
+                            <td><code>GetProductsResponse (repeated ProductItem)</code></td>
+                            <td>Query produk/paket solusi mitra</td>
+                        </tr>
+                        <tr>
+                            <td><code>CatalogGrpc.GetFeaturedPortfolio</code></td>
+                            <td><code>GetPortfolioRequest</code></td>
+                            <td><code>GetPortfolioResponse (repeated PortfolioItem)</code></td>
+                            <td>Showcase studi kasus unggulan</td>
+                        </tr>
+                        <tr>
+                            <td><code>CatalogGrpc.SearchCatalog</code></td>
+                            <td><code>SearchCatalogRequest (query)</code></td>
+                            <td><code>SearchCatalogResponse (repeated SearchResultItem)</code></td>
+                            <td>Search gateway lintas data domain internal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const methodSelect = document.getElementById('apiMethod');
+        const bodyContainer = document.getElementById('requestBodyContainer');
+
+        methodSelect.addEventListener('change', () => {
+            const val = methodSelect.value;
+            bodyContainer.style.display = (val === 'POST' || val === 'PUT' || val === 'PATCH') ? 'block' : 'none';
+        });
+
+        function setPreset(method, url, body = '') {
+            document.getElementById('apiMethod').value = method;
+            document.getElementById('apiUrl').value = url;
+            document.getElementById('apiBody').value = body;
+            bodyContainer.style.display = (method === 'POST' || method === 'PUT' || method === 'PATCH') ? 'block' : 'none';
+            executeApiTest();
+        }
+
+        async function executeApiTest() {
+            const method = document.getElementById('apiMethod').value;
+            const url = document.getElementById('apiUrl').value;
+            const bodyContent = document.getElementById('apiBody').value;
+            const responseBox = document.getElementById('apiResponseBox');
+            const statusBadge = document.getElementById('responseStatusBadge');
+
+            responseBox.textContent = 'Menghubungkan ke endpoint...';
+            statusBadge.className = 'badge bg-secondary';
+            statusBadge.textContent = 'Loading...';
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if ((method === 'POST' || method === 'PUT' || method === 'PATCH') && bodyContent.trim().length > 0) {
+                    options.body = bodyContent;
+                }
+
+                const startTime = performance.now();
+                const res = await fetch(url, options);
+                const duration = Math.round(performance.now() - startTime);
+
+                let data;
+                const contentType = res.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    data = await res.text();
+                }
+
+                if (res.ok) {
+                    statusBadge.className = 'badge bg-success';
+                } else if (res.status === 401 || res.status === 403) {
+                    statusBadge.className = 'badge bg-warning text-dark';
+                } else {
+                    statusBadge.className = 'badge bg-danger';
+                }
+
+                statusBadge.textContent = `HTTP ${res.status} ${res.statusText} (${duration} ms)`;
+                responseBox.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+            } catch (err) {
+                statusBadge.className = 'badge bg-danger';
+                statusBadge.textContent = 'Request Failed';
+                responseBox.textContent = 'Error: ' + err.message;
+            }
+        }
+    </script>
+}
