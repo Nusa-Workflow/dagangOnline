@@ -64,7 +64,7 @@ public class LoginModel : PageModel
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user != null && !user.IsActive)
             {
-                ModelState.AddModelError(string.Empty, "Akun Anda sedang dinonaktifkan oleh administrator.");
+                ModelState.AddModelError(string.Empty, "Email atau kata sandi tidak valid.");
                 return Page();
             }
 
@@ -76,6 +76,10 @@ public class LoginModel : PageModel
                     if (await _userManager.IsInRoleAsync(user, RoleConstants.Admin))
                     {
                         return RedirectToPage("/Admin/Dashboard/Index");
+                    }
+                    if (await _userManager.IsInRoleAsync(user, RoleConstants.Agent))
+                    {
+                        return RedirectToPage("/Agent/Index");
                     }
                     if (await _userManager.IsInRoleAsync(user, RoleConstants.Mitra))
                     {
@@ -90,7 +94,7 @@ public class LoginModel : PageModel
                 return LocalRedirect(returnUrl);
             }
 
-            ModelState.AddModelError(string.Empty, "Kombinasi email atau password tidak valid.");
+            ModelState.AddModelError(string.Empty, "Email atau kata sandi tidak valid.");
         }
 
         return Page();

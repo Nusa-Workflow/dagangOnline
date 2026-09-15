@@ -1,41 +1,418 @@
 @page
 @model dagangOnline.Pages.Account.ProfileModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Profil Pengguna";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h1>Profile</h1>
-        <p class="text-muted">Kelola informasi profil akun Anda.</p>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header Banner -->
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                <div>
+                    <h2 class="fw-bold mb-1">Pengaturan Profil</h2>
+                    <p class="text-muted mb-0">Kelola identitas, alamat email, dan foto profil akun Anda.</p>
+                </div>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
+                    Peran: @Model.RoleName
+                </span>
+            </div>
 
-        @if (TempData["ProfileMessage"] is string message)
-        {
-            <div class="alert alert-success" role="status">@message</div>
-        }
+            @if (TempData["ProfileMessage"] is string message)
+            {
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill me-2 flex-shrink-0" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    <div>@message</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            }
 
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Input.DisplayName" class="form-label"></label>
-                <input asp-for="Input.DisplayName" class="form-control" autocomplete="name" />
-                <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+            <div class="row g-4">
+                <!-- Left Column: Avatar Card & CRUD -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 text-center p-4 h-100">
+                        <h5 class="fw-bold mb-3">Foto Profil</h5>
+
+                        <!-- Avatar Frame with Circular Mask -->
+                        <div class="position-relative mx-auto mb-3" style="width: 150px; height: 150px;">
+                            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                            {
+                                <img id="avatarCurrentPreview" src="@Model.AvatarUrl" alt="Foto Profil" 
+                                     class="rounded-circle shadow-sm border border-3 border-light w-100 h-100 object-fit-cover" />
+                            }
+                            else
+                            {
+                                var initial = string.IsNullOrWhiteSpace(Model.Input.DisplayName) ? "U" : Model.Input.DisplayName.Substring(0, 1).ToUpperInvariant();
+                                <div id="avatarPlaceholder" class="rounded-circle shadow-sm border border-3 border-light w-100 h-100 bg-primary text-white d-flex align-items-center justify-content-center display-5 fw-bold">
+                                    @initial
+                                </div>
+                            }
+                        </div>
+
+                        <p class="small text-muted mb-3">
+                            Format yang didukung: <span class="fw-semibold">JPG, JPEG, PNG</span> (Maks. 5 MB).
+                            Foto dapat disesuaikan fokus wajahnya.
+                        </p>
+
+                        <!-- Avatar Actions -->
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="document.getElementById('avatarFileInput').click();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera me-1" viewBox="0 0 16 16">
+                                    <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/>
+                                    <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+                                </svg>
+                                Pilih / Sesuaikan Foto
+                            </button>
+
+                            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                            {
+                                <form method="post" asp-page-handler="DeleteAvatar" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto profil ini?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3 me-1" viewBox="0 0 16 16">
+                                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                        </svg>
+                                        Hapus Foto
+                                    </button>
+                                </form>
+                            }
+                        </div>
+
+                        <!-- Status badge after adjustment -->
+                        <div id="cropStatusBadge" class="mt-3 alert alert-info py-1 px-2 small d-none">
+                            Foto disesuaikan dan siap disimpan!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Profile Form Details -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <form method="post" enctype="multipart/form-data" id="profileMainForm">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3"></div>
+
+                            <!-- Hidden Inputs for Avatar Upload and Cropped Face Adjustment -->
+                            <input type="file" id="avatarFileInput" name="Input.AvatarFile" class="d-none" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
+                            <input type="hidden" asp-for="Input.CroppedAvatarData" id="croppedAvatarData" />
+
+                            <div class="row g-3">
+                                <!-- Display Name -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.DisplayName" class="form-label fw-semibold">
+                                        Nama Tampilan <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Input.DisplayName" class="form-control rounded-3" placeholder="contoh: Budi Santoso" />
+                                    <span asp-validation-for="Input.DisplayName" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Email (Custom Ordinary Email) -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.Email" class="form-label fw-semibold">
+                                        Alamat Email Biasa <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Input.Email" class="form-control rounded-3" type="email" placeholder="nama@emailanda.com" />
+                                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                                    <div class="form-text small text-muted">Dapat diubah dengan alamat email biasa apa saja yang aktif.</div>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.PhoneNumber" class="form-label fw-semibold">Nomor Telepon / WhatsApp</label>
+                                    <input asp-for="Input.PhoneNumber" class="form-control rounded-3" placeholder="contoh: 081234567890" />
+                                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.Location" class="form-label fw-semibold">Kota / Domisili</label>
+                                    <input asp-for="Input.Location" class="form-control rounded-3" placeholder="contoh: Jakarta Selatan" />
+                                    <span asp-validation-for="Input.Location" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Website / Link -->
+                                <div class="col-12">
+                                    <label asp-for="Input.WebsiteUrl" class="form-label fw-semibold">Website / Tautan Portofolio</label>
+                                    <input asp-for="Input.WebsiteUrl" class="form-control rounded-3" placeholder="https://portofolio-anda.com" />
+                                    <span asp-validation-for="Input.WebsiteUrl" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Bio -->
+                                <div class="col-12">
+                                    <label asp-for="Input.Bio" class="form-label fw-semibold">Biografi / Profil Ringkas</label>
+                                    <textarea asp-for="Input.Bio" class="form-control rounded-3" rows="4" 
+                                              placeholder="Ceritakan ringkas mengenai keahlian, pengalaman, atau latar belakang usaha Anda..."></textarea>
+                                    <span asp-validation-for="Input.Bio" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end align-items-center mt-4 pt-3 border-top gap-2">
+                                <a asp-page="/Index" class="btn btn-light rounded-pill px-4">Batal</a>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                                    Simpan Perubahan Profil
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" value="@Model.Email" readonly />
-                <div class="form-text">Email dikelola oleh sistem Identity.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Penyesuaian Foto & Fokus Muka -->
+<div class="modal fade" id="avatarAdjustModal" tabindex="-1" aria-labelledby="avatarAdjustModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="avatarAdjustModalLabel">Sesuaikan Fokus Wajah & Foto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
-            <div class="mb-3">
-                <label asp-for="Input.Bio" class="form-label"></label>
-                <textarea asp-for="Input.Bio" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="Input.Bio" class="text-danger"></span>
+            <div class="modal-body text-center">
+                <p class="small text-muted mb-3">Geser posisi foto dan perbesar zoom untuk memposisikan wajah di dalam lingkaran.</p>
+
+                <!-- Interactive Preview Frame with Mask -->
+                <div class="position-relative mx-auto rounded-circle overflow-hidden shadow border border-3 border-primary" 
+                     id="previewContainer" 
+                     style="width: 240px; height: 240px; background-color: #1a1a1a; cursor: grab;">
+                    <img id="adjustImageSource" src="" alt="Foto Sumber" 
+                         style="position: absolute; top: 0; left: 0; transform-origin: center center; user-select: none; pointer-events: auto;" />
+                </div>
+
+                <!-- Guidance indicator -->
+                <div class="text-muted small mt-2">
+                    <span class="badge bg-light text-dark border">💡 Tips:</span> Geser (drag) foto untuk mengarahkan wajah ke tengah
+                </div>
+
+                <!-- Controls: Zoom & Alignment -->
+                <div class="mt-4 px-3 text-start">
+                    <label for="zoomSlider" class="form-label small fw-bold d-flex justify-content-between mb-1">
+                        <span>Skala Perbesaran (Zoom)</span>
+                        <span id="zoomValueText" class="text-primary">100%</span>
+                    </label>
+                    <input type="range" class="form-range" id="zoomSlider" min="1" max="3" step="0.05" value="1">
+                </div>
+
+                <div class="row g-2 px-3 mt-1">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 rounded-pill" id="btnResetAdjust">
+                            Reset Posisi
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 rounded-pill" id="btnFocusCenter">
+                            Fokus Tengah
+                        </button>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Simpan profile</button>
-        </form>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold" id="btnApplyCrop">
+                    Terapkan Foto Wajah
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const fileInput = document.getElementById('avatarFileInput');
+            const modalEl = document.getElementById('avatarAdjustModal');
+            const adjustModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+            const imgSource = document.getElementById('adjustImageSource');
+            const container = document.getElementById('previewContainer');
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomValueText = document.getElementById('zoomValueText');
+            const btnApplyCrop = document.getElementById('btnApplyCrop');
+            const btnReset = document.getElementById('btnResetAdjust');
+            const btnCenter = document.getElementById('btnFocusCenter');
+            const croppedInput = document.getElementById('croppedAvatarData');
+            const currentPreview = document.getElementById('avatarCurrentPreview');
+            const placeholder = document.getElementById('avatarPlaceholder');
+            const cropStatusBadge = document.getElementById('cropStatusBadge');
+
+            let currentScale = 1.0;
+            let posX = 0;
+            let posY = 0;
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            let rawFile = null;
+
+            if (!fileInput) return;
+
+            // Handle file selection
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const validExts = ['.jpg', '.jpeg', '.png'];
+                const fileName = file.name.toLowerCase();
+                const isValidExt = validExts.some(ext => fileName.endsWith(ext));
+
+                if (!isValidExt) {
+                    alert('Hanya format file .jpg, .jpeg, dan .png yang didukung.');
+                    fileInput.value = '';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file foto maksimal 5 MB.');
+                    fileInput.value = '';
+                    return;
+                }
+
+                rawFile = file;
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imgSource.onload = function () {
+                        // Reset transforms
+                        currentScale = 1.0;
+                        zoomSlider.value = "1";
+                        zoomValueText.textContent = "100%";
+
+                        // Initial fit
+                        const cw = container.clientWidth;
+                        const ch = container.clientHeight;
+                        const nw = imgSource.naturalWidth;
+                        const nh = imgSource.naturalHeight;
+
+                        // Scale to cover
+                        const ratio = Math.max(cw / nw, ch / nh);
+                        imgSource.width = nw * ratio;
+                        imgSource.height = nh * ratio;
+
+                        posX = (cw - imgSource.width) / 2;
+                        posY = (ch - imgSource.height) / 2;
+
+                        applyTransform();
+                        adjustModal.show();
+                    };
+                    imgSource.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            function applyTransform() {
+                imgSource.style.transform = `translate(${posX}px, ${posY}px) scale(${currentScale})`;
+            }
+
+            // Zoom slider
+            zoomSlider.addEventListener('input', function (e) {
+                currentScale = parseFloat(e.target.value);
+                zoomValueText.textContent = Math.round(currentScale * 100) + '%';
+                applyTransform();
+            });
+
+            // Dragging to reposition face
+            container.addEventListener('mousedown', function (e) {
+                isDragging = true;
+                startX = e.clientX - posX;
+                startY = e.clientY - posY;
+                container.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', function (e) {
+                if (!isDragging) return;
+                posX = e.clientX - startX;
+                posY = e.clientY - startY;
+                applyTransform();
+            });
+
+            window.addEventListener('mouseup', function () {
+                if (isDragging) {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                }
+            });
+
+            // Touch support for mobile
+            container.addEventListener('touchstart', function (e) {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - posX;
+                    startY = e.touches[0].clientY - posY;
+                }
+            });
+
+            container.addEventListener('touchmove', function (e) {
+                if (!isDragging || e.touches.length !== 1) return;
+                posX = e.touches[0].clientX - startX;
+                posY = e.touches[0].clientY - startY;
+                applyTransform();
+                e.preventDefault();
+            });
+
+            container.addEventListener('touchend', function () {
+                isDragging = false;
+            });
+
+            // Reset
+            btnReset.addEventListener('click', function () {
+                currentScale = 1.0;
+                zoomSlider.value = "1";
+                zoomValueText.textContent = "100%";
+                posX = (container.clientWidth - imgSource.width) / 2;
+                posY = (container.clientHeight - imgSource.height) / 2;
+                applyTransform();
+            });
+
+            btnCenter.addEventListener('click', function () {
+                posX = (container.clientWidth - imgSource.width) / 2;
+                posY = (container.clientHeight - imgSource.height) / 2;
+                applyTransform();
+            });
+
+            // Apply Crop using 2D Canvas to generate adjusted face image
+            btnApplyCrop.addEventListener('click', function () {
+                const targetSize = 400; // high quality square output
+                const canvas = document.createElement('canvas');
+                canvas.width = targetSize;
+                canvas.height = targetSize;
+                const ctx = canvas.getContext('2d');
+
+                const cw = container.clientWidth;
+                const scaleFactor = targetSize / cw;
+
+                // Fill white background just in case
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, targetSize, targetSize);
+
+                // Calculate center and draw
+                ctx.save();
+                ctx.translate(posX * scaleFactor, posY * scaleFactor);
+                ctx.scale(currentScale * scaleFactor, currentScale * scaleFactor);
+                ctx.drawImage(imgSource, 0, 0, imgSource.width, imgSource.height);
+                ctx.restore();
+
+                const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                croppedInput.value = croppedDataUrl;
+
+                // Update UI preview immediately
+                if (currentPreview) {
+                    currentPreview.src = croppedDataUrl;
+                    currentPreview.classList.remove('d-none');
+                } else if (placeholder) {
+                    placeholder.classList.add('d-none');
+                    const newImg = document.createElement('img');
+                    newImg.id = 'avatarCurrentPreview';
+                    newImg.src = croppedDataUrl;
+                    newImg.alt = 'Foto Profil';
+                    newImg.className = 'rounded-circle shadow-sm border border-3 border-light w-100 h-100 object-fit-cover';
+                    placeholder.parentNode.appendChild(newImg);
+                }
+
+                if (cropStatusBadge) {
+                    cropStatusBadge.classList.remove('d-none');
+                }
+
+                adjustModal.hide();
+            });
+        })();
+    </script>
 }

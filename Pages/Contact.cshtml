@@ -38,13 +38,15 @@
 
                         <div class="mb-3">
                             <label asp-for="Input.Name" class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input asp-for="Input.Name" class="form-control" placeholder="cth. Budi Santoso" />
+                            <input asp-for="Input.Name" class="form-control" placeholder="contoh: Budi Santoso" />
+                            <div class="form-text small text-muted">Nama lengkap atau nama penanggung jawab organisasi.</div>
                             <span asp-validation-for="Input.Name" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Input.Email" class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
-                            <input asp-for="Input.Email" type="email" class="form-control" placeholder="budi@example.com" />
+                            <input asp-for="Input.Email" type="email" class="form-control" placeholder="contoh: budi@domain.com" />
+                            <div class="form-text small text-muted">Kami akan mengirimkan balasan konsultasi ke email ini.</div>
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
 
@@ -60,22 +62,23 @@
                                 <span asp-validation-for="Input.Category" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Input.Subject" class="form-label fw-semibold">Subjek <span class="text-danger">*</span></label>
-                                <input asp-for="Input.Subject" class="form-control" placeholder="Topik diskusi" />
+                                <label asp-for="Input.Subject" class="form-label fw-semibold">Subjek Pesan <span class="text-danger">*</span></label>
+                                <input asp-for="Input.Subject" class="form-control" placeholder="contoh: Konsultasi Solusi Digital UMKM" />
                                 <span asp-validation-for="Input.Subject" class="text-danger small"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Input.Message" class="form-label fw-semibold">Pesan / Detail Kebutuhan <span class="text-danger">*</span></label>
-                            <textarea asp-for="Input.Message" class="form-control" rows="5" placeholder="Jelaskan kebutuhan, target waktu, atau pertanyaan Anda..."></textarea>
+                            <textarea asp-for="Input.Message" class="form-control" rows="5" placeholder="Jelaskan kebutuhan solusi, target waktu, atau pertanyaan yang ingin Anda diskusikan..."></textarea>
+                            <div class="form-text small text-muted">Sertakan informasi bisnis yang relevan agar tim kami dapat merespons secara akurat.</div>
                             <span asp-validation-for="Input.Message" class="text-danger small"></span>
                         </div>
 
                         <div class="form-check mb-4">
                             <input asp-for="Input.ConsentAccepted" class="form-check-input" type="checkbox" id="consentCheck" />
                             <label class="form-check-label small text-muted" for="consentCheck">
-                                Saya menyetujui data yang dikirimkan diproses untuk keperluan tindak lanjut komunikasi sesuai kebijakan privasi.
+                                Saya menyetujui data yang dikirimkan diproses untuk keperluan tindak lanjut komunikasi sesuai kebijakan privasi. <span class="text-danger">*</span>
                             </label>
                             <div>
                                 <span asp-validation-for="Input.ConsentAccepted" class="text-danger small"></span>

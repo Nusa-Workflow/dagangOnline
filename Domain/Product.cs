@@ -14,6 +14,8 @@ public class Product : BaseEntity
     public string? ImageUrl { get; set; }
     public Guid? ServiceId { get; set; }
     public Service? Service { get; set; }
+    public string? OwnerId { get; set; }
+    public string? OwnerName { get; set; }
 }
 
 public enum ProductCategory

@@ -16,11 +16,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0d6efd" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="~/icons/icon-192.png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/dagangOnline.styles.css" asp-append-version="true" />
 </head>
 <body class="bg-light">
+    <!-- Offline Connection Indicator (Task 3.4) -->
+    <div id="offlineBanner" class="alert alert-warning py-2 mb-0 text-center small rounded-0 border-0 d-none" role="alert">
+        <strong>Mode Offline:</strong> Koneksi internet terputus. Anda menjelajahi data tersimpan.
+    </div>
+
     <!-- Modern Sticky Header -->
     <header class="sticky-top">
         <nav class="navbar navbar-expand-lg navbar-modern">
@@ -41,8 +49,8 @@
                 </a>
 
                 <!-- Mobile Toggle Button -->
-                <button class="navbar-toggler border-0 p-2 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMainContent"
-                        aria-controls="navbarMainContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMainContent"
+                        aria-controls="navbarMainContent" aria-expanded="false" aria-label="Buka menu navigasi">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -76,7 +84,7 @@
                     <!-- Right Side Actions & Authentication -->
                     <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
                         <!-- Quick Search Icon -->
-                        <a class="btn-nav-search" asp-page="/Search" title="Pencarian Cepat">
+                        <a class="btn-nav-search" asp-page="/Search" title="Pencarian Cepat" aria-label="Pencarian Cepat">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                             </svg>
@@ -84,18 +92,30 @@
 
                         @if (SignInManager.IsSignedIn(User))
                         {
-                            var userInitial = (User.Identity?.Name?.Length > 0 ? User.Identity.Name.Substring(0, 1).ToUpper() : "U");
+                            var currentUser = await UserManager.GetUserAsync(User);
+                            var userInitial = (!string.IsNullOrEmpty(currentUser?.DisplayName) ? currentUser.DisplayName.Substring(0, 1).ToUpper() : (User.Identity?.Name?.Length > 0 ? User.Identity.Name.Substring(0, 1).ToUpper() : "U"));
                             <div class="dropdown">
                                 <a href="#" class="user-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="user-avatar-circle">
-                                        @userInitial
-                                    </div>
+                                    @if (!string.IsNullOrEmpty(currentUser?.AvatarUrl))
+                                    {
+                                        <img src="@currentUser.AvatarUrl" alt="Foto Profil" class="user-avatar-circle user-avatar-img" />
+                                    }
+                                    else
+                                    {
+                                        <div class="user-avatar-circle">
+                                            @userInitial
+                                        </div>
+                                    }
                                     <span class="user-meta-name d-none d-md-inline">
-                                        @(User.Identity?.Name?.Split('@')[0] ?? "Akun")
+                                        @(currentUser?.DisplayName ?? User.Identity?.Name?.Split('@')[0] ?? "Akun")
                                     </span>
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <span class="badge bg-danger rounded-pill px-2 py-1 small" style="font-size: 0.65rem;">Admin</span>
+                                    }
+                                    else if (User.IsInRole("Agent"))
+                                    {
+                                        <span class="badge bg-info text-dark rounded-pill px-2 py-1 small" style="font-size: 0.65rem;">Agent</span>
                                     }
                                     else if (User.IsInRole("Mitra"))
                                     {
@@ -106,7 +126,7 @@
                                     <li class="px-3 py-2 border-bottom mb-1">
                                         <div class="fw-bold text-dark small">@User.Identity?.Name</div>
                                         <span class="text-muted small" style="font-size: 0.75rem;">
-                                            @(User.IsInRole("Admin") ? "Super Administrator" : User.IsInRole("Mitra") ? "Mitra Terdaftar" : "Pengguna Terdaftar")
+                                            @(User.IsInRole("Admin") ? "Super Administrator" : User.IsInRole("Agent") ? "Human Agent (Moderator)" : User.IsInRole("Mitra") ? "Mitra Terdaftar" : "Pengguna Terdaftar")
                                         </span>
                                     </li>
                                     <li>
@@ -125,6 +145,26 @@
                                                     <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h1a.5.5 0 0 1 0 1H0a.5.5 0 0 1 0-1h1V9a.5.5 0 0 1 .5-.5zm2 .5a.5.5 0 0 1 .5.5V13h8V9.5a.5.5 0 0 1 1 0V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .5-.5z"/>
                                                 </svg>
                                                 Portal Mitra
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-modern" asp-page="/Agent/Index">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-check text-info" viewBox="0 0 16 16">
+                                                    <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524z"/>
+                                                    <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                                                </svg>
+                                                Moderasi Produk
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-modern" asp-page="/Agent/LiveChat">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-headset text-primary" viewBox="0 0 16 16">
+                                                    <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5z"/>
+                                                </svg>
+                                                Live Chat Handoff
                                             </a>
                                         </li>
                                     }
@@ -206,6 +246,21 @@
             </ul>
         </div>
     </footer>
+
+    <!-- Global Application Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="appToast" class="toast align-items-center border-0 shadow-lg text-white" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2" id="appToastBody">
+                    <span id="appToastMessage">Pesan sistem</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Chat Widget -->
+    <partial name="_ChatWidget" />
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -452,12 +452,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label asp-for="NewAnnouncement.Title" class="form-label fw-semibold">Judul Pengumuman <span class="text-danger">*</span></label>
-                        <input asp-for="NewAnnouncement.Title" class="form-control" placeholder="cth: Pemeliharaan Sistem Terjadwal" />
+                        <input asp-for="NewAnnouncement.Title" class="form-control" placeholder="contoh: Pemeliharaan Server & Pembaruan Sistem Terjadwal" />
+                        <div class="form-text small text-muted">Judul ringkas dan jelas yang akan tampil pada banner pengguna.</div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="NewAnnouncement.Content" class="form-label fw-semibold">Isi Pengumuman</label>
-                        <textarea asp-for="NewAnnouncement.Content" class="form-control" rows="4" placeholder="Detail informasi pengumuman..."></textarea>
+                        <textarea asp-for="NewAnnouncement.Content" class="form-control" rows="4" placeholder="Tuliskan detail informasi pengumuman, estimasi jadwal, dan dampak terhadap pengguna..."></textarea>
                     </div>
 
                     <div class="form-check">

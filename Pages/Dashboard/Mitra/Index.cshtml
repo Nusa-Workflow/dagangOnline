@@ -2,7 +2,7 @@
 @using dagangOnline.Domain
 @model dagangOnline.Pages.Dashboard.Mitra.IndexModel
 @{
-    ViewData["Title"] = "Mitra Dashboard";
+    ViewData["Title"] = "Dashboard Mitra Bisnis";
 }
 
 <div class="container py-4">
@@ -22,7 +22,7 @@
                 }
                 else
                 {
-                    <span class="badge bg-warning text-dark">Menunggu Verifikasi</span>
+                    <span class="badge bg-warning text-dark">Menunggu Verifikasi Legalitas</span>
                 }
             </div>
             <p class="text-muted mb-0">
@@ -38,15 +38,23 @@
 
     @if (!string.IsNullOrEmpty(Model.StatusMessage))
     {
-        <div class="alert alert-info alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
             @Model.StatusMessage
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+            @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
         </div>
     }
 
     <!-- KPI Summary Row -->
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100 bg-light">
                 <div class="card-body d-flex align-items-center">
                     <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 me-3">
@@ -55,16 +63,47 @@
                         </svg>
                     </div>
                     <div>
-                        <h6 class="text-muted mb-0 small">Katalog Produk</h6>
+                        <h6 class="text-muted mb-0 small">Katalog Produk Sendiri</h6>
                         <h3 class="fw-bold mb-0 text-dark">@Model.Products.Count</h3>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
+                            <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 4V3h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2h-7zm3 6.35c.42.203.65.518.65.85v.6c0 .332-.23.647-.65.85A3.5 3.5 0 0 0 4.5 13h7a3.5 3.5 0 0 0-3-2.35z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Menunggu Review</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.Products.Count(p => p.Status == PublicationStatus.PendingReview)</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100 bg-light">
                 <div class="card-body d-flex align-items-center">
                     <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0 small">Produk Tayang</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.Products.Count(p => p.Status == PublicationStatus.Published)</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+                <div class="card-body d-flex align-items-center">
+                    <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 me-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
                             <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
                         </svg>
@@ -76,29 +115,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 bg-light">
-                <div class="card-body d-flex align-items-center">
-                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 me-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
-                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-0 small">Lokasi Operasional</h6>
-                        <h3 class="h5 fw-bold mb-0 text-dark">@(string.IsNullOrWhiteSpace(Model.Profile?.City) ? "Belum diatur" : Model.Profile.City)</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Tabs Navigation -->
     <ul class="nav nav-pills mb-4" id="mitraTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-semibold" id="products-tab" data-bs-toggle="pill" data-bs-target="#products-pane" type="button" role="tab">
-                Katalog Produk & Solusi (@Model.Products.Count)
+                Katalog Produk Saya (@Model.Products.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications-pane" type="button" role="tab">
+                Notifikasi & Hasil Review (@Model.Notifications.Count)
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -114,11 +142,11 @@
     </ul>
 
     <div class="tab-content" id="mitraTabsContent">
-        <!-- Tab 1: Products -->
+        <!-- Tab 1: Products (Scoped to Mitra) -->
         <div class="tab-pane fade show active" id="products-pane" role="tabpanel">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0">Daftar Produk & Layanan Mitra</h5>
+                    <h5 class="fw-bold mb-0">Daftar Produk & Solusi Milik Anda</h5>
                     <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
                         + Tambah Produk
                     </button>
@@ -133,8 +161,9 @@
                                         <th>Nama Produk</th>
                                         <th>Kategori</th>
                                         <th>Harga</th>
-                                        <th>Status Publikasi</th>
-                                        <th>Tanggal Dibuat</th>
+                                        <th>Status Moderasi</th>
+                                        <th>Waktu Diajukan</th>
+                                        <th class="text-end pe-3">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -152,14 +181,39 @@
                                             <td>
                                                 @if (prod.Status == PublicationStatus.Published)
                                                 {
-                                                    <span class="badge bg-success">Tayang</span>
+                                                    <span class="badge bg-success">Tayang di Publik</span>
+                                                }
+                                                else if (prod.Status == PublicationStatus.PendingReview)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Menunggu Review</span>
+                                                }
+                                                else if (prod.Status == PublicationStatus.Rejected)
+                                                {
+                                                    <span class="badge bg-danger">Perlu Revisi</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-warning text-dark">@prod.Status</span>
+                                                    <span class="badge bg-secondary">Draf</span>
                                                 }
                                             </td>
                                             <td class="text-muted small">@prod.CreatedAt.ToString("dd MMM yyyy")</td>
+                                            <td class="text-end pe-3">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary me-1 btn-edit-product"
+                                                        data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                                        data-id="@prod.Id"
+                                                        data-name="@prod.Name"
+                                                        data-summary="@prod.Summary"
+                                                        data-desc="@prod.Description"
+                                                        data-price="@prod.Price"
+                                                        data-category="@prod.Category">
+                                                    Edit
+                                                </button>
+                                                <form method="post" asp-page-handler="DeleteProduct" asp-route-id="@prod.Id" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk @prod.Name? Tindakan ini permanen.');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
@@ -169,7 +223,7 @@
                     else
                     {
                         <div class="text-center py-5">
-                            <p class="text-muted mb-3">Belum ada produk atau paket layanan yang didaftarkan.</p>
+                            <p class="text-muted mb-3">Anda belum memiliki produk yang didaftarkan.</p>
                             <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
                                 Daftarkan Produk Pertama
                             </button>
@@ -179,11 +233,45 @@
             </div>
         </div>
 
-        <!-- Tab 2: Available Service Requests -->
-        <div class="tab-pane fade" id="requests-pane" role="tabpanel">
-            <div class="card border-0 shadow-sm">
+        <!-- Tab 2: Notifications / Review Feedback -->
+        <div class="tab-pane fade" id="notifications-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header bg-white py-3">
-                    <h5 class="fw-bold mb-0">Peluang Permintaan Layanan yang Tersedia</h5>
+                    <h5 class="fw-bold mb-0">Umpan Balik & Keputusan Moderasi</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Notifications.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var notif in Model.Notifications)
+                            {
+                                <div class="list-group-item p-3">
+                                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 fw-bold @(notif.Type == "Success" ? "text-success" : notif.Type == "Warning" ? "text-danger" : "text-dark")">
+                                            @notif.Title
+                                        </h6>
+                                        <small class="text-muted">@notif.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="mb-0 text-secondary small">@notif.Message</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">Belum ada riwayat notifikasi keputusan review.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Available Service Requests -->
+        <div class="tab-pane fade" id="requests-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Peluang Permintaan Layanan Platform</h5>
                 </div>
                 <div class="card-body p-0">
                     @if (Model.AvailableRequests.Any())
@@ -227,9 +315,9 @@
             </div>
         </div>
 
-        <!-- Tab 3: Mitra Profile Form -->
+        <!-- Tab 4: Mitra Profile Form -->
         <div class="tab-pane fade" id="profile-pane" role="tabpanel">
-            <div class="card border-0 shadow-sm p-4">
+            <div class="card border-0 shadow-sm p-4 rounded-3">
                 <div class="card-body">
                     <h5 class="fw-bold mb-3">Informasi Bisnis & Legalitas Mitra</h5>
                     <p class="text-muted small mb-4">
@@ -284,19 +372,23 @@
     </div>
 </div>
 
-<!-- Modal Tambah Produk -->
+<!-- Modal Tambah Produk Baru -->
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="newProductModalLabel">Daftarkan Produk / Paket Solusi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <form method="post" asp-page-handler="CreateProduct">
                 <div class="modal-body">
+                    <div class="alert alert-info py-2 small mb-3">
+                        Pengajuan produk akan ditinjau oleh Human Agent sebelum diterbitkan ke katalog platform.
+                    </div>
+
                     <div class="mb-3">
                         <label asp-for="NewProduct.Name" class="form-label fw-semibold">Nama Produk / Paket <span class="text-danger">*</span></label>
-                        <input asp-for="NewProduct.Name" class="form-control" placeholder="cth: Paket Aplikasi Kasir Cloud" />
+                        <input asp-for="NewProduct.Name" class="form-control" placeholder="contoh: Paket Aplikasi Kasir UMKM Cloud" required />
                     </div>
 
                     <div class="row g-2 mb-3">
@@ -311,23 +403,77 @@
                         </div>
                         <div class="col-md-6">
                             <label asp-for="NewProduct.Price" class="form-label fw-semibold">Harga (IDR)</label>
-                            <input asp-for="NewProduct.Price" type="number" step="1000" class="form-control" placeholder="cth: 2500000" />
+                            <input asp-for="NewProduct.Price" type="number" step="1000" class="form-control" placeholder="contoh: 2500000" />
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="NewProduct.Summary" class="form-label fw-semibold">Ringkasan Singkat</label>
-                        <input asp-for="NewProduct.Summary" class="form-control" placeholder="Penjelasan 1 kalimat untuk katalog" />
+                        <input asp-for="NewProduct.Summary" class="form-control" placeholder="contoh: Sistem kasir online dengan inventori otomatis" />
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="NewProduct.Description" class="form-label fw-semibold">Detail Deskripsi & Fitur</label>
-                        <textarea asp-for="NewProduct.Description" class="form-control" rows="4" placeholder="Jelaskan spesifikasi, cakupan fitur, dan ketentuan..."></textarea>
+                        <textarea asp-for="NewProduct.Description" class="form-control" rows="4" placeholder="Jelaskan spesifikasi modul, cakupan fitur, dan ketentuan lisensi..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary fw-semibold">Publikasikan Produk</button>
+                    <button type="submit" class="btn btn-primary fw-semibold">Ajukan untuk Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Produk Existing -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="editProductModalLabel">Edit Produk / Solusi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <form method="post" id="editProductForm" asp-page-handler="UpdateProduct">
+                <div class="modal-body">
+                    <div class="alert alert-warning py-2 small mb-3">
+                        Perubahan informasi produk akan diajukan ulang ke antrean review kurator internal.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Produk <span class="text-danger">*</span></label>
+                        <input asp-for="EditProduct.Name" id="editProdName" class="form-control" required />
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Kategori</label>
+                            <select asp-for="EditProduct.Category" id="editProdCategory" class="form-select">
+                                <option value="General">Umum</option>
+                                <option value="SaaS">SaaS / Cloud</option>
+                                <option value="ServicePackage">Paket Layanan</option>
+                                <option value="DigitalProduct">Produk Digital</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Harga (IDR)</label>
+                            <input asp-for="EditProduct.Price" id="editProdPrice" type="number" step="1000" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ringkasan Singkat</label>
+                        <input asp-for="EditProduct.Summary" id="editProdSummary" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Detail Deskripsi & Fitur</label>
+                        <textarea asp-for="EditProduct.Description" id="editProdDesc" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary fw-semibold">Simpan & Ajukan Ulang</button>
                 </div>
             </form>
         </div>

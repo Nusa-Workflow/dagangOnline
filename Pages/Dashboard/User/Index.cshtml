@@ -283,7 +283,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label asp-for="NewRequest.Title" class="form-label fw-semibold">Judul Permintaan <span class="text-danger">*</span></label>
-                        <input asp-for="NewRequest.Title" class="form-control" placeholder="cth: Pembuatan Toko Online Terintegrasi" />
+                        <input asp-for="NewRequest.Title" class="form-control" placeholder="contoh: Pembuatan Toko Online & Aplikasi POS" />
+                        <div class="form-text small text-muted">Ringkasan singkat mengenai proyek atau solusi yang diajukan.</div>
                         <span asp-validation-for="NewRequest.Title" class="text-danger small"></span>
                     </div>
 
@@ -310,13 +311,14 @@
                         </div>
                         <div class="col-md-6">
                             <label asp-for="NewRequest.Phone" class="form-label fw-semibold">No. WhatsApp/Telepon</label>
-                            <input asp-for="NewRequest.Phone" class="form-control" placeholder="08xxxxxxxxxx" />
+                            <input asp-for="NewRequest.Phone" class="form-control" placeholder="contoh: 081234567890" />
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="NewRequest.Description" class="form-label fw-semibold">Deskripsi Kebutuhan <span class="text-danger">*</span></label>
                         <textarea asp-for="NewRequest.Description" class="form-control" rows="4" placeholder="Jelaskan kebutuhan fungsional, sasaran bisnis, dan ekspektasi waktu pengerjaan..."></textarea>
+                        <div class="form-text small text-muted">Detailkan spesifikasi atau preferensi teknologi yang Anda inginkan.</div>
                         <span asp-validation-for="NewRequest.Description" class="text-danger small"></span>
                     </div>
                 </div>

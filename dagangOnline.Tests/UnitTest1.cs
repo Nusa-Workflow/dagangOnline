@@ -4,10 +4,14 @@ using dagangOnline.Authorization;
 using dagangOnline.Controllers.Api.v1;
 using dagangOnline.Data;
 using dagangOnline.Domain;
+using dagangOnline.Domain.Agents;
 using dagangOnline.Models;
+using dagangOnline.Pages.Account;
 using dagangOnline.Protos;
+using dagangOnline.Services;
 using dagangOnline.Services.Grpc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +28,7 @@ public class IdentityFoundationTests
         Assert.Equal("Admin", RoleConstants.Admin);
         Assert.Equal("User", RoleConstants.User);
         Assert.Equal("Mitra", RoleConstants.Mitra);
+        Assert.Equal("Agent", RoleConstants.Agent);
     }
 
     [Fact]
@@ -36,6 +41,7 @@ public class IdentityFoundationTests
             options.AddPolicy(AuthorizationPolicies.RequireAdmin, policy => policy.RequireRole(RoleConstants.Admin));
             options.AddPolicy(AuthorizationPolicies.RequireUser, policy => policy.RequireRole(RoleConstants.User));
             options.AddPolicy(AuthorizationPolicies.RequireMitra, policy => policy.RequireRole(RoleConstants.Mitra));
+            options.AddPolicy(AuthorizationPolicies.RequireAgent, policy => policy.RequireRole(RoleConstants.Agent));
         });
 
         var provider = services.BuildServiceProvider();
@@ -44,6 +50,7 @@ public class IdentityFoundationTests
         Assert.NotNull(authorizationOptions.GetPolicy(AuthorizationPolicies.RequireAdmin));
         Assert.NotNull(authorizationOptions.GetPolicy(AuthorizationPolicies.RequireUser));
         Assert.NotNull(authorizationOptions.GetPolicy(AuthorizationPolicies.RequireMitra));
+        Assert.NotNull(authorizationOptions.GetPolicy(AuthorizationPolicies.RequireAgent));
     }
 
     [Fact]
@@ -555,6 +562,265 @@ public class IdentityFoundationTests
         var searchResponse = await grpcService.SearchCatalog(new SearchCatalogRequest { Query = "audit" }, null!);
         Assert.Single(searchResponse.Results);
         Assert.Equal("Cybersecurity Audit", searchResponse.Results[0].Title);
+    }
+
+    [Fact]
+    public async Task AgentReviewService_ApproveProduct_PublishesAndNotifiesMitra()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var auditService = new AuditLogService(context);
+        var reviewService = new AgentReviewService(context, auditService);
+
+        var owner = new ApplicationUser
+        {
+            Id = "mitra-user-1",
+            Email = "mitra@example.com",
+            UserName = "mitra@example.com"
+        };
+        context.Users.Add(owner);
+
+        var product = new Product
+        {
+            Id = Guid.NewGuid(),
+            Name = "Aplikasi Kasir POS",
+            Slug = "aplikasi-kasir-pos",
+            Price = 1500000,
+            Status = PublicationStatus.PendingReview,
+            OwnerId = owner.Id,
+            OwnerName = "PT Mitra Sejahtera"
+        };
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
+
+        var task = await reviewService.CreateReviewTaskForProductAsync(product);
+        Assert.NotNull(task);
+        Assert.Equal(ReviewTaskStatus.Pending, task.Status);
+
+        var approved = await reviewService.ApproveProductAsync(task.Id, "agent-1", "Human Moderator", "Semua fitur terverifikasi valid.");
+        Assert.True(approved);
+
+        var updatedProduct = await context.Products.FindAsync(product.Id);
+        Assert.Equal(PublicationStatus.Published, updatedProduct!.Status);
+
+        var decision = await context.ModerationDecisions.FirstOrDefaultAsync(d => d.ReviewTaskId == task.Id);
+        Assert.NotNull(decision);
+        Assert.Equal("Approved", decision.Decision);
+
+        var notif = await context.Notifications.FirstOrDefaultAsync(n => n.RecipientEmail == owner.Email);
+        Assert.NotNull(notif);
+        Assert.Equal("Success", notif.Type);
+        Assert.Contains("disetujui", notif.Message);
+    }
+
+    [Fact]
+    public async Task AgentReviewService_RejectProduct_SetsRejectedAndSendsFeedback()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var auditService = new AuditLogService(context);
+        var reviewService = new AgentReviewService(context, auditService);
+
+        var owner = new ApplicationUser
+        {
+            Id = "mitra-user-2",
+            Email = "mitra2@example.com",
+            UserName = "mitra2@example.com"
+        };
+        context.Users.Add(owner);
+
+        var product = new Product
+        {
+            Id = Guid.NewGuid(),
+            Name = "Template Design Abal",
+            Slug = "template-design-abal",
+            Price = 50000,
+            Status = PublicationStatus.PendingReview,
+            OwnerId = owner.Id
+        };
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
+
+        var task = await reviewService.CreateReviewTaskForProductAsync(product);
+        var rejected = await reviewService.RejectProductAsync(task.Id, "agent-1", "Human Moderator", "Deskripsi fitur tidak lengkap", "Mohon lengkapi dokumentasi");
+        Assert.True(rejected);
+
+        var updatedProduct = await context.Products.FindAsync(product.Id);
+        Assert.Equal(PublicationStatus.Rejected, updatedProduct!.Status);
+
+        var decision = await context.ModerationDecisions.FirstOrDefaultAsync(d => d.ReviewTaskId == task.Id);
+        Assert.NotNull(decision);
+        Assert.Equal("Rejected", decision.Decision);
+        Assert.Equal("Deskripsi fitur tidak lengkap", decision.Reason);
+
+        var notif = await context.Notifications.FirstOrDefaultAsync(n => n.RecipientEmail == owner.Email);
+        Assert.NotNull(notif);
+        Assert.Equal("Warning", notif.Type);
+        Assert.Contains("ditolak", notif.Message);
+    }
+
+    [Fact]
+    public async Task ProductsApiController_MitraOwnership_RejectsCrossMitraModification()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var auditService = new AuditLogService(context);
+        var controller = new ProductsController(context, auditService);
+
+        var product = new Product
+        {
+            Id = Guid.NewGuid(),
+            Name = "Private Product",
+            Slug = "private-product",
+            Price = 100000,
+            OwnerId = "owner-mitra-1",
+            Status = PublicationStatus.Published
+        };
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
+
+        // Simulate request by a different Mitra user
+        var intruderClaims = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "intruder-mitra-2"),
+            new Claim(ClaimTypes.Role, RoleConstants.Mitra)
+        }, "TestAuth"));
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext { User = intruderClaims }
+        };
+
+        // Try to update product of another Mitra
+        var updateResult = await controller.Update(product.Id, new UpdateProductDto
+        {
+            Name = "Hacked Name",
+            Price = 100
+        });
+        Assert.IsType<ForbidResult>(updateResult);
+
+        // Try to delete product of another Mitra
+        var deleteResult = await controller.Delete(product.Id);
+        Assert.IsType<ForbidResult>(deleteResult);
+    }
+
+    [Fact]
+    public async Task PublicCatalogService_PendingOrRejectedProducts_DoNotAppearInPublicCatalog()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        context.Products.Add(new Product
+        {
+            Name = "Smart Payroll System",
+            Slug = "smart-payroll-system",
+            Summary = "Cloud HR & payroll solution",
+            Status = PublicationStatus.PendingReview // Belum diapprove
+        });
+        context.Products.Add(new Product
+        {
+            Name = "Suspicious Tool",
+            Slug = "suspicious-tool",
+            Summary = "Automation bot tool",
+            Status = PublicationStatus.Rejected // Ditolak
+        });
+        context.Products.Add(new Product
+        {
+            Name = "Official Cloud CRM",
+            Slug = "official-cloud-crm",
+            Summary = "CRM customer relationship management",
+            Status = PublicationStatus.Published // Approved / Tayang
+        });
+        await context.SaveChangesAsync();
+
+        var catalogService = new PublicCatalogService(context);
+        var searchResults = await catalogService.SearchAsync("cloud");
+
+        // Only the Published product should appear in public search!
+        var singleProduct = Assert.Single(searchResults, r => r.Type == "Product");
+        Assert.Equal("Official Cloud CRM", singleProduct.Title);
+    }
+}
+
+public class ProfileCustomizationAndAvatarTests
+{
+    [Fact]
+    public void IsValidImageHeader_ValidatesJpgJpegAndPngCorrectly()
+    {
+        // Valid JPEG header: FF D8 FF E0
+        byte[] validJpeg = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10 };
+        Assert.True(ProfileModel.IsValidImageHeader(validJpeg, ".jpg"));
+        Assert.True(ProfileModel.IsValidImageHeader(validJpeg, ".jpeg"));
+
+        // Valid PNG header: 89 50 4E 47 0D 0A 1A 0A
+        byte[] validPng = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00 };
+        Assert.True(ProfileModel.IsValidImageHeader(validPng, ".png"));
+
+        // Invalid bytes (e.g. text/exe pretending to be jpg)
+        byte[] fakeJpg = new byte[] { 0x4D, 0x5A, 0x90, 0x00 }; // MZ DOS header
+        Assert.False(ProfileModel.IsValidImageHeader(fakeJpg, ".jpg"));
+
+        // Unsupported extension
+        Assert.False(ProfileModel.IsValidImageHeader(validJpeg, ".gif"));
+        Assert.False(ProfileModel.IsValidImageHeader(validJpeg, ".exe"));
+        Assert.False(ProfileModel.IsValidImageHeader(validJpeg, ".svg"));
+    }
+
+    [Fact]
+    public async Task ApplicationUser_CanPersistAvatarUrl_AndSyncWithUserProfile()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var user = new ApplicationUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = "customuser@example.com",
+            Email = "customuser@example.com",
+            DisplayName = "Custom User",
+            AvatarUrl = "/uploads/avatars/avatar_123.jpg"
+        };
+        context.Users.Add(user);
+
+        var profile = new UserProfile
+        {
+            UserId = user.Id,
+            DisplayName = user.DisplayName,
+            Location = "Jakarta",
+            AvatarUrl = user.AvatarUrl
+        };
+        context.UserProfiles.Add(profile);
+        await context.SaveChangesAsync();
+
+        var retrievedUser = await context.Users.FindAsync(user.Id);
+        Assert.NotNull(retrievedUser);
+        Assert.Equal("/uploads/avatars/avatar_123.jpg", retrievedUser.AvatarUrl);
+
+        var retrievedProfile = await context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
+        Assert.NotNull(retrievedProfile);
+        Assert.Equal("/uploads/avatars/avatar_123.jpg", retrievedProfile.AvatarUrl);
+        Assert.Equal("Jakarta", retrievedProfile.Location);
+
+        // Deletion clears AvatarUrl
+        retrievedUser.AvatarUrl = null;
+        retrievedProfile.AvatarUrl = null;
+        await context.SaveChangesAsync();
+
+        var clearedUser = await context.Users.FindAsync(user.Id);
+        Assert.Null(clearedUser!.AvatarUrl);
     }
 }
 

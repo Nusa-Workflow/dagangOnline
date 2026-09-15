@@ -20,10 +20,10 @@
 
                         <!-- Tipe Akun Selector -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">Tipe Akun:</label>
+                            <label class="form-label fw-bold small text-muted">Pilih Tipe Akun: <span class="text-danger">*</span></label>
                             <div class="row g-2">
                                 <div class="col-6">
-                                    <input type="radio" class="btn-check" name="Input.AccountType" id="typeUser" value="user" @(Model.Input.AccountType == "user" ? "checked" : "") onchange="toggleMitraFields(false)" />
+                                    <input type="radio" class="btn-check account-type-radio" name="Input.AccountType" id="typeUser" value="user" @(Model.Input.AccountType == "user" ? "checked" : "") />
                                     <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center" for="typeUser">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person mb-1" viewBox="0 0 16 16">
                                             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
@@ -32,7 +32,7 @@
                                     </label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="radio" class="btn-check" name="Input.AccountType" id="typeMitra" value="mitra" @(Model.Input.AccountType == "mitra" ? "checked" : "") onchange="toggleMitraFields(true)" />
+                                    <input type="radio" class="btn-check account-type-radio" name="Input.AccountType" id="typeMitra" value="mitra" @(Model.Input.AccountType == "mitra" ? "checked" : "") />
                                     <label class="btn btn-outline-success w-100 py-2 d-flex flex-column align-items-center" for="typeMitra">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-briefcase mb-1" viewBox="0 0 16 16">
                                             <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
@@ -45,14 +45,14 @@
 
                         <!-- Data Pribadi -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.DisplayName" class="form-control" id="nameInput" placeholder="Nama Lengkap" />
-                            <label asp-for="Input.DisplayName">Nama Lengkap Penanggung Jawab</label>
+                            <input asp-for="Input.DisplayName" class="form-control" id="nameInput" placeholder="contoh: Budi Santoso" />
+                            <label asp-for="Input.DisplayName">Nama Lengkap Penanggung Jawab <span class="text-danger">*</span></label>
                             <span asp-validation-for="Input.DisplayName" class="text-danger small"></span>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Email" type="email" class="form-control" id="emailInput" placeholder="name@example.com" />
-                            <label asp-for="Input.Email">Alamat Email</label>
+                            <input asp-for="Input.Email" type="email" class="form-control" id="emailInput" placeholder="contoh: budi@domain.com" />
+                            <label asp-for="Input.Email">Alamat Email <span class="text-danger">*</span></label>
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
 
@@ -61,36 +61,67 @@
                             <h6 class="fw-bold text-success mb-3">Informasi Kemitraan (Partnership)</h6>
                             <div class="mb-3">
                                 <label asp-for="Input.BusinessName" class="form-label small fw-semibold">Nama Perusahaan / Usaha / Brand <span class="text-danger">*</span></label>
-                                <input asp-for="Input.BusinessName" class="form-control" placeholder="cth: CV Swandaru Digital Solusi" />
+                                <input asp-for="Input.BusinessName" class="form-control" placeholder="contoh: PT Solusi Teknologi Nusantara" />
+                                <div class="form-text small text-muted">Gunakan nama usaha yang mudah dikenali calon klien.</div>
                                 <span asp-validation-for="Input.BusinessName" class="text-danger small"></span>
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-md-6">
                                     <label asp-for="Input.BusinessType" class="form-label small fw-semibold">Bidang Industri</label>
-                                    <input asp-for="Input.BusinessType" class="form-control" placeholder="cth: Software House / IT" />
+                                    <input asp-for="Input.BusinessType" class="form-control" placeholder="contoh: Software House / IT" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label asp-for="Input.City" class="form-label small fw-semibold">Kota / Domisili</label>
-                                    <input asp-for="Input.City" class="form-control" placeholder="cth: Jakarta" />
+                                    <label asp-for="Input.City" class="form-label small fw-semibold">Kota Domisili</label>
+                                    <input asp-for="Input.City" class="form-control" placeholder="contoh: Jakarta Selatan" />
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Password Requirements Guidance -->
+                        <div class="p-2 mb-3 bg-light rounded-3 border small text-muted">
+                            <span class="fw-semibold text-dark">Ketentuan Kata Sandi:</span> Minimal 8 karakter, kombinasi huruf besar, huruf kecil, dan angka.
+                        </div>
+
                         <!-- Password Fields -->
-                        <div class="row g-2 mb-4">
+                        <div class="row g-2 mb-3">
                             <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input asp-for="Input.Password" type="password" class="form-control" id="passInput" placeholder="Password" />
-                                    <label asp-for="Input.Password">Kata Sandi</label>
+                                <label asp-for="Input.Password" class="form-label small fw-semibold text-muted">Kata Sandi <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input asp-for="Input.Password" type="password" class="form-control" id="passInput" placeholder="Minimal 8 karakter" autocomplete="new-password" />
+                                    <button class="btn btn-outline-secondary btn-toggle-password" type="button" data-target="passInput" aria-label="Tampilkan atau sembunyikan kata sandi">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash d-none" viewBox="0 0 16 16">
+                                            <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/>
+                                            <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/>
+                                            <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z"/>
+                                        </svg>
+                                    </button>
                                 </div>
                                 <span asp-validation-for="Input.Password" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" id="confirmPassInput" placeholder="Konfirmasi" />
-                                    <label asp-for="Input.ConfirmPassword">Ulangi Sandi</label>
+                                <label asp-for="Input.ConfirmPassword" class="form-label small fw-semibold text-muted">Ulangi Sandi <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control" id="confirmPassInput" placeholder="Ulangi kata sandi" autocomplete="new-password" />
+                                    <button class="btn btn-outline-secondary btn-toggle-password" type="button" data-target="confirmPassInput" aria-label="Tampilkan atau sembunyikan konfirmasi sandi">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash d-none" viewBox="0 0 16 16">
+                                            <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/>
+                                            <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/>
+                                            <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z"/>
+                                        </svg>
+                                    </button>
                                 </div>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <div id="passwordMatchFeedback" class="small mt-1"></div>
                             </div>
                         </div>
 
@@ -111,10 +142,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        function toggleMitraFields(isMitra) {
-            const container = document.getElementById('mitraFieldsContainer');
-            container.style.display = isMitra ? 'block' : 'none';
-        }
-    </script>
 }

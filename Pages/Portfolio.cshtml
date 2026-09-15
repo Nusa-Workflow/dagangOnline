@@ -58,8 +58,20 @@
         }
         else
         {
-            <div class="text-center py-5">
-                <p class="text-muted fs-5">Belum ada portfolio yang tersedia saat ini.</p>
+            <div class="text-center py-5 bg-white rounded-4 border p-5 shadow-sm">
+                <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle d-inline-flex mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
+                        <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">Belum Ada Portofolio Publik yang Ditampilkan</h3>
+                <p class="text-muted col-md-6 mx-auto mb-4">
+                    Studi kasus proyek sedang dalam proses dokumentasi. Ingin melihat rekam jejak solusi teknologi atau berdiskusi tentang studi kasus bisnis Anda?
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-page="/Services" class="btn btn-outline-primary">Lihat Layanan Kami</a>
+                    <a asp-page="/Contact" class="btn btn-primary">Konsultasi Solusi</a>
+                </div>
             </div>
         }
     </div>

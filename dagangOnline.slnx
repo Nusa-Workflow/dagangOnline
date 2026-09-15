@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="dagangOnline.csproj" />
+  <Project Path="dagangOnline.Tests/dagangOnline.Tests.csproj" />
+</Solution>

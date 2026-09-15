@@ -71,11 +71,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Interactive API Sandbox & Live Tester</h5>
                 <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/services')">GET Services</button>
-                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/products')">GET Products</button>
-                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/portfolio')">GET Portfolio</button>
-                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/search?q=digital')">GET Search</button>
-                    <button class="btn btn-outline-secondary" onclick="setPreset('GET', '/api/v1/contact/inquiries')">GET Inquiries</button>
+                    <button class="btn btn-outline-secondary btn-api-preset" data-method="GET" data-url="/api/v1/services">GET Services</button>
+                    <button class="btn btn-outline-secondary btn-api-preset" data-method="GET" data-url="/api/v1/products">GET Products</button>
+                    <button class="btn btn-outline-secondary btn-api-preset" data-method="GET" data-url="/api/v1/portfolio">GET Portfolio</button>
+                    <button class="btn btn-outline-secondary btn-api-preset" data-method="GET" data-url="/api/v1/search?q=digital">GET Search</button>
+                    <button class="btn btn-outline-secondary btn-api-preset" data-method="GET" data-url="/api/v1/contact/inquiries">GET Inquiries</button>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                     <input type="text" id="apiUrl" class="form-control font-monospace" value="/api/v1/services" />
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-primary w-100 fw-semibold" id="btnExecuteApi" onclick="executeApiTest()">
+                    <button class="btn btn-primary w-100 fw-semibold" id="btnExecuteApi">
                         Kirim Request
                     </button>
                 </div>
@@ -280,74 +280,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        const methodSelect = document.getElementById('apiMethod');
-        const bodyContainer = document.getElementById('requestBodyContainer');
-
-        methodSelect.addEventListener('change', () => {
-            const val = methodSelect.value;
-            bodyContainer.style.display = (val === 'POST' || val === 'PUT' || val === 'PATCH') ? 'block' : 'none';
-        });
-
-        function setPreset(method, url, body = '') {
-            document.getElementById('apiMethod').value = method;
-            document.getElementById('apiUrl').value = url;
-            document.getElementById('apiBody').value = body;
-            bodyContainer.style.display = (method === 'POST' || method === 'PUT' || method === 'PATCH') ? 'block' : 'none';
-            executeApiTest();
-        }
-
-        async function executeApiTest() {
-            const method = document.getElementById('apiMethod').value;
-            const url = document.getElementById('apiUrl').value;
-            const bodyContent = document.getElementById('apiBody').value;
-            const responseBox = document.getElementById('apiResponseBox');
-            const statusBadge = document.getElementById('responseStatusBadge');
-
-            responseBox.textContent = 'Menghubungkan ke endpoint...';
-            statusBadge.className = 'badge bg-secondary';
-            statusBadge.textContent = 'Loading...';
-
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                };
-
-                if ((method === 'POST' || method === 'PUT' || method === 'PATCH') && bodyContent.trim().length > 0) {
-                    options.body = bodyContent;
-                }
-
-                const startTime = performance.now();
-                const res = await fetch(url, options);
-                const duration = Math.round(performance.now() - startTime);
-
-                let data;
-                const contentType = res.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    data = await res.json();
-                } else {
-                    data = await res.text();
-                }
-
-                if (res.ok) {
-                    statusBadge.className = 'badge bg-success';
-                } else if (res.status === 401 || res.status === 403) {
-                    statusBadge.className = 'badge bg-warning text-dark';
-                } else {
-                    statusBadge.className = 'badge bg-danger';
-                }
-
-                statusBadge.textContent = `HTTP ${res.status} ${res.statusText} (${duration} ms)`;
-                responseBox.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
-            } catch (err) {
-                statusBadge.className = 'badge bg-danger';
-                statusBadge.textContent = 'Request Failed';
-                responseBox.textContent = 'Error: ' + err.message;
-            }
-        }
-    </script>
+    <script src="~/js/api-management.js" asp-append-version="true"></script>
 }

@@ -1,0 +1,154 @@
+@page "{id:guid}"
+@using dagangOnline.Domain.Agents
+@model dagangOnline.Pages.Agent.ReviewModel
+@{
+    ViewData["Title"] = "Review Detail Produk — " + (Model.TaskItem?.Product?.Name ?? "Moderasi");
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb & Back -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="/Agent/Index">Antrean Moderasi</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Review Produk</li>
+        </ol>
+    </nav>
+
+    @if (Model.TaskItem == null || Model.TaskItem.Product == null)
+    {
+        <div class="alert alert-danger" role="alert">
+            Data tugas review tidak ditemukan atau telah dihapus.
+        </div>
+        <a asp-page="/Agent/Index" class="btn btn-secondary">&larr; Kembali ke Antrean</a>
+    }
+    else
+    {
+        var product = Model.TaskItem.Product;
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-4 border-bottom">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <h1 class="h3 fw-bold mb-0">@product.Name</h1>
+                    <span class="badge bg-warning text-dark">Status: @Model.TaskItem.Status</span>
+                </div>
+                <p class="text-muted mb-0">
+                    Diajukan oleh: <strong>@(product.OwnerName ?? "Mitra Terdaftar")</strong> pada @Model.TaskItem.CreatedAt.ToString("dd MMMM yyyy HH:mm") WIB
+                </p>
+            </div>
+            <div class="mt-2 mt-sm-0">
+                <a asp-page="/Agent/Index" class="btn btn-outline-secondary">
+                    &larr; Kembali ke Antrean
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left: Product Submission Details -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0">Informasi Pengajuan Produk / Solusi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="small text-muted fw-semibold d-block">Nama Produk</label>
+                                <span class="fw-bold text-dark fs-5">@product.Name</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="small text-muted fw-semibold d-block">Kategori Solusi</label>
+                                <span class="badge bg-secondary fs-6">@product.Category</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="small text-muted fw-semibold d-block">Usulan Harga</label>
+                                <span class="fw-bold text-primary fs-5">
+                                    @(product.Price > 0 ? $"Rp {product.Price:N0}" : "Hubungi Kami (Bespoke)")
+                                </span>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="small text-muted fw-semibold d-block">Identifier Slug</label>
+                                <code class="small bg-light p-1 rounded">@product.Slug</code>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-semibold d-block">Ringkasan Katalog (Summary)</label>
+                            <p class="p-3 bg-light rounded-3 text-dark mb-0">
+                                @(string.IsNullOrWhiteSpace(product.Summary) ? "(Tidak ada ringkasan singkat)" : product.Summary)
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small text-muted fw-semibold d-block">Deskripsi Lengkap & Spesifikasi Fitur</label>
+                            <div class="p-3 bg-light rounded-3 text-dark" style="white-space: pre-wrap; line-height: 1.6;">@(string.IsNullOrWhiteSpace(product.Description) ? "(Tidak ada deskripsi rinci)" : product.Description)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Moderation Action Panel -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top: 80px;">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="fw-bold mb-0">Keputusan Moderasi</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="small text-muted mb-4">
+                            Sebagai <strong>Human Agent</strong>, pastikan produk memenuhi standar kualitas, kejelasan fitur, harga wajar, dan tidak melanggar ketentuan layanan.
+                        </p>
+
+                        <!-- Action 1: Approve Form -->
+                        <form method="post" asp-page-handler="Approve" class="mb-4 pb-4 border-bottom">
+                            <input type="hidden" asp-for="TaskId" />
+                            <h6 class="fw-bold text-success mb-2">1. Setujui & Publikasikan</h6>
+                            <p class="small text-muted mb-2">Produk akan langsung berstatus <em>Published</em> dan tampil di katalog publik.</p>
+                            
+                            <div class="mb-3">
+                                <label asp-for="ApprovalNotes" class="form-label small fw-semibold">Catatan Internal (Opsional)</label>
+                                <textarea asp-for="ApprovalNotes" class="form-control form-control-sm" rows="2" placeholder="Catatan kelayakan atau verifikasi..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 fw-semibold" onclick="return confirm('Apakah Anda yakin ingin MENYETUJUI dan menerbitkan produk ini ke katalog publik?');">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-circle me-1" viewBox="0 0 16 16">
+                                    <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+                                    <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+                                </svg>
+                                Setujui Produk
+                            </button>
+                        </form>
+
+                        <!-- Action 2: Reject Form -->
+                        <form method="post" asp-page-handler="Reject">
+                            <input type="hidden" asp-for="TaskId" />
+                            <h6 class="fw-bold text-danger mb-2">2. Tolak / Minta Perbaikan</h6>
+                            <p class="small text-muted mb-2">Produk akan berstatus <em>Rejected</em> dan Mitra akan menerima alasan penolakan.</p>
+
+                            <div class="mb-3">
+                                <label asp-for="RejectReason" class="form-label small fw-semibold">Alasan Penolakan <span class="text-danger">*</span></label>
+                                <input asp-for="RejectReason" class="form-control form-control-sm mb-1" placeholder="contoh: Deskripsi fitur belum lengkap" required />
+                                <span asp-validation-for="RejectReason" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RejectNotes" class="form-label small fw-semibold">Detail Arahan Revisi</label>
+                                <textarea asp-for="RejectNotes" class="form-control form-control-sm" rows="2" placeholder="Jelaskan bagian mana yang perlu diperbaiki oleh Mitra..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-danger w-100 fw-semibold" onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan produk ini? Alasan akan dikirimkan ke Mitra.');">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle me-1" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                                Tolak Pengajuan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

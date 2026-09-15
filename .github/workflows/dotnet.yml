@@ -1,0 +1,57 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: dagangOnline.sln
+      Test_Project_Path: dagangOnline.Tests\dagangOnline.Tests.csproj
+      Web_Project_Path: dagangOnline.csproj
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install .NET SDK
+    - name: Install .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    # Restore dependencies for solution
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
+
+    # Build the solution
+    - name: Build solution
+      run: dotnet build $env:Solution_Name --configuration ${{ matrix.configuration }} --no-restore
+
+    # Execute all unit tests in the solution
+    - name: Execute unit tests
+      run: dotnet test $env:Test_Project_Path --configuration ${{ matrix.configuration }} --no-build --verbosity normal
+
+    # Publish web application
+    - name: Publish application
+      run: dotnet publish $env:Web_Project_Path --configuration ${{ matrix.configuration }} --no-build -o ./publish
+
+    # Upload build artifacts
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dagangOnline-${{ matrix.configuration }}
+        path: ./publish

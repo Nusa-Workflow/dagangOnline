@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using dagangOnline.Application.DTOs;
 using dagangOnline.Application.Services;
@@ -109,6 +110,9 @@ public class ProductsController : ControllerBase
         slug = Regex.Replace(slug, @"\s+", "-").Trim('-');
         var uniqueSlug = $"{slug}-{Guid.NewGuid().ToString().Substring(0, 6)}";
 
+        var isMitra = User != null && User.IsInRole(RoleConstants.Mitra) && !User.IsInRole(RoleConstants.Admin);
+        var currentUserId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var entity = new Product
         {
             Name = input.Name,
@@ -118,7 +122,9 @@ public class ProductsController : ControllerBase
             Price = input.Price,
             Currency = input.Currency,
             Category = input.Category,
-            Status = input.Status,
+            Status = isMitra ? PublicationStatus.PendingReview : input.Status,
+            OwnerId = isMitra ? currentUserId : null,
+            OwnerName = isMitra ? User?.Identity?.Name : null,
             IsFeatured = input.IsFeatured,
             ServiceId = input.ServiceId,
             CreatedAt = DateTime.UtcNow,
@@ -172,6 +178,13 @@ public class ProductsController : ControllerBase
             return NotFound(Problem(statusCode: StatusCodes.Status404NotFound, title: "Produk tidak ditemukan."));
         }
 
+        var isMitra = User != null && User.IsInRole(RoleConstants.Mitra) && !User.IsInRole(RoleConstants.Admin);
+        var currentUserId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (isMitra && entity.OwnerId != currentUserId)
+        {
+            return Forbid();
+        }
+
         entity.Name = input.Name;
         if (!string.IsNullOrWhiteSpace(input.Slug)) entity.Slug = input.Slug;
         entity.Summary = input.Summary;
@@ -223,6 +236,13 @@ public class ProductsController : ControllerBase
         if (entity == null)
         {
             return NotFound(Problem(statusCode: StatusCodes.Status404NotFound, title: "Produk tidak ditemukan."));
+        }
+
+        var isMitra = User != null && User.IsInRole(RoleConstants.Mitra) && !User.IsInRole(RoleConstants.Admin);
+        var currentUserId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (isMitra && entity.OwnerId != currentUserId)
+        {
+            return Forbid();
         }
 
         _context.Products.Remove(entity);

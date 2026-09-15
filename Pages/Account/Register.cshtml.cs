@@ -140,7 +140,14 @@ public class RegisterModel : PageModel
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                if (error.Code == "DuplicateUserName" || error.Code == "DuplicateEmail")
+                {
+                    ModelState.AddModelError("Input.Email", "Alamat email ini sudah terdaftar. Silakan gunakan menu Masuk.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
         }
 

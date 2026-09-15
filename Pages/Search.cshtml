@@ -58,17 +58,39 @@
         }
         else
         {
-            <div class="text-center py-5 bg-light rounded-3">
-                <p class="text-muted fs-5 mb-3">Tidak ditemukan hasil yang cocok dengan pencarian Anda.</p>
-                <p class="text-muted small mb-0">Coba gunakan kata kunci yang lebih umum atau periksa ejaan kata kunci.</p>
+            <div class="text-center py-5 bg-white rounded-4 border p-5 shadow-sm">
+                <div class="p-3 bg-secondary bg-opacity-10 text-secondary rounded-circle d-inline-flex mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </div>
+                <h3 class="h5 fw-bold text-dark mb-2">Tidak Ditemukan Hasil yang Cocok</h3>
+                <p class="text-muted col-md-6 mx-auto mb-4">
+                    Kata kunci "<strong>@Model.Q</strong>" belum cocok dengan data layanan atau portofolio kami. Coba kata kunci lain di bawah ini:
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a asp-page="/Search" asp-route-q="Web" class="badge bg-light text-dark border p-2 text-decoration-none">Web</a>
+                    <a asp-page="/Search" asp-route-q="UMKM" class="badge bg-light text-dark border p-2 text-decoration-none">UMKM</a>
+                    <a asp-page="/Search" asp-route-q="Cloud" class="badge bg-light text-dark border p-2 text-decoration-none">Cloud</a>
+                    <a asp-page="/Search" asp-route-q="Kasir" class="badge bg-light text-dark border p-2 text-decoration-none">Kasir</a>
+                    <a asp-page="/Search" asp-route-q="API" class="badge bg-light text-dark border p-2 text-decoration-none">API</a>
+                </div>
             </div>
         }
     }
     else
     {
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center text-muted py-4">
-                <p>Masukkan kata kunci di atas untuk mulai mencari layanan, proyek, atau informasi terkait dagangOnline.</p>
+            <div class="col-md-8 text-center text-muted py-5 bg-white rounded-4 border shadow-sm p-4">
+                <h5 class="fw-bold text-dark mb-2">Pencarian Cepat di Seluruh Ekosistem</h5>
+                <p class="small text-muted mb-4">Temukan layanan digital, katalog paket produk, dan studi kasus proyek dengan mengetikkan kata kunci atau klik saran pencarian populer berikut:</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a asp-page="/Search" asp-route-q="Web" class="btn btn-sm btn-outline-primary">🌐 Web Development</a>
+                    <a asp-page="/Search" asp-route-q="UMKM" class="btn btn-sm btn-outline-primary">🏪 Digitalisasi UMKM</a>
+                    <a asp-page="/Search" asp-route-q="Cloud" class="btn btn-sm btn-outline-primary">☁️ Cloud & Keamanan</a>
+                    <a asp-page="/Search" asp-route-q="Kasir" class="btn btn-sm btn-outline-primary">💳 Aplikasi Kasir / POS</a>
+                    <a asp-page="/Search" asp-route-q="API" class="btn btn-sm btn-outline-primary">⚡ REST & gRPC API</a>
+                </div>
             </div>
         </div>
     }

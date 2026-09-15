@@ -1,4 +1,6 @@
 using dagangOnline.Domain;
+using dagangOnline.Domain.Agents;
+using dagangOnline.Domain.Chat;
 using dagangOnline.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ContentPage> ContentPages => Set<ContentPage>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
     public DbSet<MitraProfile> MitraProfiles => Set<MitraProfile>();
+    public DbSet<ReviewTask> ReviewTasks => Set<ReviewTask>();
+    public DbSet<ModerationDecision> ModerationDecisions => Set<ModerationDecision>();
+    public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -34,6 +40,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             entity.Property(x => x.DisplayName).HasMaxLength(200);
             entity.Property(x => x.Bio).HasMaxLength(1000);
+            entity.Property(x => x.AvatarUrl).HasMaxLength(500);
             entity.Property(x => x.IsActive).HasDefaultValue(true);
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(x => x.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -137,6 +144,49 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.Title).HasMaxLength(200).IsRequired();
             entity.Property(x => x.ClientEmail).HasMaxLength(200);
             entity.Property(x => x.Status).HasMaxLength(50).HasDefaultValue("New");
+        });
+
+        builder.Entity<ReviewTask>(entity =>
+        {
+            entity.Property(x => x.Status).HasConversion<string>();
+            entity.HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ModerationDecision>(entity =>
+        {
+            entity.Property(x => x.Decision).HasMaxLength(50).IsRequired();
+            entity.Property(x => x.Reason).HasMaxLength(500);
+            entity.Property(x => x.Notes).HasMaxLength(1000);
+            entity.HasOne(x => x.ReviewTask)
+                .WithMany()
+                .HasForeignKey(x => x.ReviewTaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ChatSession>(entity =>
+        {
+            entity.Property(x => x.Status).HasConversion<string>();
+            entity.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.AssignedAgent)
+                .WithMany()
+                .HasForeignKey(x => x.AssignedAgentId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<ChatMessage>(entity =>
+        {
+            entity.Property(x => x.Content).IsRequired();
+            entity.Property(x => x.SenderRole).HasConversion<string>();
+            entity.HasOne(x => x.Session)
+                .WithMany(s => s.Messages)
+                .HasForeignKey(x => x.ChatSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
