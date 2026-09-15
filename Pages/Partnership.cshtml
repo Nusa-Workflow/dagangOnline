@@ -1,7 +1,7 @@
 @page
 @model dagangOnline.Pages.PartnershipModel
 @{
-    ViewData["Title"] = "Program Kemitraan (Partnership)";
+    ViewData["Title"] = "Program Kemitraan Sahabat UMKM";
 }
 
 <div class="container py-5">
@@ -9,20 +9,20 @@
     <div class="row align-items-center mb-5 pb-3">
         <div class="col-lg-7">
             <span class="badge bg-warning bg-opacity-25 text-dark fw-semibold px-3 py-2 rounded-pill mb-3">
-                🤝 Program Kemitraan & Kolaborasi
+                🤝 Program Kemitraan & Gotong Royong
             </span>
             <h1 class="display-4 fw-bold mb-3 text-dark">
-                Bertumbuh Bersama Ekosistem <span class="text-primary">dagangOnline</span>
+                Bertumbuh Bersama Keluarga Besar <span class="text-primary">dagangOnline</span>
             </h1>
             <p class="lead text-muted mb-4">
-                Bergabunglah sebagai Mitra Pengembang, Agensi Solusi, atau Penyedia Layanan Digital. Dapatkan akses ke ratusan peluang proyek, integrasi API terpadu, dan bagi hasil transparan.
+                Bergabunglah sebagai Toko Sahabat, Mitra Usaha, atau Pendamping Wirausaha Lokal. Dapatkan akses ke pembeli lebih luas, bantuan pengelolaan toko yang ramah, dan kerja sama yang saling menguntungkan.
             </p>
             <div class="d-flex flex-wrap gap-3">
-                <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-primary btn-lg px-4 fw-semibold shadow-sm">
+                <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-primary btn-lg px-4 fw-semibold shadow-sm rounded-pill">
                     Daftar Sebagai Mitra
                 </a>
-                <a asp-page="/Contact" class="btn btn-outline-secondary btn-lg px-4">
-                    Konsultasi Kemitraan
+                <a asp-page="/Contact" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                    Ngobrol Santai Bersama Kami
                 </a>
             </div>
         </div>
@@ -30,21 +30,21 @@
             <div class="card border-0 shadow-lg p-4 bg-gradient bg-primary text-white rounded-4">
                 <div class="card-body">
                     <div class="display-3 fw-bold mb-2">@(Model.ActiveMitraCount > 0 ? Model.ActiveMitraCount.ToString() : "50+")</div>
-                    <h5 class="fw-semibold mb-3">Mitra Terverifikasi Aktif</h5>
+                    <h5 class="fw-semibold mb-3">Toko & Mitra Terdaftar</h5>
                     <p class="small text-white-50 mb-4">
-                        Tergabung dalam jaringan penyedia solusi teknologi terpercaya di seluruh Indonesia.
+                        Tergabung dalam wadah gotong royong pelaku usaha lokal di berbagai daerah.
                     </p>
                     <div class="row g-2 text-dark text-start">
                         <div class="col-6">
                             <div class="p-2 bg-white rounded-3">
-                                <span class="d-block small text-muted">Komisi Proyek</span>
-                                <strong class="fs-6">Hingga 85%</strong>
+                                <span class="d-block small text-muted">Bagi Hasil Usaha</span>
+                                <strong class="fs-6">Transparan & Adil</strong>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="p-2 bg-white rounded-3">
-                                <span class="d-block small text-muted">Pencairan</span>
-                                <strong class="fs-6">Mingguan / Real-time</strong>
+                                <span class="d-block small text-muted">Pencairan Dana</span>
+                                <strong class="fs-6">Cepat & Tanpa Ribet</strong>
                             </div>
                         </div>
                     </div>
@@ -56,45 +56,45 @@
     <!-- Keuntungan Menjadi Mitra -->
     <div class="mb-5 pb-4">
         <div class="text-center mb-5">
-            <h2 class="h3 fw-bold">Mengapa Bergabung Sebagai Mitra dagangOnline?</h2>
-            <p class="text-muted">Infrastruktur dan kemudahan yang kami sediakan untuk mendukung akselerasi bisnis Anda</p>
+            <h2 class="h3 fw-bold">Kemudahan Bergabung Bersama Kami</h2>
+            <p class="text-muted">Dukungan nyata yang kami siapkan agar usaha Anda makin laris dan berkembang</p>
         </div>
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-3 rounded-3">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-white">
                     <div class="card-body">
                         <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 d-inline-block mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
-                                <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-shop-window" viewBox="0 0 16 16">
+                                <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h1a.5.5 0 0 1 0 1H0a.5.5 0 0 1 0-1h1V9a.5.5 0 0 1 .5-.5zm2 .5a.5.5 0 0 1 .5.5V13h8V9.5a.5.5 0 0 1 1 0V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .5-.5z"/>
                             </svg>
                         </div>
-                        <h4 class="h5 fw-bold mb-2">Akses Proyek Berkualitas</h4>
+                        <h4 class="h5 fw-bold mb-2">Jangkauan Pembeli Lebih Luas</h4>
                         <p class="text-muted small">
-                            Klien terverifikasi dari sektor UMKM hingga korporasi yang siap mengimplementasikan solusi digital Anda.
+                            Produk dan layanan Anda akan langsung dapat ditemukan oleh tetangga, warga sekitar, dan pelanggan baru di platform.
                         </p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-3 rounded-3">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-white">
                     <div class="card-body">
                         <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 d-inline-block mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
-                                <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-chat-heart" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.965 12.695a1 1 0 0 0-.287-.438l-.666-.666a4.5 4.5 0 0 1 0-6.364l.666-.666a1 1 0 0 0 .287-.438l.192-.768a1 1 0 0 1 .73-.73l.768-.192a1 1 0 0 0 .438-.287l.666-.666a4.5 4.5 0 0 1 6.364 0l.666.666a1 1 0 0 0 .438.287l.768.192a1 1 0 0 1 .73.73l.192.768a1 1 0 0 0 .287.438l.666.666a4.5 4.5 0 0 1 0 6.364l-.666.666a1 1 0 0 0-.287.438l-.192.768a1 1 0 0 1-.73.73l-.768.192a1 1 0 0 0-.438.287l-.666.666a4.5 4.5 0 0 1-6.364 0l-.666-.666a1 1 0 0 0-.438-.287l-.768-.192a1 1 0 0 1-.73-.73l-.192-.768zM8 4.5c-.886 0-1.6.714-1.6 1.6 0 .463.195.882.508 1.182L8 8.39l1.092-1.108A1.597 1.597 0 0 0 9.6 6.1c0-.886-.714-1.6-1.6-1.6z"/>
                             </svg>
                         </div>
-                        <h4 class="h5 fw-bold mb-2">API & Integrasi gRPC Lengkap</h4>
+                        <h4 class="h5 fw-bold mb-2">Didampingi dengan Ramah</h4>
                         <p class="text-muted small">
-                            Sambungkan sistem Anda langsung ke katalog, manajemen pesanan, dan analitik via REST API & gRPC siap pakai.
+                            Tidak perlu takut gaptek! Tim kami siap memandu cara memasukkan foto produk dan melayani pesanan dari ponsel.
                         </p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm p-3 rounded-3">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-white">
                     <div class="card-body">
                         <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 d-inline-block mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
@@ -102,9 +102,9 @@
                                 <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
                             </svg>
                         </div>
-                        <h4 class="h5 fw-bold mb-2">Pembayaran Terproteksi</h4>
+                        <h4 class="h5 fw-bold mb-2">Pencatatan Jujur & Jelas</h4>
                         <p class="text-muted small">
-                            Sistem escrow andal yang menjamin pembayaran jasa Anda tepat waktu setelah milestone terselesaikan.
+                            Setiap transaksi tercatat transparan, dana jualan Anda terlindungi dan dapat dicairkan kapan saja dengan tenang.
                         </p>
                     </div>
                 </div>
@@ -115,27 +115,27 @@
     <!-- Tipe Kemitraan -->
     <div class="card border-0 shadow-sm p-4 bg-light mb-5 rounded-4">
         <div class="card-body">
-            <h3 class="h4 fw-bold mb-4 text-center">Kategori Kemitraan Yang Tersedia</h3>
+            <h3 class="h4 fw-bold mb-4 text-center">Bentuk Kemitraan yang Terbuka untuk Anda</h3>
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="p-3 bg-white rounded-3 h-100 shadow-sm">
-                        <span class="badge bg-primary mb-2">Developer Partner</span>
-                        <h5 class="fw-bold">Mitra Pengembang Aplikasi</h5>
-                        <p class="text-muted small mb-0">Untuk freelancer & software house yang membangun web, mobile app, API backend, dan otomasi.</p>
+                    <div class="p-4 bg-white rounded-4 h-100 shadow-sm">
+                        <span class="badge bg-primary mb-2 rounded-pill">Mitra Toko & Warung</span>
+                        <h5 class="fw-bold">Warung & Toko Kelontong</h5>
+                        <p class="text-muted small mb-0">Untuk warung sembako, toko harian, dan pedagang keliling yang ingin terima pesanan warga lewat online.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="p-3 bg-white rounded-3 h-100 shadow-sm">
-                        <span class="badge bg-success mb-2">Agency Partner</span>
-                        <h5 class="fw-bold">Mitra Agensi Digital</h5>
-                        <p class="text-muted small mb-0">Untuk agensi marketing, SEO, branding, dan konsultan transformasi bisnis UMKM.</p>
+                    <div class="p-4 bg-white rounded-4 h-100 shadow-sm">
+                        <span class="badge bg-success mb-2 rounded-pill">Mitra Kuliner & UMKM</span>
+                        <h5 class="fw-bold">Kuliner & Usaha Rumahan</h5>
+                        <p class="text-muted small mb-0">Untuk penjual makanan, jajanan pasar, kedai kopi, dan pengrajin oleh-oleh lokal agar makin laris manis.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="p-3 bg-white rounded-3 h-100 shadow-sm">
-                        <span class="badge bg-info text-dark mb-2">Infrastructure Partner</span>
-                        <h5 class="fw-bold">Mitra Cloud & Keamanan</h5>
-                        <p class="text-muted small mb-0">Penyedia hosting, audit penetrasi siber, integrasi payment gateway, dan DevOps.</p>
+                    <div class="p-4 bg-white rounded-4 h-100 shadow-sm">
+                        <span class="badge bg-warning text-dark mb-2 rounded-pill">Mitra Jasa & Kurir</span>
+                        <h5 class="fw-bold">Jasa & Kurir Lingkungan</h5>
+                        <p class="text-muted small mb-0">Untuk kurir antar-tetangga, jasa antar pesanan, atau tukang servis lokal yang ingin melayani warga sekitar.</p>
                     </div>
                 </div>
             </div>
@@ -144,16 +144,16 @@
 
     <!-- Call To Action -->
     <div class="p-5 text-center bg-dark text-white rounded-4 shadow">
-        <h2 class="display-6 fw-bold mb-3">Siap Melangkah Menjadi Mitra Strategis?</h2>
+        <h2 class="display-6 fw-bold mb-3">Siap Menjadi Bagian dari Sahabat dagangOnline?</h2>
         <p class="lead text-light mb-4 col-md-8 mx-auto">
-            Proses pendaftaran mudah hanya 2 menit. Daftarkan profil keahlian Anda sekarang dan mulai terima permintaan proyek.
+            Pendaftaran mudah, gratis, dan ramah pemula. Mari kita majukan usaha warga bersama-sama dengan penuh semangat gotong royong.
         </p>
         <div class="d-flex justify-content-center gap-3">
-            <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-warning btn-lg px-4 fw-bold text-dark">
+            <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-warning btn-lg px-4 fw-bold text-dark rounded-pill">
                 Daftar Mitra Sekarang
             </a>
-            <a asp-page="/Contact" class="btn btn-outline-light btn-lg px-4">
-                Hubungi Tim Partnership
+            <a asp-page="/Contact" class="btn btn-outline-light btn-lg px-4 rounded-pill">
+                Tanya-Tanya Dulu
             </a>
         </div>
     </div>

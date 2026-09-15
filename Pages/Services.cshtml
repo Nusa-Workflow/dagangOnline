@@ -1,14 +1,17 @@
 @page
 @model dagangOnline.Pages.ServicesModel
 @{
-    ViewData["Title"] = "Layanan Kami";
+    ViewData["Title"] = "Bantuan & Solusi Usaha";
 }
 
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold">Layanan Kami</h1>
-            <p class="lead text-muted">Solusi digital lengkap untuk transformasi bisnis Anda</p>
+            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">
+                🌟 Bantuan & Pendampingan
+            </span>
+            <h1 class="display-5 fw-bold">Bantuan & Layanan Usaha</h1>
+            <p class="lead text-muted">Solusi praktis dan bersahabat yang kami siapkan untuk mendampingi warung dan UMKM berkembang</p>
         </div>
 
         @if (Model.PublishedServices.Any())
@@ -17,15 +20,17 @@
                 @foreach (var service in Model.PublishedServices)
                 {
                     <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 shadow-sm border-0">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 p-3 bg-white">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-semibold">@service.Name</h5>
+                                <h5 class="card-title fw-semibold text-dark">@service.Name</h5>
                                 <p class="card-text text-muted flex-grow-1">@service.Summary</p>
                                 @if (service.IsFeatured)
                                 {
-                                    <span class="badge bg-primary mb-2 align-self-start">Featured</span>
+                                    <span class="badge bg-warning text-dark mb-2 align-self-start rounded-pill">⭐ Pilihan</span>
                                 }
-                                <a asp-page="/Contact" asp-route-category="Consultation" class="btn btn-outline-primary mt-auto">Konsultasi Layanan &rarr;</a>
+                                <a asp-page="/Contact" asp-route-category="Consultation" class="btn btn-outline-primary mt-auto rounded-pill">
+                                    Tanya Layanan Ini &rarr;
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -40,11 +45,11 @@
                         <path d="M4 2v2H2V2h2zm1 12v-2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5 10v-2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zM9 2v2H7V2h2zm5 0v2h-2V2h2zM4 7v2H2V7h2zm5 0v2H7V7h2zm5 0v2h-2V7h2zM4 12v2H2v-2h2zm5 0v2H7v-2h2zm5 0v2h-2v-2h2z"/>
                     </svg>
                 </div>
-                <h3 class="h5 fw-bold text-dark mb-2">Belum Ada Layanan Publik yang Ditampilkan</h3>
+                <h3 class="h5 fw-bold text-dark mb-2">Katalog Sedang Kami Rapikan</h3>
                 <p class="text-muted col-md-6 mx-auto mb-4">
-                    Katalog layanan sedang dalam pembaruan berkala. Butuh solusi pengembangan piranti lunak custom sekarang? Diskusikan langsung dengan konsultan kami.
+                    Daftar solusi usaha sedang diperbarui agar semakin pas untuk kebutuhan Anda. Ingin bantuan untuk warung atau jualan produk lokal Anda sekarang? Mari ngobrol santai bersama kami.
                 </p>
-                <a asp-page="/Contact" class="btn btn-primary px-4">Konsultasi Kebutuhan Custom</a>
+                <a asp-page="/Contact" class="btn btn-primary px-4 rounded-pill">Tanya & Konsultasi Gratis</a>
             </div>
         }
     </div>

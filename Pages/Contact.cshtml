@@ -6,9 +6,9 @@
 
 <div class="container py-5">
     <div class="text-center mb-5">
-        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Kontak & Konsultasi</span>
-        <h1 class="display-5 fw-bold">Hubungi Tim Kami</h1>
-        <p class="lead text-muted">Diskusikan kebutuhan proyek Anda atau tanyakan informasi seputar layanan dan kemitraan</p>
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">🤝 Bantuan & Sapa Kami</span>
+        <h1 class="display-5 fw-bold">Hubungi Sahabat dagangOnline</h1>
+        <p class="lead text-muted">Punya pertanyaan seputar cara jualan online, ingin curhat usaha, atau butuh bantuan? Kami selalu siap mendengar dengan senang hati</p>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
@@ -142,11 +142,11 @@
 
                     <hr />
 
-                    <h5 class="fw-semibold mb-2">Ingin Bergabung Sebagai Mitra?</h5>
+                    <h5 class="fw-semibold mb-2">Ingin Menjadi Mitra Toko / Sahabat UMKM?</h5>
                     <p class="text-muted small mb-3">
-                        Dapatkan akses ke ekosistem proyek dan perluas jangkauan layanan bisnis Anda.
+                        Mari bergandengan tangan untuk saling memajukan usaha warga sekitar dengan ramah dan penuh kehangatan.
                     </p>
-                    <a asp-page="/Account/Register" class="btn btn-outline-primary btn-sm">Daftar Mitra Sekarang</a>
+                    <a asp-page="/Account/Register" asp-route-role="mitra" class="btn btn-outline-primary btn-sm rounded-pill">Daftar Mitra Sekarang</a>
                 </div>
             </div>
         </div>
