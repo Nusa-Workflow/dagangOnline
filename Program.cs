@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using dagangOnline.Application.Services;
 using dagangOnline.Authorization;
 using dagangOnline.Data;
@@ -11,6 +12,20 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Observability: Logging
+builder.Logging.ClearProviders();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Logging.AddConsole();
+}
+else
+{
+    builder.Logging.AddJsonConsole();
+}
+
+// Observability: Metrics
+builder.Services.AddMetrics();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -38,6 +53,13 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "PLACEHOLDER_CLIENT_ID";
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "PLACEHOLDER_CLIENT_SECRET";
+    });
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(AuthorizationPolicies.RequireAdmin, policy => policy.RequireRole(RoleConstants.Admin));
@@ -61,13 +83,32 @@ builder.Services.AddControllersWithViews()
     });
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options =>
+{
+    options.Interceptors.Add<dagangOnline.Infrastructure.Logging.GrpcObservabilityInterceptor>();
+});
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>(name: "PostgreSQL");
 builder.Services.AddSignalR();
+builder.Services.AddServerSideBlazor();
+
+// Setup WebOptimizer for SCSS compilation
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    pipeline.CompileScssFiles(null, "scss/**/*.scss");
+});
 
 // Application services
+builder.Services.AddScoped<dagangOnline.Domain.Repositories.IProductRepository, dagangOnline.Infrastructure.Data.Repositories.ProductRepository>();
+builder.Services.AddScoped<dagangOnline.Domain.Repositories.IServiceRepository, dagangOnline.Infrastructure.Data.Repositories.ServiceRepository>();
+builder.Services.AddScoped<dagangOnline.Domain.Repositories.IPortfolioRepository, dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.ICatalogService, dagangOnline.Application.Services.CatalogService>();
+
+// Register AI Chat Service with HttpClient
+builder.Services.AddHttpClient<dagangOnline.Application.Interfaces.IAiChatService, dagangOnline.Application.Services.GroqAiChatService>();
 builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<ContactInquiryService>();
-builder.Services.AddScoped<PublicCatalogService>();
+
 builder.Services.AddScoped<AgentReviewService>();
 builder.Services.AddScoped<ChatBotService>();
 builder.Services.AddSingleton<ResourceAuthorizationService>();
@@ -123,12 +164,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseMiddleware<dagangOnline.Infrastructure.Logging.ObservabilityMiddleware>();
+
 app.UseHttpsRedirection();
 app.UseSecurityHeaders();
 
 var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 contentTypeProvider.Mappings[".webmanifest"] = "application/manifest+json";
 
+app.UseWebOptimizer();
 app.UseStaticFiles(new StaticFileOptions
 {
     ContentTypeProvider = contentTypeProvider
@@ -143,8 +187,16 @@ app.MapOpenApi();
 app.MapControllers();
 app.MapDefaultControllerRoute();
 app.MapGrpcService<dagangOnline.Services.Grpc.CatalogGrpcService>();
+app.MapGrpcService<dagangOnline.Services.Grpc.ManagementGrpcService>();
 app.MapHub<SupportChatHub>("/supportChatHub");
+app.MapBlazorHub();
 app.MapRazorPages();
+
+app.MapHealthChecks("/health/ready");
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false // Liveness check just verifies the server is responsive
+});
 
 app.Run();
 

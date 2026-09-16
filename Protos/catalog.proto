@@ -4,15 +4,49 @@ option csharp_namespace = "dagangOnline.Protos";
 
 package catalog;
 
+// CatalogGrpc provides read-only access to published catalog data.
 service CatalogGrpc {
+  // Retrieves published services with optional category filtering and pagination.
   rpc GetPublishedServices (GetServicesRequest) returns (GetServicesResponse);
+  
+  // Retrieves published products with optional category filtering and pagination.
   rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  
+  // Retrieves featured portfolio projects with pagination.
   rpc GetFeaturedPortfolio (GetPortfolioRequest) returns (GetPortfolioResponse);
+  
+  // Searches across products, services, and portfolios.
   rpc SearchCatalog (SearchCatalogRequest) returns (SearchCatalogResponse);
+
+  // Retrieves a specific product by its ID.
+  rpc GetProductById (GetProductByIdRequest) returns (GetProductResponse);
+
+  // Retrieves a specific product by its unique slug.
+  rpc GetProductBySlug (GetProductBySlugRequest) returns (GetProductResponse);
+
+  // Retrieves a specific service by its unique slug.
+  rpc GetServiceBySlug (GetServiceBySlugRequest) returns (GetServiceResponse);
+
+  // Retrieves a specific portfolio project by its unique ID.
+  rpc GetPortfolioById (GetPortfolioByIdRequest) returns (GetPortfolioItemResponse);
+}
+
+// Common pagination request parameters.
+message PaginationRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+// Common pagination response metadata.
+message PaginationResponse {
+  int32 page = 1;
+  int32 page_size = 2;
+  int32 total_count = 3;
 }
 
 message GetServicesRequest {
   string category = 1;
+  PaginationRequest pagination = 2;
 }
 
 message ServiceItem {
@@ -26,10 +60,12 @@ message ServiceItem {
 
 message GetServicesResponse {
   repeated ServiceItem services = 1;
+  PaginationResponse pagination = 2;
 }
 
 message GetProductsRequest {
   string category = 1;
+  PaginationRequest pagination = 2;
 }
 
 message ProductItem {
@@ -44,9 +80,11 @@ message ProductItem {
 
 message GetProductsResponse {
   repeated ProductItem products = 1;
+  PaginationResponse pagination = 2;
 }
 
 message GetPortfolioRequest {
+  PaginationRequest pagination = 1;
 }
 
 message PortfolioItem {
@@ -61,10 +99,12 @@ message PortfolioItem {
 
 message GetPortfolioResponse {
   repeated PortfolioItem items = 1;
+  PaginationResponse pagination = 2;
 }
 
 message SearchCatalogRequest {
   string query = 1;
+  PaginationRequest pagination = 2;
 }
 
 message SearchResultItemMessage {
@@ -76,4 +116,35 @@ message SearchResultItemMessage {
 
 message SearchCatalogResponse {
   repeated SearchResultItemMessage results = 1;
+  PaginationResponse pagination = 2;
+}
+
+// New single-item requests and responses
+
+message GetProductByIdRequest {
+  string id = 1;
+}
+
+message GetProductBySlugRequest {
+  string slug = 1;
+}
+
+message GetProductResponse {
+  ProductItem product = 1;
+}
+
+message GetServiceBySlugRequest {
+  string slug = 1;
+}
+
+message GetServiceResponse {
+  ServiceItem service = 1;
+}
+
+message GetPortfolioByIdRequest {
+  string id = 1;
+}
+
+message GetPortfolioItemResponse {
+  PortfolioItem portfolio = 1;
 }

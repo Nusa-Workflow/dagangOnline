@@ -9,9 +9,9 @@ namespace dagangOnline.Controllers.Api.v1;
 [Produces("application/json")]
 public class SearchController : ControllerBase
 {
-    private readonly PublicCatalogService _catalogService;
+    private readonly dagangOnline.Application.Interfaces.ICatalogService _catalogService;
 
-    public SearchController(PublicCatalogService catalogService)
+    public SearchController(dagangOnline.Application.Interfaces.ICatalogService catalogService)
     {
         _catalogService = catalogService;
     }
@@ -20,7 +20,7 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<List<SearchResultItem>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string? q)
     {
-        var results = await _catalogService.SearchAsync(q);
-        return Ok(ApiResponse<List<SearchResultItem>>.Ok(results));
+        var results = await _catalogService.Search.SearchAsync(q);
+        return Ok(ApiResponse<List<SearchResultItem>>.Ok(results.Items));
     }
 }

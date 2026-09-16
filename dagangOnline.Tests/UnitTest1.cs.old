@@ -9,6 +9,7 @@ using dagangOnline.Models;
 using dagangOnline.Pages.Account;
 using dagangOnline.Protos;
 using dagangOnline.Services;
+using dagangOnline.Application.Services;
 using dagangOnline.Services.Grpc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -146,7 +147,7 @@ public class IdentityFoundationTests
     }
 
     [Fact]
-    public async Task PublicCatalogService_ReturnsPublishedPortfolioAndServices()
+    public async Task CatalogService_ReturnsPublishedPortfolioAndServices()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -181,7 +182,11 @@ public class IdentityFoundationTests
 
         await context.SaveChangesAsync();
 
-        var service = new PublicCatalogService(context);
+        var productRepo = new dagangOnline.Infrastructure.Data.Repositories.ProductRepository(context);
+        var serviceRepo = new dagangOnline.Infrastructure.Data.Repositories.ServiceRepository(context);
+        var portfolioRepo = new dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository(context);
+        var auditService = new dagangOnline.Application.Services.AuditLogService(context);
+        var service = new dagangOnline.Application.Services.CatalogService(productRepo, serviceRepo, portfolioRepo, auditService);
 
         var projects = await service.GetFeaturedPortfolioAsync();
         var servicesList = await service.GetPublishedServicesAsync();
@@ -278,7 +283,7 @@ public class IdentityFoundationTests
     }
 
     [Fact]
-    public async Task PublicCatalogService_SearchAsync_ReturnsMatchingResults()
+    public async Task CatalogService_SearchAsync_ReturnsMatchingResults()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -300,7 +305,11 @@ public class IdentityFoundationTests
         });
         await context.SaveChangesAsync();
 
-        var service = new PublicCatalogService(context);
+        var productRepo = new dagangOnline.Infrastructure.Data.Repositories.ProductRepository(context);
+        var serviceRepo = new dagangOnline.Infrastructure.Data.Repositories.ServiceRepository(context);
+        var portfolioRepo = new dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository(context);
+        var auditService = new dagangOnline.Application.Services.AuditLogService(context);
+        var service = new dagangOnline.Application.Services.CatalogService(productRepo, serviceRepo, portfolioRepo, auditService);
         var results = await service.SearchAsync("web");
 
         Assert.Equal(2, results.Count);
@@ -458,16 +467,7 @@ public class IdentityFoundationTests
 
         await using var context = new ApplicationDbContext(options);
         var auditService = new AuditLogService(context);
-        var controller = new ServicesController(context, auditService);
-
-        // 1. Create
-        var createResult = await controller.Create(new CreateServiceDto
-        {
-            Name = "DevOps Engineering",
-            Summary = "Cloud CI/CD modern automation",
-            Description = "Automated deployments and testing",
-            Status = PublicationStatus.Published
-        });
+        var controller = new ServicesController(catalogService);
         var createdAction = Assert.IsType<CreatedAtActionResult>(createResult);
         var createdDto = Assert.IsType<ApiResponse<ServiceDto>>(createdAction.Value);
         Assert.NotNull(createdDto.Data);
@@ -515,16 +515,7 @@ public class IdentityFoundationTests
 
         await using var context = new ApplicationDbContext(options);
         var auditService = new AuditLogService(context);
-        var controller = new ProductsController(context, auditService);
-
-        var createResult = await controller.Create(new CreateProductDto
-        {
-            Name = "Smart POS",
-            Summary = "Cloud cashier system",
-            Price = 2500000,
-            Category = ProductCategory.SaaS,
-            Status = PublicationStatus.Published
-        });
+        var controller = new ProductsController(catalogService);
         var createdAction = Assert.IsType<CreatedAtActionResult>(createResult);
         var createdDto = Assert.IsType<ApiResponse<ProductDto>>(createdAction.Value);
         Assert.Equal("Smart POS", createdDto.Data?.Name);
@@ -552,8 +543,12 @@ public class IdentityFoundationTests
         });
         await context.SaveChangesAsync();
 
-        var catalogService = new PublicCatalogService(context);
-        var grpcService = new CatalogGrpcService(context, catalogService);
+        var productRepo = new dagangOnline.Infrastructure.Data.Repositories.ProductRepository(context);
+        var serviceRepo = new dagangOnline.Infrastructure.Data.Repositories.ServiceRepository(context);
+        var portfolioRepo = new dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository(context);
+        var auditService = new dagangOnline.Application.Services.AuditLogService(context);
+        var catalogService = new dagangOnline.Application.Services.CatalogService(productRepo, serviceRepo, portfolioRepo, auditService);
+        var grpcService = new CatalogGrpcService(catalogService);
 
         var response = await grpcService.GetPublishedServices(new GetServicesRequest(), null!);
         Assert.Single(response.Services);
@@ -674,18 +669,7 @@ public class IdentityFoundationTests
 
         await using var context = new ApplicationDbContext(options);
         var auditService = new AuditLogService(context);
-        var controller = new ProductsController(context, auditService);
-
-        var product = new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = "Private Product",
-            Slug = "private-product",
-            Price = 100000,
-            OwnerId = "owner-mitra-1",
-            Status = PublicationStatus.Published
-        };
-        context.Products.Add(product);
+        var controller = new ProductsController(catalogService);
         await context.SaveChangesAsync();
 
         // Simulate request by a different Mitra user
@@ -714,7 +698,7 @@ public class IdentityFoundationTests
     }
 
     [Fact]
-    public async Task PublicCatalogService_PendingOrRejectedProducts_DoNotAppearInPublicCatalog()
+    public async Task CatalogService_PendingOrRejectedProducts_DoNotAppearInPublicCatalog()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -744,8 +728,12 @@ public class IdentityFoundationTests
         });
         await context.SaveChangesAsync();
 
-        var catalogService = new PublicCatalogService(context);
-        var searchResults = await catalogService.SearchAsync("cloud");
+        var productRepo = new dagangOnline.Infrastructure.Data.Repositories.ProductRepository(context);
+        var serviceRepo = new dagangOnline.Infrastructure.Data.Repositories.ServiceRepository(context);
+        var portfolioRepo = new dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository(context);
+        var auditService = new dagangOnline.Application.Services.AuditLogService(context);
+        var catalogService = new dagangOnline.Application.Services.CatalogService(productRepo, serviceRepo, portfolioRepo, auditService);
+        var searchResults = await ((ICatalogService)catalogService).Search.SearchAsync("cloud");
 
         // Only the Published product should appear in public search!
         var singleProduct = Assert.Single(searchResults, r => r.Type == "Product");

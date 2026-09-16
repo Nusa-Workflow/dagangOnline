@@ -1,3 +1,4 @@
+using dagangOnline.Application.DTOs;
 using dagangOnline.Application.Services;
 using dagangOnline.Domain;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,26 +7,26 @@ namespace dagangOnline.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly PublicCatalogService _catalogService;
+    private readonly dagangOnline.Application.Interfaces.ICatalogService _catalogService;
 
-    public IndexModel(PublicCatalogService catalogService)
+    public IndexModel(dagangOnline.Application.Interfaces.ICatalogService catalogService)
     {
         _catalogService = catalogService;
     }
 
-    public List<Service> FeaturedServices { get; set; } = new();
-    public List<PortfolioProject> FeaturedProjects { get; set; } = new();
+    public List<ServiceDto> FeaturedServices { get; set; } = new();
+    public List<PortfolioDto> FeaturedProjects { get; set; } = new();
 
     public async Task OnGetAsync()
     {
-        var services = await _catalogService.GetPublishedServicesAsync();
-        FeaturedServices = services.Where(s => s.IsFeatured).Take(3).ToList();
+        var services = await _catalogService.Services.GetPublishedServicesAsync();
+        FeaturedServices = services.Items.Where(s => s.IsFeatured).Take(3).ToList();
         if (!FeaturedServices.Any())
         {
-            FeaturedServices = services.Take(3).ToList();
+            FeaturedServices = services.Items.Take(3).ToList();
         }
 
-        var portfolio = await _catalogService.GetFeaturedPortfolioAsync();
-        FeaturedProjects = portfolio.Take(2).ToList();
+        var portfolio = await _catalogService.Portfolio.GetFeaturedPortfolioAsync();
+        FeaturedProjects = portfolio.Items.Take(2).ToList();
     }
 }

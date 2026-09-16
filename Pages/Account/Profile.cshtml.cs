@@ -82,6 +82,8 @@ public class ProfileModel : PageModel
 
         user.DisplayName = Input.DisplayName.Trim();
         user.PhoneNumber = string.IsNullOrWhiteSpace(Input.PhoneNumber) ? null : Input.PhoneNumber.Trim();
+        user.WhatsAppNumber = string.IsNullOrWhiteSpace(Input.WhatsAppNumber) ? null : Input.WhatsAppNumber.Trim();
+        user.BusinessEmail = string.IsNullOrWhiteSpace(Input.BusinessEmail) ? null : Input.BusinessEmail.Trim();
         user.Bio = string.IsNullOrWhiteSpace(Input.Bio) ? null : Input.Bio.Trim();
         user.UpdatedAt = DateTime.UtcNow;
 
@@ -202,6 +204,8 @@ public class ProfileModel : PageModel
         Input.DisplayName = user.DisplayName;
         Input.Email = user.Email ?? string.Empty;
         Input.PhoneNumber = user.PhoneNumber;
+        Input.WhatsAppNumber = user.WhatsAppNumber;
+        Input.BusinessEmail = user.BusinessEmail;
         Input.Bio = user.Bio;
         Input.Location = userProfile?.Location;
         Input.WebsiteUrl = userProfile?.WebsiteUrl;
@@ -374,6 +378,16 @@ public class ProfileModel : PageModel
         [StringLength(20, ErrorMessage = "Nomor telepon maksimal 20 karakter.")]
         [Display(Name = "Nomor Telepon")]
         public string? PhoneNumber { get; set; }
+
+        [Phone(ErrorMessage = "Format nomor WhatsApp tidak valid.")]
+        [StringLength(20, ErrorMessage = "Nomor WhatsApp maksimal 20 karakter.")]
+        [Display(Name = "Nomor WhatsApp (Bincang Bisnis)")]
+        public string? WhatsAppNumber { get; set; }
+
+        [EmailAddress(ErrorMessage = "Format email bisnis tidak valid.")]
+        [StringLength(150, ErrorMessage = "Email Bisnis maksimal 150 karakter.")]
+        [Display(Name = "Email Bisnis (Bincang Bisnis)")]
+        public string? BusinessEmail { get; set; }
 
         [StringLength(100, ErrorMessage = "Lokasi / Kota maksimal 100 karakter.")]
         [Display(Name = "Lokasi / Kota")]

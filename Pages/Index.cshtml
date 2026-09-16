@@ -30,6 +30,57 @@
     </div>
 </section>
 
+<!-- Event Carousel Section -->
+<section class="mb-5">
+    <div id="eventCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" style="background-color: #f8f9fa; min-height: 250px;">
+                <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
+                    <div>
+                        <span class="badge bg-danger mb-2">HOT EVENT</span>
+                        <h3 class="fw-bold">Webinar: Strategi Jualan Laris Manis 2026</h3>
+                        <p class="text-muted">Ikuti sesi gratis bersama ahli digital marketing khusus untuk UMKM lokal.</p>
+                        <a href="#" class="btn btn-primary rounded-pill">Daftar Sekarang</a>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-color: #e9ecef; min-height: 250px;">
+                <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
+                    <div>
+                        <span class="badge bg-success mb-2">PROMO MITRA</span>
+                        <h3 class="fw-bold">Diskon Ongkir Seluruh Nusantara</h3>
+                        <p class="text-muted">Nikmati potongan ongkir hingga 50% untuk setiap pengiriman minggu ini.</p>
+                        <a href="#" class="btn btn-success rounded-pill">Cek Syarat & Ketentuan</a>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-color: #e2e3e5; min-height: 250px;">
+                <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
+                    <div>
+                        <span class="badge bg-info text-dark mb-2">INFO BARU</span>
+                        <h3 class="fw-bold">Fitur "Bincang Bisnis" Kini Tersedia</h3>
+                        <p class="text-muted">Hubungi langsung mitra kami melalui WhatsApp & Email untuk kolaborasi.</p>
+                        <a asp-page="/Services" class="btn btn-outline-dark rounded-pill">Pelajari Lebih Lanjut</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</section>
+
 <!-- Stats / Trust Indicators -->
 <section class="mb-5">
     <div class="row g-4 text-center">

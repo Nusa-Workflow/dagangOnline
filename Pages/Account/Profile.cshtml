@@ -118,9 +118,28 @@
 
                                 <!-- Phone Number -->
                                 <div class="col-md-6">
-                                    <label asp-for="Input.PhoneNumber" class="form-label fw-semibold">Nomor Telepon / WhatsApp</label>
+                                    <label asp-for="Input.PhoneNumber" class="form-label fw-semibold">Nomor Telepon Pribadi</label>
                                     <input asp-for="Input.PhoneNumber" class="form-control rounded-3" placeholder="contoh: 081234567890" />
                                     <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <!-- WhatsApp Number -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.WhatsAppNumber" class="form-label fw-semibold">
+                                        Nomor WhatsApp <span class="badge bg-info text-dark ms-1">Bincang Bisnis</span>
+                                    </label>
+                                    <input asp-for="Input.WhatsAppNumber" class="form-control rounded-3" placeholder="contoh: 081234567890" />
+                                    <span asp-validation-for="Input.WhatsAppNumber" class="text-danger small"></span>
+                                    <div class="form-text small text-muted">Akan ditampilkan pada halaman Anda untuk calon pelanggan/mitra (Publik).</div>
+                                </div>
+
+                                <!-- Business Email -->
+                                <div class="col-md-6">
+                                    <label asp-for="Input.BusinessEmail" class="form-label fw-semibold">
+                                        Email Bisnis <span class="badge bg-info text-dark ms-1">Bincang Bisnis</span>
+                                    </label>
+                                    <input asp-for="Input.BusinessEmail" class="form-control rounded-3" type="email" placeholder="halo@bisnisanda.com" />
+                                    <span asp-validation-for="Input.BusinessEmail" class="text-danger small"></span>
                                 </div>
 
                                 <!-- Location -->

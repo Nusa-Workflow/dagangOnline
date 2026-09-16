@@ -63,10 +63,21 @@ public class RegisterModel : PageModel
 
     public void OnGet(string? role = null)
     {
-        if (!string.IsNullOrWhiteSpace(role) && role.ToLowerInvariant() == "mitra")
+        var selectedRole = (role ?? "user").ToLowerInvariant();
+        if (selectedRole == "mitra" || selectedRole == "partnership")
         {
             Role = "mitra";
             Input.AccountType = "mitra";
+        }
+        else if (selectedRole == "agent")
+        {
+            Role = "agent";
+            Input.AccountType = "agent";
+        }
+        else if (selectedRole == "admin")
+        {
+            Role = "admin";
+            Input.AccountType = "admin";
         }
         else
         {
@@ -80,6 +91,22 @@ public class RegisterModel : PageModel
         if (Input.AccountType == "mitra" && string.IsNullOrWhiteSpace(Input.BusinessName))
         {
             ModelState.AddModelError("Input.BusinessName", "Nama bisnis/perusahaan wajib diisi untuk pendaftaran mitra.");
+        }
+
+        string targetRole = Input.AccountType.ToLowerInvariant() switch
+        {
+            "mitra" or "partnership" => RoleConstants.Mitra,
+            "agent" => RoleConstants.Agent,
+            "admin" => RoleConstants.Admin,
+            _ => RoleConstants.User
+        };
+
+        // Enforce dummy registration limit: Max 20 accounts per role
+        var usersInRole = await _userManager.GetUsersInRoleAsync(targetRole);
+        if (usersInRole.Count >= 20)
+        {
+            ModelState.AddModelError(string.Empty, $"Batas pendaftaran akun dummy (maksimal 20 akun) untuk role '{targetRole}' telah tercapai.");
+            return Page();
         }
 
         if (ModelState.IsValid)
@@ -98,10 +125,10 @@ public class RegisterModel : PageModel
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
-                if (Input.AccountType == "mitra")
-                {
-                    await _userManager.AddToRoleAsync(user, RoleConstants.Mitra);
+                await _userManager.AddToRoleAsync(user, targetRole);
 
+                if (targetRole == RoleConstants.Mitra)
+                {
                     var mitraProfile = new MitraProfile
                     {
                         UserId = user.Id,
@@ -121,8 +148,6 @@ public class RegisterModel : PageModel
                 }
                 else
                 {
-                    await _userManager.AddToRoleAsync(user, RoleConstants.User);
-
                     var userProfile = new UserProfile
                     {
                         UserId = user.Id,
@@ -134,6 +159,11 @@ public class RegisterModel : PageModel
                     await _context.SaveChangesAsync();
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    if (targetRole == RoleConstants.Admin || targetRole == RoleConstants.Agent)
+                    {
+                        return RedirectToPage("/Index");
+                    }
                     return RedirectToPage("/Dashboard/User/Index");
                 }
             }

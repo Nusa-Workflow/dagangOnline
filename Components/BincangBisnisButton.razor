@@ -1,0 +1,85 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using dagangOnline.Models
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
+@if (_canViewContactInfo)
+{
+    <div class="d-flex gap-2">
+        @if (!string.IsNullOrEmpty(WhatsAppNumber))
+        {
+            <a href="https://wa.me/@FormatWhatsApp(WhatsAppNumber)" target="_blank" class="btn btn-success rounded-pill px-3 fw-semibold shadow-sm">
+                <i class="bi bi-whatsapp me-1"></i> Hubungi via WA
+            </a>
+        }
+        @if (!string.IsNullOrEmpty(BusinessEmail))
+        {
+            <a href="mailto:@BusinessEmail" class="btn btn-outline-primary rounded-pill px-3 fw-semibold shadow-sm">
+                <i class="bi bi-envelope me-1"></i> Email Bisnis
+            </a>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? WhatsAppNumber { get; set; }
+
+    [Parameter]
+    public string? BusinessEmail { get; set; }
+
+    [Parameter]
+    public string OwnerUserId { get; set; } = string.Empty;
+
+    private bool _canViewContactInfo = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Rule: Show contact info if:
+        // 1. User is NOT logged in (Public view)
+        // 2. OR User is the owner of this profile
+        // 3. OR User is an Admin
+        // 4. If user is logged in as a Mitra/Partnership (and not the owner), HIDE it to avoid competitor scraping.
+
+        if (!user.Identity?.IsAuthenticated ?? true)
+        {
+            _canViewContactInfo = true; // Public View
+        }
+        else
+        {
+            var currentUserId = UserManager.GetUserId(user);
+            if (currentUserId == OwnerUserId || user.IsInRole("Admin"))
+            {
+                _canViewContactInfo = true; // Owner or Admin
+            }
+            else
+            {
+                // Is the viewer a Mitra/Partnership?
+                bool isMitra = user.IsInRole("Mitra") || user.IsInRole("Partnership");
+                if (isMitra)
+                {
+                    _canViewContactInfo = false; // Hide from competitors
+                }
+                else
+                {
+                    _canViewContactInfo = true; // Normal logged-in customer
+                }
+            }
+        }
+    }
+
+    private string FormatWhatsApp(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+        var digits = new string(input.Where(char.IsDigit).ToArray());
+        if (digits.StartsWith("0"))
+        {
+            digits = "62" + digits.Substring(1);
+        }
+        return digits;
+    }
+}

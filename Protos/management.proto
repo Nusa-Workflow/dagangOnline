@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+option csharp_namespace = "dagangOnline.Protos";
+
+package management;
+
+import "google/protobuf/empty.proto";
+
+
+
+message StatusResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Product Messages
+message CreateProductRequest {
+  string name = 1;
+  string slug = 2;
+  string summary = 3;
+  string description = 4;
+  double price = 5;
+  string currency = 6;
+  int32 category = 7;
+  int32 status = 8;
+  bool is_featured = 9;
+  string service_id = 10;
+}
+
+message UpdateProductRequest {
+  string id = 1; // UUID
+  string name = 2;
+  string slug = 3;
+  string summary = 4;
+  string description = 5;
+  double price = 6;
+  string currency = 7;
+  int32 category = 8;
+  int32 status = 9;
+  bool is_featured = 10;
+  string service_id = 11;
+}
+
+message ProductMutationResponse {
+  bool success = 1;
+  string message = 2;
+  string product_id = 3; // UUID
+}
+
+message DeleteRequest {
+  string id = 1; // UUID
+}
+
+// Service Messages
+message CreateServiceRequest {
+  string name = 1;
+  string slug = 2;
+  string summary = 3;
+  string description = 4;
+  int32 status = 5;
+  bool is_featured = 6;
+}
+
+message UpdateServiceRequest {
+  string id = 1; // UUID
+  string name = 2;
+  string slug = 3;
+  string summary = 4;
+  string description = 5;
+  int32 status = 6;
+  bool is_featured = 7;
+}
+
+message ServiceMutationResponse {
+  bool success = 1;
+  string message = 2;
+  string service_id = 3; // UUID
+}
+
+// Portfolio Messages
+message CreatePortfolioRequest {
+  string title = 1;
+  string summary = 2;
+  string description = 3;
+  string problem = 4;
+  string solution = 5;
+  string result = 6;
+  int32 status = 7;
+  bool is_featured = 8;
+}
+
+message UpdatePortfolioRequest {
+  string id = 1; // UUID
+  string title = 2;
+  string summary = 3;
+  string description = 4;
+  string problem = 5;
+  string solution = 6;
+  string result = 7;
+  int32 status = 8;
+  bool is_featured = 9;
+}
+
+message PortfolioMutationResponse {
+  bool success = 1;
+  string message = 2;
+  string portfolio_id = 3; // UUID
+}
+
+service Management {
+  // Product Operations
+  rpc CreateProduct(CreateProductRequest) returns (ProductMutationResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductMutationResponse);
+  rpc DeleteProduct(DeleteRequest) returns (StatusResponse);
+
+  // Service Operations
+  rpc CreateService(CreateServiceRequest) returns (ServiceMutationResponse);
+  rpc UpdateService(UpdateServiceRequest) returns (ServiceMutationResponse);
+  rpc DeleteService(DeleteRequest) returns (StatusResponse);
+
+  // Portfolio Operations
+  rpc CreatePortfolio(CreatePortfolioRequest) returns (PortfolioMutationResponse);
+  rpc UpdatePortfolio(UpdatePortfolioRequest) returns (PortfolioMutationResponse);
+  rpc DeletePortfolio(DeleteRequest) returns (StatusResponse);
+}

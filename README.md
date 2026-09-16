@@ -1,99 +1,137 @@
-# dagangOnline — Platform Solusi Digital & Ekosistem Bisnis
+# dagangOnline — Platform Solusi Digital & Ekosistem Bisnis Gotong Royong
 
 Repository: `https://github.com/Nusa-Workflow/dagangOnline.git`  
-Stack: **ASP.NET Core Razor Pages (.NET 10.0), EF Core, PostgreSQL / In-Memory, Identity RBAC, REST v1 & gRPC Services, PWA**
+Stack: **ASP.NET Core Razor Pages + Blazor Server (.NET 10.0), Clean Architecture, gRPC Services, Entity Framework Core, PostgreSQL / In-Memory, Identity RBAC, SCSS WebOptimizer, PWA, Groq Qwen AI (RAG Pipeline)**
 
 ---
 
-## Ringkasan Eksekusi Sprint Audit & Upgrade
+## 📐 Visualisasi Metode & Arsitektur Sistem
 
-Semua task dikerjakan berbasis arsitektur existing tanpa rewrite dari nol, memenuhi **4 Verification Gate** (Mismatch, Failed Script, Problem, Posisi).
+Ekosistem `dagangOnline` dibangun di atas arsitektur **Clean Architecture** dengan batas dependensi yang jelas (*Dependency Boundaries*), memisahkan Domain, Application, Infrastructure, dan Presentation/Web Layer:
 
-### Matriks Status Gate Per Task
+```mermaid
+graph TD
+    subgraph ClientLayer ["Client & Frontend Presentation Layer"]
+        RP["Razor Pages (Public / Dashboards)"]
+        BLZ["Blazor Server (AiChatWidget & Interactive Components)"]
+        PWA["PWA Service Worker & Offline Cache"]
+    end
 
-| Sprint | Task | Mismatch | Failed Script | Problem | Posisi | Status |
-|---|---|:---:|:---:|:---:|:---:|:---:|
-| **Sprint 0** | Audit Codebase (Read-Only) | OK | OK | OK | OK | **DONE** |
-| **Sprint 1** | 1.1 Design Tokens & Color Consistency | OK | OK | OK | OK | **DONE** |
-| | 1.2 Button System & Loading State | OK | OK | OK | OK | **DONE** |
-| | 1.3 Form & Placeholder UX (Bahasa Indonesia) | OK | OK | OK | OK | **DONE** |
-| | 1.4 Navbar & Global Layout (_Layout.cshtml) | OK | OK | OK | OK | **DONE** |
-| | 1.5 Typography & Featured Portfolio Pass | OK | OK | OK | OK | **DONE** |
-| | 1.6 CRUD Pattern Consistency (Modal, Toast, Skeletons) | OK | OK | OK | OK | **DONE** |
-| | 1.7 Register & Login Flow Audit (Password Toggle, Role Redirect) | OK | OK | OK | OK | **DONE** |
-| | 1.8 Role Mitra: Product Content Management & Ownership | OK | OK | OK | OK | **DONE** |
-| | 1.9 Role Human Agent: Review Queue, Approve/Reject & Audit | OK | OK | OK | OK | **DONE** |
-| **Sprint 2** | 2.1 Responsive Testing & Table/Flex Layout | OK | OK | OK | OK | **DONE** |
-| | 2.2 UX States (Empty, Loading, Error, Alerts) | OK | OK | OK | OK | **DONE** |
-| | 2.3 Fitur Relevan (Search UX, Service Links) | OK | OK | OK | OK | **DONE** |
-| **Sprint 3** | 3.1 PWA Manifest & Multi-size Icons | OK | OK | OK | OK | **DONE** |
-| | 3.2 Service Worker & Caching Strategy | OK | OK | OK | OK | **DONE** |
-| | 3.3 Installability & Session Security | OK | OK | OK | OK | **DONE** |
-| | 3.4 Online/Offline Indicator Banner | OK | OK | OK | OK | **DONE** |
-| **Sprint 4** | 4.1 Accessibility (a11y & ARIA) | OK | OK | OK | OK | **DONE** |
-| | 4.2 Performance & Bundle Optimization | OK | OK | OK | OK | **DONE** |
-| | 4.3 Code Quality & CSP Unobtrusive JS | OK | OK | OK | OK | **DONE** |
-| | 4.4 Security Sanity Check & RBAC | OK | OK | OK | OK | **DONE** |
-| | 4.5 Full Build & Test Regression | OK | OK | OK | OK | **DONE** |
+    subgraph ApiLayer ["API & Interface Boundaries"]
+        REST["REST API Controllers (v1)"]
+        GRPC["gRPC Services (Catalog & Management)"]
+        HUB["SignalR Chat Hub & Blazor Hub"]
+    end
 
----
+    subgraph AppLayer ["Application Core (Use Cases & Contracts)"]
+        ICAT["ICatalogService / IProductService"]
+        IAI["IAiChatService (Groq RAG Pipeline)"]
+        IAGNT["IAgentReviewService"]
+        ISEARCH["ISearchService"]
+    end
 
-## Rincian Perubahan & File yang Berubah
+    subgraph InfraLayer ["Infrastructure & External Services"]
+        DB["ApplicationDbContext (EF Core PostgreSQL / In-Memory)"]
+        GROQ["Groq Cloud API (Qwen-2.5-32B / Qwen2-72B Instruct)"]
+        AUTH["ASP.NET Core Identity & Cookie RBAC"]
+        SCSS["WebOptimizer SASS / SCSS Compiler"]
+    end
 
-### 1. File yang Berubah (Per Sprint)
-- **Sprint 1 (Fondasi UI, Auth, Mitra Scoping & Human Agent Moderation)**:
-  - `Authorization/RoleConstants.cs`: Penambahan role `RoleConstants.Agent = "Agent"`.
-  - `Authorization/AuthorizationPolicies.cs`: Penambahan `RequireAgent` dan `RequireAgentOrAdmin`.
-  - `Domain/PublicationStatus.cs`: Penambahan status `PendingReview = 3` dan `Rejected = 4`.
-  - `Domain/Product.cs`: Penambahan kepemilikan produk (`OwnerId` & `OwnerName`).
-  - `Domain/Agents/ReviewTask.cs`: Entitas tugas review antrean kurasi.
-  - `Domain/Agents/ModerationDecision.cs`: Entitas audit trail riwayat keputusan moderasi kurator internal.
-  - `Data/ApplicationDbContext.cs`: Registrasi DbSets `ReviewTasks` dan `ModerationDecisions` serta konfigurasi relationship.
-  - `Services/AgentReviewService.cs`: Service logika bisnis moderasi produk (antrean, persetujuan, penolakan dengan alasan, notifikasi Mitra, dan audit logging).
-  - `Controllers/AgentController.cs`: REST API untuk Human Agent queue dan persetujuan/penolakan.
-  - `Pages/Agent/Index.cshtml` & `.cs`: Dashboard antrean review khusus Human Agent.
-  - `Pages/Agent/Review.cshtml` & `.cs`: Halaman detail kurasi produk dengan form Approve & Reject beralasan.
-  - `Pages/Dashboard/Mitra/Index.cshtml` & `.cs`: Scoping ketat produk milik Mitra sendiri di backend, edit modal, delete confirmation modal, notifikasi hasil review, dan auto-enqueue ke review queue saat tambah/ubah produk.
-  - `Controllers/Api/v1/ProductsController.cs`: Penegakan otorisasi kepemilikan Mitra pada Create/Update/Delete dan status `PendingReview`.
-  - `Pages/Account/Login.cshtml` & `.cs`: Password visibility toggle button, pesan error login generik tanpa membocorkan eksistensi akun, autofill akun demo Admin & Agent, dan redirect sesuai role (Admin, Agent, Mitra, User).
-  - `Pages/Account/Register.cshtml` & `.cs`: Panduan kriteria sandi terlihat di awal, password visibility toggle, validasi kesesuaian sandi real-time, dan pesan actionable untuk duplicate email.
-  - `Pages/Shared/_Layout.cshtml`: Penambahan item menu moderasi untuk Human Agent, badge Agent, dan container toast aplikasi global (`#appToast`).
-  - `wwwroot/js/site.js`: Reusable `showAppToast`, password visibility toggle handler, real-time match checker, double submit prevention, dan Mitra edit modal auto-prefill.
-  - `wwwroot/css/site.css`: Definisi CSS design tokens (`--primary`, dsb.), button system, dan loading states.
-  - `Application/Services/SecurityHeadersMiddleware.cs`: Penyesuaian CSP untuk mengizinkan font Google (`fonts.googleapis.com` & `fonts.gstatic.com`).
+    RP --> ICAT
+    BLZ --> IAI
+    BLZ --> ICAT
+    REST --> ICAT
+    GRPC --> ICAT
 
-- **Sprint 2 (Responsive & UX States)**:
-  - `Pages/Services.cshtml`: Penggantian dead link menjadi direct route ke konsultasi layanan, serta penambahan rich empty state.
-  - `Pages/Portfolio.cshtml`: Penambahan rich empty state dengan ikon dan direct CTA.
-  - `Pages/Search.cshtml`: Penambahan suggestion chips pencarian populer dan rich empty state.
-  - `wwwroot/css/site.css`: Perbaikan flex layout body min-height dan touch scrollbar untuk `.table-responsive`.
-
-- **Sprint 3 (PWA)**:
-  - `wwwroot/manifest.webmanifest` & `manifest.json`: PWA manifest metadata standar.
-  - `wwwroot/icons/`: Ikon standar PWA (`icon-192.png`, `icon-512.png`, `icon-maskable.png`).
-  - `wwwroot/offline.html`: Halaman fallback offline mandiri.
-  - `wwwroot/sw.js`: Service worker dengan strategi Cache-First untuk static assets, Network-First untuk public dynamic pages, dan Network-Only untuk auth/dashboard/API endpoints.
-  - `Program.cs`: Registrasi MIME type `.webmanifest` pada `StaticFileOptions`.
-  - `Pages/Shared/_Layout.cshtml`: Penambahan tag manifest, apple-touch-icon, theme-color, dan offline indicator banner.
-
-- **Sprint 4 (Accessibility, Security & Regresi)**:
-  - `Views/ApiManagement/Index.cshtml`: Pemisahan inline script menjadi external script untuk kepatuhan CSP.
-  - `wwwroot/js/api-management.js`: Handler modular sandbox API tester tanpa inline script/onclick.
-  - `dagangOnline.Tests/UnitTest1.cs`: 24 unit tests komprehensif mencakup Identity, RBAC, Agent Review workflow, Mitra product ownership isolation, dan Public Catalog filtering.
+    IAI --> GROQ
+    ICAT --> DB
+    IAGNT --> DB
+    AUTH --> DB
+```
 
 ---
 
-### 2. Fitur yang Ditambahkan
-1. **PWA (Progressive Web App)**: Installable, cache shell offline-first, offline fallback page, dan dynamic status offline indicator.
-2. **Role Mitra & Product Content Management**: Scoping produk milik sendiri di backend, CRUD modal terpadu, review status badges, dan tab notifikasi hasil moderasi.
-3. **Role Human Agent & Review Workflow**: Antrean moderasi terpisah dari Admin, approval publikasi katalog, penolakan dengan catatan revisi, dan audit log otomatis.
-4. **Enhanced Auth Flow UX & Security**: Password show/hide toggle, real-time match indicator, dan generic safe login errors.
-5. **Unified Feedback & Toast**: Komponen toast global dengan styling semantik dan double submit protection.
-6. **Featured Portfolio Showcase**: Halaman Beranda (`/Index`) menampilkan portofolio dinamis dari database.
-7. **Pencarian Cepat dengan Saran Populer**: Suggestion chips (`Web Development`, `Digitalisasi UMKM`, `Cloud`, dsb.) pada `/Search`.
+## 🤖 Algoritma & Permodelan AI (Groq Qwen 2.5 + RAG)
+
+Fitur **AI Assistant (Bincang Bisnis Chatbot)** menggunakan pendekatan **Retrieval-Augmented Generation (RAG)** berbasis LLM modern (Qwen 2.5 32B / Qwen 2 72B Instruct melalui Groq API):
+
+```
++-------------------+      +---------------------------------+      +------------------------+
+| User Query / Chat | ---> | RAG Context Builder             | ---> | Groq Qwen 2.5 LLM Engine|
+| (AiChatWidget)    |      | (Retrieves top products/services|      | (Constructs responses  |
++-------------------+      |  from ICatalogService in DB)    |      |  in Bahasa Indonesia)  |
+                           +---------------------------------+      +------------------------+
+                                                                                 |
+                                                                                 v
+                                                                    +------------------------+
+                                                                    | Markdown Rendered UI   |
+                                                                    | in Blazor Chat Widget  |
+                                                                    +------------------------+
+```
+
+### Flow Algoritma AI:
+1. **Query Ingestion**: Input pertanyaan dari pengguna ditangkap secara *real-time* oleh komponen Blazor Server `AiChatWidget.razor`.
+2. **Context Retrieval (RAG)**: System memanggil `ICatalogService.Products.GetPublishedProductsAsync()` untuk menarik metadata produk & layanan terpublikasi aktif dari database.
+3. **Prompt Engineering & Context Injection**:
+   - System Prompt disuntikkan dengan batasan domain bisnis `dagangOnline`.
+   - Data katalog produk dimasukkan sebagai konteks latar belakang (Knowledge Context).
+4. **Groq Qwen Inference**:
+   - Payload dikirimkan ke Groq API endpoint (`https://api.groq.com/openai/v1/chat/completions`) menggunakan model `qwen-2.5-32b` / `qwen2-72b-instruct`.
+5. **Streaming Response**: Hasil dikembalikan dan dirender dengan dukungan format Markdown pada UI interaktif.
 
 ---
 
-### 3. Hasil Verifikasi Build & Test
-- **`dotnet build --no-incremental`**: **Succeeded (0 Error)**
-- **`dotnet test`**: **24 Lolos dari 24 Pengujian (100% Pass, 0 Gagal, 0 Dilewati)**
+## 👥 Pengaturan Akun Dummy & Kebijakan Tampilan Demo
+
+### 1. Registrasi Akun Dummy Semua Role (Limit 20 Akun Per Role)
+Sistem mendukung pendaftaran mandiri (*Self-Registration*) untuk seluruh role pada platform:
+- **Pengguna / Klien** (`User`)
+- **Mitra Bisnis / Partnership** (`Mitra`)
+- **Human Agent / Moderator** (`Agent`)
+- **Super Administrator** (`Admin`)
+
+> ⚠️ **Batas Kuota Registrasi**: Setiap role dibatasi maksimal **20 akun dummy** di dalam database untuk mencegah *resource abuse*. Jika kuota 20 akun terlampaui, sistem registrasi akan menampilkan pesan validasi otomatis.
+
+### 2. Kebijakan Tampilan Demo Login Cepat
+- **Tampilan Publik & User / Mitra / Partnership View**: Tombol/bar kredensial *Quick Demo Login* **TIDAK ditampilkan** pada halaman publik maupun dashboard user/mitra/partnership demi menjaga privasi, profesionalisme tampilan, dan keamanan lingkungan produksi.
+
+---
+
+## 🛠️ Matriks Status Sprint & Pengujian
+
+| Sprint | Task / Deskripsi | Status |
+|---|---|:---:|
+| **Sprint 0** | Audit Codebase & Mapping Dependency Boundaries | **DONE** |
+| **Sprint 1** | Clean Architecture Layering & gRPC Contracts Integration | **DONE** |
+| **Sprint 2** | Security Propagation, RBAC & gRPC Authorization Policies | **DONE** |
+| **Sprint 3** | Observability, Rate Limiting, Correlation ID & Structured Logging | **DONE** |
+| **Sprint 4** | Carousel Event Header, Blazor Server Setup & Bincang Bisnis WA/Email | **DONE** |
+| **Sprint 5** | Groq Qwen AI Chatbot Widget dengan RAG Engine Katalog | **DONE** |
+| **Sprint 6** | Dummy Account Role Registration (Limit 20) & Demo Helper Hiding | **DONE** |
+
+---
+
+## 🚀 Cara Menjalankan Aplikasi Secara Lokal
+
+### Prerequisites
+- **.NET 10.0 SDK**
+- PostgreSQL (Opsional, bawaan menggunakan EF Core In-Memory Database bila connection string tidak dikonfigurasi)
+
+### Command Jalankan Project:
+```bash
+# Restore & Build Project
+dotnet build
+
+# Jalankan Server Development
+dotnet run --project dagangOnline.csproj
+```
+
+Akses portal melalui browser pada: `https://localhost:7198` atau `http://localhost:5000`.
+
+---
+
+## 📄 Pengujian Otomatis
+```bash
+dotnet test
+```
+Seluruh 24+ pengujian unit (`UnitTest1.cs`) lulus 100% tanpa kesalahan.
