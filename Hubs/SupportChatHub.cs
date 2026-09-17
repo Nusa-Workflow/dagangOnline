@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using dagangOnline.Data;
 using dagangOnline.Domain.Chat;
 using dagangOnline.Services;
+using dagangOnline.Application.Services;
 using System.Security.Claims;
 using dagangOnline.Authorization;
 
@@ -15,12 +16,12 @@ namespace dagangOnline.Hubs;
 public class SupportChatHub : Hub
 {
     private readonly ApplicationDbContext _db;
-    private readonly ChatBotService _chatBotService;
+    private readonly AgentAssistService _agentAssistService;
 
-    public SupportChatHub(ApplicationDbContext db, ChatBotService chatBotService)
+    public SupportChatHub(ApplicationDbContext db, AgentAssistService agentAssistService)
     {
         _db = db;
-        _chatBotService = chatBotService;
+        _agentAssistService = agentAssistService;
     }
 
     public override async Task OnConnectedAsync()
@@ -48,49 +49,55 @@ public class SupportChatHub : Hub
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId)) return;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId && s.CustomerId == userId);
         if (session == null)
         {
             // Create a new session if not found
-            session = new ChatSession
+            session = new Conversation
             {
-                UserId = userId,
-                Status = ChatSessionStatus.ActiveWithBot
+                CustomerId = userId,
+                Status = ConversationStatus.Open
             };
-            _db.ChatSessions.Add(session);
+            _db.Conversations.Add(session);
             await _db.SaveChangesAsync();
         }
 
-        if (session.Status != ChatSessionStatus.ActiveWithBot) return;
+        if (session.Status != ConversationStatus.Open) return;
 
         // Save user message
-        var userMessage = new ChatMessage
+        var userMessage = new ConversationMessage
         {
-            ChatSessionId = session.Id,
+            ConversationId = session.Id,
             Content = message,
-            SenderRole = ChatMessageSenderRole.User
+            SenderType = SenderType.Customer
         };
-        _db.ChatMessages.Add(userMessage);
+        _db.ConversationMessages.Add(userMessage);
         await _db.SaveChangesAsync();
 
         // Broadcast back to user UI
         await Clients.Group($"User_{userId}").SendAsync("ReceiveMessage", session.Id, userMessage.Id, "User", message, userMessage.CreatedAt);
 
         // Get bot response
-        var botResponse = await _chatBotService.GetReplyAsync(session, message);
+        var botResponse = await _agentAssistService.ProcessCustomerMessageAsync(session, message);
 
         // Save bot message
-        var botMessage = new ChatMessage
+        var botMessage = new ConversationMessage
         {
-            ChatSessionId = session.Id,
-            Content = botResponse,
-            SenderRole = ChatMessageSenderRole.Bot
+            ConversationId = session.Id,
+            Content = botResponse.SuggestedResponse,
+            SenderType = SenderType.AI
         };
-        _db.ChatMessages.Add(botMessage);
-        await _db.SaveChangesAsync();
+        _db.ConversationMessages.Add(botMessage);
+        await _db.SaveChangesAsync(); // This also saves the updated session properties from ProcessCustomerMessageAsync
 
         // Broadcast bot reply to user UI
-        await Clients.Group($"User_{userId}").SendAsync("ReceiveMessage", session.Id, botMessage.Id, "Bot", botResponse, botMessage.CreatedAt);
+        await Clients.Group($"User_{userId}").SendAsync("ReceiveMessage", session.Id, botMessage.Id, "Bot", botResponse.SuggestedResponse, botMessage.CreatedAt);
+        
+        if (session.Status == ConversationStatus.Escalated)
+        {
+            // Notify agents if it escalated
+            await Clients.Group("Agents").SendAsync("SessionEscalated", session.Id, userId);
+        }
     }
 
     public async Task RequestEscalation(Guid sessionId)
@@ -98,10 +105,10 @@ public class SupportChatHub : Hub
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId)) return;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
-        if (session != null && session.Status == ChatSessionStatus.ActiveWithBot)
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId && s.CustomerId == userId);
+        if (session != null && session.Status == ConversationStatus.Open)
         {
-            session.Status = ChatSessionStatus.Escalated;
+            session.Status = ConversationStatus.Escalated;
             await _db.SaveChangesAsync();
 
             // Notify all agents about the new escalated session
@@ -118,10 +125,10 @@ public class SupportChatHub : Hub
         var agentId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(agentId)) return;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId);
-        if (session != null && session.Status == ChatSessionStatus.Escalated)
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId);
+        if (session != null && session.Status == ConversationStatus.Escalated)
         {
-            session.Status = ChatSessionStatus.ActiveWithAgent;
+            session.Status = ConversationStatus.WaitingForCustomer;
             session.AssignedAgentId = agentId;
             await _db.SaveChangesAsync();
 
@@ -129,8 +136,8 @@ public class SupportChatHub : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, $"Session_{session.Id}");
 
             // Notify user
-            await Clients.Group($"User_{session.UserId}").SendAsync("AgentJoined", session.Id, agentId);
-            await Clients.Group($"User_{session.UserId}").SendAsync("ReceiveMessage", session.Id, Guid.NewGuid(), "System", "Seorang agen telah bergabung ke sesi obrolan Anda.", DateTime.UtcNow);
+            await Clients.Group($"User_{session.CustomerId}").SendAsync("AgentJoined", session.Id, agentId);
+            await Clients.Group($"User_{session.CustomerId}").SendAsync("ReceiveMessage", session.Id, Guid.NewGuid(), "System", "Seorang agen telah bergabung ke sesi obrolan Anda.", DateTime.UtcNow);
             
             // Notify agents UI
             await Clients.Group("Agents").SendAsync("SessionAccepted", session.Id, agentId);
@@ -144,20 +151,20 @@ public class SupportChatHub : Hub
         var agentName = Context.User?.Identity?.Name ?? "Agent";
         if (string.IsNullOrEmpty(agentId)) return;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.AssignedAgentId == agentId);
-        if (session != null && session.Status == ChatSessionStatus.ActiveWithAgent)
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId && s.AssignedAgentId == agentId);
+        if (session != null && session.Status == ConversationStatus.WaitingForCustomer)
         {
-            var agentMessage = new ChatMessage
+            var agentMessage = new ConversationMessage
             {
-                ChatSessionId = session.Id,
+                ConversationId = session.Id,
                 Content = message,
-                SenderRole = ChatMessageSenderRole.Agent
+                SenderType = SenderType.HumanAgent
             };
-            _db.ChatMessages.Add(agentMessage);
+            _db.ConversationMessages.Add(agentMessage);
             await _db.SaveChangesAsync();
 
             // Send to user
-            await Clients.Group($"User_{session.UserId}").SendAsync("ReceiveMessage", session.Id, agentMessage.Id, agentName, message, agentMessage.CreatedAt);
+            await Clients.Group($"User_{session.CustomerId}").SendAsync("ReceiveMessage", session.Id, agentMessage.Id, agentName, message, agentMessage.CreatedAt);
             
             // Send to agent (self)
             await Clients.Caller.SendAsync("ReceiveMessage", session.Id, agentMessage.Id, "You", message, agentMessage.CreatedAt);
@@ -169,16 +176,16 @@ public class SupportChatHub : Hub
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId)) return;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
-        if (session != null && session.Status == ChatSessionStatus.ActiveWithAgent)
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId && s.CustomerId == userId);
+        if (session != null && session.Status == ConversationStatus.WaitingForCustomer)
         {
-            var userMessage = new ChatMessage
+            var userMessage = new ConversationMessage
             {
-                ChatSessionId = session.Id,
+                ConversationId = session.Id,
                 Content = message,
-                SenderRole = ChatMessageSenderRole.User
+                SenderType = SenderType.Customer
             };
-            _db.ChatMessages.Add(userMessage);
+            _db.ConversationMessages.Add(userMessage);
             await _db.SaveChangesAsync();
 
             // Broadcast back to user UI
@@ -194,16 +201,16 @@ public class SupportChatHub : Hub
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userRole = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
 
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId);
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId);
         if (session == null) return;
 
         // Either the owner user or the assigned agent can end it
-        if (session.UserId == userId || session.AssignedAgentId == userId)
+        if (session.CustomerId == userId || session.AssignedAgentId == userId)
         {
-            session.Status = ChatSessionStatus.Resolved;
+            session.Status = ConversationStatus.Resolved;
             await _db.SaveChangesAsync();
 
-            await Clients.Group($"User_{session.UserId}").SendAsync("SessionEnded", session.Id);
+            await Clients.Group($"User_{session.CustomerId}").SendAsync("SessionEnded", session.Id);
             await Clients.Group($"Session_{session.Id}").SendAsync("SessionEnded", session.Id);
         }
     }

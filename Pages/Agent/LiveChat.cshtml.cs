@@ -10,71 +10,91 @@ using Microsoft.EntityFrameworkCore;
 using dagangOnline.Authorization;
 using dagangOnline.Data;
 using dagangOnline.Domain.Chat;
+using dagangOnline.Application.Interfaces;
 
 namespace dagangOnline.Pages.Agent;
 
 [Authorize(Policy = AuthorizationPolicies.RequireAgentOrAdmin)]
 public class LiveChatModel : PageModel
 {
-    private readonly ApplicationDbContext _db;
+    private readonly IConversationRepository _conversationRepository;
 
-    public LiveChatModel(ApplicationDbContext db)
+    public LiveChatModel(IConversationRepository conversationRepository)
     {
-        _db = db;
+        _conversationRepository = conversationRepository;
     }
 
-    public List<ChatSession> EscalatedSessions { get; set; } = new();
-    public List<ChatSession> MyActiveSessions { get; set; } = new();
+    public List<Conversation> EscalatedSessions { get; set; } = new();
+    public List<Conversation> MyActiveSessions { get; set; } = new();
     
     [BindProperty(SupportsGet = true)]
     public Guid? ActiveSessionId { get; set; }
     
-    public ChatSession? CurrentSession { get; set; }
+    public Conversation? CurrentSession { get; set; }
 
     public async Task OnGetAsync()
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var currentCustomerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         // Get sessions waiting for any agent
-        EscalatedSessions = await _db.ChatSessions
-            .Include(s => s.User)
-            .Where(s => s.Status == ChatSessionStatus.Escalated)
+        EscalatedSessions = (await _conversationRepository.GetActiveConversationsAsync())
+            .Where(s => s.Status == ConversationStatus.Escalated)
             .OrderBy(s => s.UpdatedAt)
-            .ToListAsync();
+            .ToList(); // Note: Repository doesn't load Customer natively in GetActive... wait, let's just use the repo
 
         // Get sessions currently handled by this agent
-        MyActiveSessions = await _db.ChatSessions
-            .Include(s => s.User)
-            .Where(s => s.Status == ChatSessionStatus.ActiveWithAgent && s.AssignedAgentId == currentUserId)
+        MyActiveSessions = (await _conversationRepository.GetConversationsByAgentAsync(currentCustomerId ?? string.Empty))
+            .Where(s => s.Status == ConversationStatus.WaitingForCustomer || s.Status == ConversationStatus.Open)
             .OrderByDescending(s => s.UpdatedAt)
-            .ToListAsync();
+            .ToList();
 
         if (ActiveSessionId.HasValue)
         {
-            CurrentSession = await _db.ChatSessions
-                .Include(s => s.User)
-                .Include(s => s.Messages)
-                .FirstOrDefaultAsync(s => s.Id == ActiveSessionId.Value && (s.AssignedAgentId == currentUserId || s.Status == ChatSessionStatus.Escalated));
+            CurrentSession = await _conversationRepository.GetByIdAsync(ActiveSessionId.Value, trackChanges: false);
         }
     }
 
     public async Task<IActionResult> OnPostAcceptEscalationAsync(Guid sessionId)
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var session = await _db.ChatSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.Status == ChatSessionStatus.Escalated);
+        var currentCustomerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var session = await _conversationRepository.GetByIdAsync(sessionId, trackChanges: true);
         
-        if (session != null)
+        if (session != null && session.Status == ConversationStatus.Escalated)
         {
-            session.Status = ChatSessionStatus.ActiveWithAgent;
-            session.AssignedAgentId = currentUserId;
+            session.Status = ConversationStatus.WaitingForCustomer;
+            session.AssignedAgentId = currentCustomerId;
             session.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
-            
-            // Note: SignalR Hub AcceptEscalation is typically called from client, but we can also just redirect.
-            // But we already have a hub method for it. The client will call the hub method. 
-            // We'll let the UI call the hub method directly via JS to ensure groups are updated.
+            await _conversationRepository.UpdateAsync(session);
         }
 
+        return RedirectToPage(new { ActiveSessionId = sessionId });
+    }
+
+    public async Task<IActionResult> OnPostUpdateStatusAsync(Guid sessionId, ConversationStatus newStatus)
+    {
+        var session = await _conversationRepository.GetByIdAsync(sessionId, trackChanges: true);
+        if (session != null)
+        {
+            session.Status = newStatus;
+            session.UpdatedAt = DateTime.UtcNow;
+            if (newStatus == ConversationStatus.Closed || newStatus == ConversationStatus.Resolved)
+            {
+                session.ClosedAt = DateTime.UtcNow;
+            }
+            await _conversationRepository.UpdateAsync(session);
+        }
+        return RedirectToPage(new { ActiveSessionId = sessionId });
+    }
+
+    public async Task<IActionResult> OnPostUpdatePriorityAsync(Guid sessionId, ConversationPriority newPriority)
+    {
+        var session = await _conversationRepository.GetByIdAsync(sessionId, trackChanges: true);
+        if (session != null)
+        {
+            session.Priority = newPriority;
+            session.UpdatedAt = DateTime.UtcNow;
+            await _conversationRepository.UpdateAsync(session);
+        }
         return RedirectToPage(new { ActiveSessionId = sessionId });
     }
 }

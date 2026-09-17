@@ -4,20 +4,24 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);dagangOnline.Mobile\**;dagangOnline.Mobile/**;dagangOnline.Tests\**;dagangOnline.Tests/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JavaScriptEngineSwitcher.Extensions.MsDependencyInjection" Version="3.31.0" />
+    <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.35.2" />
+    <PackageReference Include="JavaScriptEngineSwitcher.V8.Native.win-x64" Version="3.35.2" />
     <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.147" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0-rc.1.25451.107" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.0-rc.1.25451.107" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0-rc.1.25451.107">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0-rc.1.25451.107" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.0-rc.1.25451.107" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0-rc.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
   </ItemGroup>
@@ -32,6 +36,10 @@
     <Content Remove="dagangOnline.Tests/**" />
     <EmbeddedResource Remove="dagangOnline.Tests/**" />
     <None Remove="dagangOnline.Tests/**" />
+    <Compile Remove="dagangOnline.Mobile/**/*.cs" />
+    <Content Remove="dagangOnline.Mobile/**" />
+    <EmbeddedResource Remove="dagangOnline.Mobile/**" />
+    <None Remove="dagangOnline.Mobile/**" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:dagangOnline.Mobile.ViewModels"
+             x:Class="dagangOnline.Mobile.Views.OrdersPage"
+             Title="{Binding Title}">
+
+    <CollectionView ItemsSource="{Binding Orders}" Margin="12">
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Border Padding="14" Margin="0,6" BackgroundColor="White" Stroke="#E9ECEF" StrokeThickness="1" StrokeShape="RoundRectangle 10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{Binding OrderNumber}" FontSize="14" FontAttributes="Bold" TextColor="#212529"/>
+                            <Label Text="{Binding ProductName}" FontSize="12" TextColor="#6C757D"/>
+                            <Label Text="{Binding FormattedTotal}" FontSize="13" FontAttributes="Bold" TextColor="#0D6EFD"/>
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="#E8F4FD" Padding="8,4" StrokeShape="RoundRectangle 6" VerticalOptions="Center">
+                            <Label Text="{Binding Status}" FontSize="11" TextColor="#0D6EFD" FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+
+</ContentPage>

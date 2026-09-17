@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:dagangOnline.Mobile.ViewModels"
+             x:Class="dagangOnline.Mobile.Views.LoginPage"
+             Title="{Binding Title}">
+
+    <VerticalStackLayout Padding="24" Spacing="16" VerticalOptions="Center">
+        <Label Text="Masuk ke Akun Anda" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#212529"/>
+        <Label Text="Gunakan kredensial akun terdaftar dagangOnline" FontSize="13" TextColor="#6C757D" HorizontalOptions="Center"/>
+
+        <Entry Placeholder="Alamat Email" Text="{Binding Email, Mode=TwoWay}" Keyboard="Email" Margin="0,12,0,0"/>
+        <Entry Placeholder="Kata Sandi" Text="{Binding Password, Mode=TwoWay}" IsPassword="True"/>
+
+        <Label Text="{Binding ErrorMessage}" TextColor="#DC3545" FontSize="12" IsVisible="{Binding ErrorMessage, Converter={StaticResource NotNullConverter}}"/>
+
+        <Button Text="Masuk" Command="{Binding LoginCommand}" BackgroundColor="#0D6EFD" TextColor="White" CornerRadius="8" HeightRequest="46"/>
+    </VerticalStackLayout>
+
+</ContentPage>

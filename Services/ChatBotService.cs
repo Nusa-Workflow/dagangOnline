@@ -5,7 +5,7 @@ namespace dagangOnline.Services;
 
 public class ChatBotService
 {
-    public async Task<string> GetReplyAsync(ChatSession session, string message)
+    public async Task<string> GetReplyAsync(Conversation session, string message)
     {
         // Simple mock bot logic
         var lowerMessage = message.ToLowerInvariant();

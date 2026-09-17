@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using JavaScriptEngineSwitcher.V8;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +95,12 @@ builder.Services.AddSignalR();
 builder.Services.AddServerSideBlazor();
 
 // Setup WebOptimizer for SCSS compilation
+builder.Services.AddJsEngineSwitcher(options =>
+{
+    options.DefaultEngineName = V8JsEngine.EngineName;
+})
+.AddV8();
+
 builder.Services.AddWebOptimizer(pipeline =>
 {
     pipeline.CompileScssFiles(null, "scss/**/*.scss");
@@ -102,15 +110,30 @@ builder.Services.AddWebOptimizer(pipeline =>
 builder.Services.AddScoped<dagangOnline.Domain.Repositories.IProductRepository, dagangOnline.Infrastructure.Data.Repositories.ProductRepository>();
 builder.Services.AddScoped<dagangOnline.Domain.Repositories.IServiceRepository, dagangOnline.Infrastructure.Data.Repositories.ServiceRepository>();
 builder.Services.AddScoped<dagangOnline.Domain.Repositories.IPortfolioRepository, dagangOnline.Infrastructure.Data.Repositories.PortfolioRepository>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IConversationRepository, dagangOnline.Infrastructure.Data.Repositories.ConversationRepository>();
 builder.Services.AddScoped<dagangOnline.Application.Interfaces.ICatalogService, dagangOnline.Application.Services.CatalogService>();
 
 // Register AI Chat Service with HttpClient
 builder.Services.AddHttpClient<dagangOnline.Application.Interfaces.IAiChatService, dagangOnline.Application.Services.GroqAiChatService>();
 builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<ContactInquiryService>();
-
 builder.Services.AddScoped<AgentReviewService>();
-builder.Services.AddScoped<ChatBotService>();
+builder.Services.AddScoped<dagangOnline.Application.Services.GraphContextBuilder>();
+
+// RAG, Language, Grounding & Feedback services
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.ILanguageService, dagangOnline.Application.Services.Language.LanguageService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IIndonesiaContextLayer, dagangOnline.Application.Services.Knowledge.IndonesiaContextLayer>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IEmbeddingService, dagangOnline.Application.Services.RAG.EmbeddingService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IRerankerService, dagangOnline.Application.Services.RAG.RerankerService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IRetrievalService, dagangOnline.Application.Services.RAG.HybridRetrievalService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IGroundingService, dagangOnline.Application.Services.RAG.GroundingService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IGuardrailService, dagangOnline.Application.Services.RAG.GuardrailService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IRetrievalEvaluationService, dagangOnline.Application.Services.RAG.RetrievalEvaluationService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.ICacheService, dagangOnline.Application.Services.Cache.MemoryCacheService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IFeedbackService, dagangOnline.Application.Services.Feedback.FeedbackService>();
+
+builder.Services.AddScoped<AgentAssistService>();
 builder.Services.AddSingleton<ResourceAuthorizationService>();
 
 // Rate limiting

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:dagangOnline.Mobile.ViewModels"
+             x:Class="dagangOnline.Mobile.Views.ProductsPage"
+             Title="{Binding Title}">
+
+    <CollectionView ItemsSource="{Binding Products}" Margin="12">
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Border Padding="14" Margin="0,6" BackgroundColor="White" Stroke="#E9ECEF" StrokeThickness="1" StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="#212529"/>
+                        <Label Text="{Binding Summary}" FontSize="12" TextColor="#6C757D"/>
+                        <Label Text="{Binding FormattedPrice}" FontSize="14" FontAttributes="Bold" TextColor="#198754" Margin="0,4,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+
+</ContentPage>

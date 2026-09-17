@@ -137,7 +137,7 @@
         try
         {
             var response = await AiChatService.GetChatResponseAsync(message, contextData);
-            Messages.Add(new ChatMessage { IsUser = false, Content = response });
+            Messages.Add(new ChatMessage { IsUser = false, Content = response.SuggestedResponse });
         }
         catch (Exception)
         {

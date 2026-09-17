@@ -20,7 +20,7 @@ public class SearchController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<List<SearchResultItem>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search([FromQuery] string? q)
     {
-        var results = await _catalogService.Search.SearchAsync(q);
+        var results = await _catalogService.Search.SearchAsync(q ?? string.Empty);
         return Ok(ApiResponse<List<SearchResultItem>>.Ok(results.Items));
     }
 }

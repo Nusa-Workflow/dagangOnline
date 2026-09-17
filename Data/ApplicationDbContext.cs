@@ -24,8 +24,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<MitraProfile> MitraProfiles => Set<MitraProfile>();
     public DbSet<ReviewTask> ReviewTasks => Set<ReviewTask>();
     public DbSet<ModerationDecision> ModerationDecisions => Set<ModerationDecision>();
-    public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
-    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ConversationMessage> ConversationMessages => Set<ConversationMessage>();
+    public DbSet<KnowledgeDocument> KnowledgeDocuments => Set<KnowledgeDocument>();
+    public DbSet<KnowledgeChunk> KnowledgeChunks => Set<KnowledgeChunk>();
+    public DbSet<ConversationFeedback> ConversationFeedbacks => Set<ConversationFeedback>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -166,12 +169,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<ChatSession>(entity =>
+        builder.Entity<Conversation>(entity =>
         {
             entity.Property(x => x.Status).HasConversion<string>();
-            entity.HasOne(x => x.User)
+            entity.Property(x => x.Priority).HasConversion<string>();
+            entity.Property(x => x.Intent).HasConversion<string>();
+            entity.HasOne(x => x.Customer)
                 .WithMany()
-                .HasForeignKey(x => x.UserId)
+                .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(x => x.AssignedAgent)
                 .WithMany()
@@ -179,13 +184,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
-        builder.Entity<ChatMessage>(entity =>
+        builder.Entity<ConversationMessage>(entity =>
         {
             entity.Property(x => x.Content).IsRequired();
-            entity.Property(x => x.SenderRole).HasConversion<string>();
-            entity.HasOne(x => x.Session)
+            entity.Property(x => x.SenderType).HasConversion<string>();
+            entity.HasOne(x => x.Conversation)
                 .WithMany(s => s.Messages)
-                .HasForeignKey(x => x.ChatSessionId)
+                .HasForeignKey(x => x.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

@@ -7,7 +7,6 @@ using dagangOnline.Domain;
 using dagangOnline.Domain.Repositories;
 using dagangOnline.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace dagangOnline.Infrastructure.Data.Repositories;
 

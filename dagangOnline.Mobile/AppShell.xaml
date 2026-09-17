@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="dagangOnline.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:dagangOnline.Mobile.Views"
+    Title="dagangOnline">
+
+    <TabBar>
+        <Tab Title="Beranda">
+            <ShellContent Route="HomePage" ContentTemplate="{DataTemplate views:HomePage}" />
+        </Tab>
+        <Tab Title="Katalog">
+            <ShellContent Route="ProductsPage" ContentTemplate="{DataTemplate views:ProductsPage}" />
+        </Tab>
+        <Tab Title="Bantuan AI">
+            <ShellContent Route="HumanAgentPage" ContentTemplate="{DataTemplate views:HumanAgentPage}" />
+        </Tab>
+        <Tab Title="Pesanan">
+            <ShellContent Route="OrdersPage" ContentTemplate="{DataTemplate views:OrdersPage}" />
+        </Tab>
+        <Tab Title="Akun">
+            <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate views:LoginPage}" />
+        </Tab>
+    </TabBar>
+
+</Shell>

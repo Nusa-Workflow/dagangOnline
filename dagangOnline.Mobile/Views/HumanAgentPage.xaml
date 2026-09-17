@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:dagangOnline.Mobile.ViewModels"
+             x:Class="dagangOnline.Mobile.Views.HumanAgentPage"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <!-- 1. Header & Escalation Status Banner -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4" Padding="12,8" BackgroundColor="#F8F9FA">
+            <HorizontalStackLayout Spacing="8">
+                <Label Text="Layanan Multilingual Aktif:" FontSize="12" TextColor="#6C757D" VerticalOptions="Center"/>
+                <Label Text="🇮🇩 ID" FontSize="11" TextColor="#0D6EFD" FontAttributes="Bold"/>
+                <Label Text="🇬🇧 EN" FontSize="11" TextColor="#0D6EFD" FontAttributes="Bold"/>
+                <Label Text="🌿 Jawa" FontSize="11" TextColor="#0D6EFD" FontAttributes="Bold"/>
+                <Label Text="🍃 Sunda" FontSize="11" TextColor="#0D6EFD" FontAttributes="Bold"/>
+            </HorizontalStackLayout>
+
+            <!-- Escalation Notice -->
+            <Border IsVisible="{Binding IsEscalated}" BackgroundColor="#FFF3CD" Stroke="#FFE69C" StrokeThickness="1" Padding="8" StrokeShape="RoundRectangle 6">
+                <Label Text="{Binding EscalationText}" FontSize="12" TextColor="#664D03" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- 2. Chat Message List -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Messages}" SelectionMode="None" Margin="12,4">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="0,6">
+                        <!-- Message Bubble Container -->
+                        <Border HorizontalOptions="{Binding IsUser, Converter={StaticResource UserAlignmentConverter}}"
+                                BackgroundColor="{Binding IsUser, Converter={StaticResource UserBgColorConverter}}"
+                                StrokeShape="RoundRectangle 12"
+                                Padding="12,10"
+                                MaximumWidthRequest="320">
+                            <VerticalStackLayout Spacing="4">
+                                <!-- Content -->
+                                <Label Text="{Binding Content}" FontSize="14" TextColor="{Binding IsUser, Converter={StaticResource UserTextColorConverter}}" />
+
+                                <!-- Metadata & Grounding Evidence for Agent Messages -->
+                                <VerticalStackLayout IsVisible="{Binding IsUser, Converter={StaticResource InvertBoolConverter}}" Spacing="4" Margin="0,4,0,0">
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="{Binding EvidenceSummary}" FontSize="10" TextColor="#6C757D" FontAttributes="Italic"/>
+                                    </HorizontalStackLayout>
+
+                                    <!-- Feedback Buttons (Like / Unlike) -->
+                                    <HorizontalStackLayout Spacing="10" Margin="0,4,0,0" IsVisible="{Binding CanFeedback}">
+                                        <Button Text="👍 Like" FontSize="11" HeightRequest="28" Padding="8,0"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HumanAgentViewModel}}, Path=LikeCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="👎 Unlike" FontSize="11" HeightRequest="28" Padding="8,0" BackgroundColor="#E9ECEF" TextColor="#495057"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HumanAgentViewModel}}, Path=OpenUnlikeModalCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- Feedback Status (When given) -->
+                                    <Label Text="Terima kasih atas penilaian Anda!" FontSize="10" TextColor="#198754"
+                                           IsVisible="{Binding FeedbackGiven, Converter={StaticResource NotNullConverter}}"/>
+                                </VerticalStackLayout>
+
+                                <!-- Timestamp -->
+                                <Label Text="{Binding TimestampFormatted}" FontSize="10" TextColor="#ADB5BD" HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Typing Indicator -->
+        <HorizontalStackLayout Grid.Row="1" VerticalOptions="End" Margin="20,0,0,10" IsVisible="{Binding IsTyping}" Spacing="6">
+            <ActivityIndicator IsRunning="True" HeightRequest="16" WidthRequest="16" Color="#0D6EFD"/>
+            <Label Text="Asisten AI sedang menyusun jawaban grounded..." FontSize="11" TextColor="#6C757D" FontAttributes="Italic"/>
+        </HorizontalStackLayout>
+
+        <!-- 3. Message Input Field & Send Button -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Padding="12" ColumnSpacing="8" BackgroundColor="#FFFFFF">
+            <Entry Grid.Column="0" Placeholder="Ketik pertanyaan (ID / EN / Jawa / Sunda)..."
+                   Text="{Binding CurrentInput, Mode=TwoWay}"
+                   ReturnCommand="{Binding SendCommand}" />
+            <Button Grid.Column="1" Text="Kirim" Command="{Binding SendCommand}" BackgroundColor="#0D6EFD" TextColor="White" CornerRadius="8"/>
+        </Grid>
+
+        <!-- 4. Feedback Reason Modal Overlay (Visible when ShowFeedbackModal = true) -->
+        <Grid Grid.RowSpan="3" IsVisible="{Binding ShowFeedbackModal}" BackgroundColor="#80000000" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+            <Border WidthRequest="320" BackgroundColor="White" StrokeShape="RoundRectangle 16" Padding="20" HorizontalOptions="Center" VerticalOptions="Center">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Beri Tahu Kami Masalahnya" FontSize="16" FontAttributes="Bold" TextColor="#212529" HorizontalOptions="Center"/>
+                    <Label Text="Pilih alasan ketidaksesuaian jawaban:" FontSize="12" TextColor="#6C757D" HorizontalOptions="Center"/>
+
+                    <!-- Reason 1 -->
+                    <Button Text="1. Jawaban tidak relevan" FontSize="12" BackgroundColor="#F8F9FA" TextColor="#212529"
+                            Command="{Binding SelectUnlikeReasonCommand}" CommandParameter="Jawaban tidak relevan"/>
+
+                    <!-- Reason 2 -->
+                    <Button Text="2. Informasi kurang tepat / kurang lengkap" FontSize="12" BackgroundColor="#F8F9FA" TextColor="#212529"
+                            Command="{Binding SelectUnlikeReasonCommand}" CommandParameter="Informasi kurang tepat / kurang lengkap"/>
+
+                    <!-- Reason 3 -->
+                    <Button Text="3. Bahasa atau penjelasan kurang sesuai" FontSize="12" BackgroundColor="#F8F9FA" TextColor="#212529"
+                            Command="{Binding SelectUnlikeReasonCommand}" CommandParameter="Bahasa atau penjelasan kurang sesuai"/>
+
+                    <!-- Reason 4: Lainnya -->
+                    <Button Text="4. Lainnya" FontSize="12" BackgroundColor="#F8F9FA" TextColor="#212529"
+                            Command="{Binding SelectUnlikeReasonCommand}" CommandParameter="Lainnya"/>
+
+                    <Button Text="Batal" FontSize="12" BackgroundColor="Transparent" TextColor="#DC3545" Command="{Binding CloseFeedbackModalCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+
+</ContentPage>
