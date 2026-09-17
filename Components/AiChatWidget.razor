@@ -4,93 +4,220 @@
 @using System.Text
 @using Microsoft.AspNetCore.Components.Web
 
-<div class="chat-widget @(IsOpen ? "open" : "")">
-    <div class="chat-widget-header bg-primary text-white p-3 rounded-top d-flex justify-content-between align-items-center cursor-pointer shadow" @onclick="ToggleChat">
-        <div class="d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-robot me-2" viewBox="0 0 16 16">
-                <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5ZM3 8.062C3 6.76 4.235 5.765 5.53 5.889a2.89 2.89 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.933.933 0 0 1-.765.935c-.845.147-2.34.346-4.235.346-1.895 0-3.39-.2-4.235-.346A.933.933 0 0 1 3 9.219V8.062Zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a24.767 24.767 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25.286 25.286 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.208.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135Z"/>
-                <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2V1.866ZM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5Z"/>
-            </svg>
-            <h6 class="mb-0 fw-bold">Asisten Belanja (Groq AI)</h6>
-        </div>
-        <button class="btn btn-sm btn-link text-white p-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16" style="transform: @(IsOpen ? "rotate(0deg)" : "rotate(180deg)"); transition: transform 0.3s;">
-                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-            </svg>
-        </button>
-    </div>
-
+<!-- Floating Agent Human / CS Bot Circle Button & Drawer -->
+<div class="cs-bot-floating-container">
     @if (IsOpen)
     {
-        <div class="chat-widget-body bg-white border border-top-0 d-flex flex-column" style="height: 400px;">
-            <div class="chat-messages p-3 flex-grow-1 overflow-auto" id="chat-messages" style="display:flex; flex-direction:column; gap:10px;">
-                @foreach (var msg in Messages)
-                {
-                    <div class="chat-message @(msg.IsUser ? "align-self-end text-end" : "align-self-start text-start")" style="max-width: 85%;">
-                        <div class="d-inline-block rounded p-2 px-3 @(msg.IsUser ? "bg-primary text-white" : "bg-light text-dark border")" style="white-space: pre-wrap; text-align: left;">
-                            @msg.Content
+        <div class="cs-bot-drawer">
+            <!-- Header (Deep Green Anchor with Sage Accents) -->
+            <div class="p-3 text-white d-flex justify-content-between align-items-center" style="background: var(--primary-gradient); border-bottom: 2px solid var(--accent);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="position-relative">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.15); border: 1.5px solid var(--accent);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-headset" viewBox="0 0 16 16">
+                                <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5z"/>
+                            </svg>
                         </div>
+                        <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle"></span>
                     </div>
-                }
-                @if (IsTyping)
-                {
-                    <div class="chat-message align-self-start text-start" style="max-width: 85%;">
-                        <div class="d-inline-block rounded p-2 px-3 bg-light text-dark border">
-                            <span class="spinner-grow spinner-grow-sm text-secondary" role="status" aria-hidden="true"></span>
-                            <span class="spinner-grow spinner-grow-sm text-secondary mx-1" role="status" aria-hidden="true"></span>
-                            <span class="spinner-grow spinner-grow-sm text-secondary" role="status" aria-hidden="true"></span>
+                    <div>
+                        <div class="d-flex align-items-center gap-1">
+                            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">CS Bot & Copilot</h6>
+                            <span class="badge badge-sage" style="font-size: 0.65rem; padding: 2px 6px;">Live</span>
                         </div>
+                        <small class="text-white-50" style="font-size: 0.72rem;">Online • Siap membantu 24/7</small>
                     </div>
-                }
-            </div>
-            
-            <div class="chat-input p-2 border-top bg-light">
-                <form @onsubmit="SendMessageAsync" class="d-flex gap-2">
-                    <input type="text" class="form-control rounded-pill" placeholder="Tanya tentang produk..." @bind="UserInput" @bind:event="oninput" disabled="@IsTyping" />
-                    <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" disabled="@(string.IsNullOrWhiteSpace(UserInput) || IsTyping)" style="width: 40px; height: 40px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
-                            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                    <a href="/Agent/LiveChat" class="btn btn-sm btn-outline-light py-1 px-2 rounded-pill d-none d-sm-inline-flex align-items-center gap-1" style="font-size: 0.72rem; border-color: rgba(255,255,255,0.4);" title="Buka Portal Human Agent">
+                        <span>Human CS</span>
+                    </a>
+                    <button class="btn btn-sm btn-link text-white p-1" @onclick="ToggleChat" aria-label="Tutup Obrolan" style="opacity: 0.85;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
                         </svg>
                     </button>
-                </form>
+                </div>
             </div>
+
+            <!-- Mode Selector (AI Copilot vs Hubungi Human Agent) -->
+            <div class="d-flex p-2 gap-1 border-bottom" style="background: var(--surface-warm);">
+                <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "ai" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("ai")'>
+                    🤖 Tanya Asisten AI
+                </button>
+                <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "human" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("human")'>
+                    👤 Hubungi Human Agent
+                </button>
+            </div>
+
+            <!-- Chat Drawer Body -->
+            @if (CurrentTab == "ai")
+            {
+                <div class="chat-messages p-3 flex-grow-1 overflow-auto" id="cs-chat-messages" style="background-color: var(--background); display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Quick Question Chips -->
+                    <div class="p-2 rounded-3 mb-1" style="background: var(--surface); border: 1px dashed var(--accent-border);">
+                        <small class="fw-bold text-muted d-block mb-1" style="font-size: 0.72rem;">💡 Pertanyaan Cepat:</small>
+                        <div class="d-flex flex-wrap gap-1">
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana cara membeli produk di dagangOnline?")'>
+                                📦 Cara Belanja
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Apakah ada layanan COD dan bagaimana hitungan ongkir?")'>
+                                🚚 Ongkir & COD
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana cara mendaftar jadi Mitra UMKM?")'>
+                                🤝 Jadi Mitra
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Carane tuku produk iki piye?")'>
+                                🗣️ Basa Jawa
+                            </button>
+                        </div>
+                    </div>
+
+                    @foreach (var msg in Messages)
+                    {
+                        <div class="chat-message @(msg.IsUser ? "align-self-end text-end" : "align-self-start text-start")" style="max-width: 88%;">
+                            <div class="d-inline-block rounded-3 p-2 px-3 shadow-sm @(msg.IsUser ? "text-white" : "text-dark")"
+                                 style="background: @(msg.IsUser ? "var(--primary)" : "var(--surface)"); border: @(msg.IsUser ? "none" : "1px solid var(--border)"); white-space: pre-wrap; font-size: 0.85rem; line-height: 1.45;">
+                                @msg.Content
+                            </div>
+
+                            @if (!msg.IsUser)
+                            {
+                                <div class="d-flex align-items-center gap-2 mt-1 px-1">
+                                    <span class="badge badge-sage" style="font-size: 0.62rem;">Grounded Qwen</span>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-sm btn-link p-0 text-muted" title="Jawaban Membantu" @onclick='() => GiveFeedback(msg, true)' style="font-size: 0.75rem;">
+                                            👍
+                                        </button>
+                                        <button class="btn btn-sm btn-link p-0 text-muted ms-2" title="Kurang Membantu" @onclick='() => GiveFeedback(msg, false)' style="font-size: 0.75rem;">
+                                            👎
+                                        </button>
+                                    </div>
+                                    @if (msg.ShowFeedbackReason)
+                                    {
+                                        <div class="mt-1 p-2 rounded bg-white border small text-start shadow-sm" style="font-size: 0.72rem;">
+                                            <span class="fw-bold d-block mb-1 text-muted">Bantu perbaiki jawaban:</span>
+                                            <div class="d-flex flex-column gap-1">
+                                                <button class="btn btn-outline-secondary btn-sm py-0 px-1 text-start" style="font-size: 0.68rem;" @onclick='() => SelectReason(msg, "Jawaban tidak relevan")'>• Jawaban tidak relevan</button>
+                                                <button class="btn btn-outline-secondary btn-sm py-0 px-1 text-start" style="font-size: 0.68rem;" @onclick='() => SelectReason(msg, "Informasi kurang tepat / kurang lengkap")'>• Informasi kurang tepat / lengkap</button>
+                                                <button class="btn btn-outline-secondary btn-sm py-0 px-1 text-start" style="font-size: 0.68rem;" @onclick='() => SelectReason(msg, "Bahasa atau penjelasan kurang sesuai")'>• Bahasa kurang sesuai</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (IsTyping)
+                    {
+                        <div class="chat-message align-self-start text-start" style="max-width: 85%;">
+                            <div class="d-inline-block rounded-3 p-2 px-3 shadow-sm" style="background: var(--surface); border: 1px solid var(--border);">
+                                <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
+                                <span class="spinner-grow spinner-grow-sm mx-1" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
+                                <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
+                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Qwen sedang berpikir...</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Input Footer -->
+                <div class="chat-input p-2 border-top" style="background: var(--surface-warm);">
+                    <form @onsubmit="SendMessageAsync" class="d-flex gap-2 align-items-center">
+                        <input type="text" class="form-control rounded-pill px-3" placeholder="Ketik pertanyaan (ID / EN / Jawa / Sunda)..."
+                               @bind="UserInput" @bind:event="oninput" disabled="@IsTyping" style="font-size: 0.85rem; border-color: var(--border);" />
+                        <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                disabled="@(string.IsNullOrWhiteSpace(UserInput) || IsTyping)" style="width: 38px; height: 38px; background: var(--primary); border: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <!-- Human Agent Contact Tab -->
+                <div class="p-3 flex-grow-1 overflow-auto d-flex flex-column justify-content-between" style="background-color: var(--background);">
+                    <div class="text-center py-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background: var(--accent-subtle); color: var(--primary); border: 2px solid var(--accent);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-heart" viewBox="0 0 16 16">
+                                <path d="M9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276Z"/>
+                            </svg>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Eskalasi ke Human Agent</h6>
+                        <p class="text-muted small px-3">
+                            Jika Anda membutuhkan bantuan khusus transaksi, kemitraan, atau penanganan komplain, tim Customer Service kami siap melayani.
+                        </p>
+
+                        <div class="list-group list-group-flush text-start rounded-3 border mb-3">
+                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
+                                <span class="badge badge-sage">WhatsApp</span>
+                                <small class="text-muted">+62 812-3456-7890 (08:00 - 20:00 WIB)</small>
+                            </div>
+                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
+                                <span class="badge badge-anchor">Live Chat</span>
+                                <small class="text-muted">Antrean Moderator Langsung</small>
+                            </div>
+                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
+                                <span class="badge bg-secondary">Email</span>
+                                <small class="text-muted">bantuan@dagangonline.id</small>
+                            </div>
+                        </div>
+
+                        <a href="/Agent/LiveChat" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                                <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                            Buka Ruang Live Chat Human
+                        </a>
+                    </div>
+                </div>
+            }
         </div>
     }
+
+    <!-- Circle Trigger Button like CS Bot (Bottom Right) -->
+    <div class="d-flex align-items-center gap-2">
+        @if (!IsOpen)
+        {
+            <div class="cs-bot-pill-hint" @onclick="ToggleChat">
+                <span>💬 Tanya CS & AI Bot</span>
+            </div>
+        }
+        <button class="cs-bot-circle-btn" @onclick="ToggleChat" aria-label="Buka Chat CS Bot">
+            <span class="cs-bot-status-indicator" title="Online"></span>
+            @if (IsOpen)
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l5.646-5.647a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-headset" viewBox="0 0 16 16">
+                    <path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5z"/>
+                </svg>
+            }
+        </button>
+    </div>
 </div>
 
 <style>
-    .chat-widget {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 350px;
-        z-index: 1050;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        border-radius: 0.5rem;
-        transition: transform 0.3s;
-    }
-    @@media (max-width: 576px) {
-        .chat-widget {
-            width: calc(100% - 40px);
-            bottom: 20px;
-            right: 20px;
-        }
-    }
-    .cursor-pointer {
-        cursor: pointer;
-    }
     .chat-messages::-webkit-scrollbar {
-        width: 6px;
+        width: 5px;
     }
     .chat-messages::-webkit-scrollbar-track {
-        background: #f1f1f1; 
+        background: #F4EFEA;
     }
     .chat-messages::-webkit-scrollbar-thumb {
-        background: #c1c1c1; 
+        background: #A3B9A8;
         border-radius: 10px;
     }
     .chat-messages::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8; 
+        background: #7A9E7E;
     }
 </style>
 
@@ -98,15 +225,52 @@
     public bool IsOpen { get; set; } = false;
     public string UserInput { get; set; } = "";
     public bool IsTyping { get; set; } = false;
+    public string CurrentTab { get; set; } = "ai";
 
-    public List<ChatMessage> Messages { get; set; } = new()
+    public List<ChatMessageItem> Messages { get; set; } = new()
     {
-        new ChatMessage { IsUser = false, Content = "Halo! Saya Asisten AI dagangOnline. Ada yang bisa saya bantu terkait produk atau layanan di sini?" }
+        new ChatMessageItem
+        {
+            IsUser = false,
+            Content = "Halo! Saya Asisten AI dagangOnline didukung Groq Qwen. Ada yang bisa saya bantu terkait produk, mitra, atau ingin terhubung dengan Human Agent CS?"
+        }
     };
 
     public void ToggleChat()
     {
         IsOpen = !IsOpen;
+    }
+
+    public void SetTab(string tab)
+    {
+        CurrentTab = tab;
+    }
+
+    public async Task SendQuickMessage(string query)
+    {
+        UserInput = query;
+        await SendMessageAsync();
+    }
+
+    public void GiveFeedback(ChatMessageItem msg, bool isLike)
+    {
+        if (!isLike)
+        {
+            msg.ShowFeedbackReason = !msg.ShowFeedbackReason;
+        }
+        else
+        {
+            msg.ShowFeedbackReason = false;
+            msg.Content += "\n\n*(Terima kasih atas jempol Anda! 👍)*";
+        }
+        StateHasChanged();
+    }
+
+    public void SelectReason(ChatMessageItem msg, string reason)
+    {
+        msg.ShowFeedbackReason = false;
+        msg.Content += $"\n\n*(Catatan Anda: {reason})*";
+        StateHasChanged();
     }
 
     public async Task SendMessageAsync()
@@ -115,13 +279,13 @@
 
         var message = UserInput.Trim();
         UserInput = "";
-        
-        Messages.Add(new ChatMessage { IsUser = true, Content = message });
+
+        Messages.Add(new ChatMessageItem { IsUser = true, Content = message });
         IsTyping = true;
         StateHasChanged();
 
         // RAG Context Generation
-        var products = await CatalogService.Products.GetPublishedProductsAsync(null, 1, 20); // Top 20 products
+        var products = await CatalogService.Products.GetPublishedProductsAsync(null, 1, 20);
         var contextBuilder = new StringBuilder();
         foreach (var p in products.Items)
         {
@@ -129,7 +293,7 @@
         }
 
         var contextData = contextBuilder.ToString();
-        if (string.IsNullOrWhiteSpace(contextData)) 
+        if (string.IsNullOrWhiteSpace(contextData))
         {
             contextData = "Tidak ada produk yang dipublikasikan saat ini.";
         }
@@ -137,11 +301,15 @@
         try
         {
             var response = await AiChatService.GetChatResponseAsync(message, contextData);
-            Messages.Add(new ChatMessage { IsUser = false, Content = response.SuggestedResponse });
+            Messages.Add(new ChatMessageItem { IsUser = false, Content = response.SuggestedResponse });
         }
         catch (Exception)
         {
-            Messages.Add(new ChatMessage { IsUser = false, Content = "Maaf, koneksi saya ke server AI sedang terganggu. Silakan coba lagi." });
+            Messages.Add(new ChatMessageItem
+            {
+                IsUser = false,
+                Content = "Maaf, koneksi AI sedang sibuk. Anda juga dapat memilih tab 'Hubungi Human Agent' untuk terhubung langsung ke Customer Service."
+            });
         }
         finally
         {
@@ -150,9 +318,10 @@
         }
     }
 
-    public class ChatMessage
+    public class ChatMessageItem
     {
         public bool IsUser { get; set; }
         public string Content { get; set; } = string.Empty;
+        public bool ShowFeedbackReason { get; set; } = false;
     }
 }
