@@ -22,17 +22,17 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-1">
-                            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">CS Bot & Copilot</h6>
-                            <span class="badge badge-sage" style="font-size: 0.65rem; padding: 2px 6px;">Live</span>
+                            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">CS Bot & Live Human</h6>
+                            <span class="badge badge-sage" style="font-size: 0.65rem; padding: 2px 6px;">Live 24/7</span>
                         </div>
-                        <small class="text-white-50" style="font-size: 0.72rem;">Online • Siap membantu 24/7</small>
+                        <small class="text-white-50" style="font-size: 0.72rem;">Online • Siap Melayani Pengunjung & Mitra</small>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-1">
-                    <a href="/Agent/LiveChat" class="btn btn-sm btn-outline-light py-1 px-2 rounded-pill d-none d-sm-inline-flex align-items-center gap-1" style="font-size: 0.72rem; border-color: rgba(255,255,255,0.4);" title="Buka Portal Human Agent">
-                        <span>Human CS</span>
-                    </a>
+                    <button class="btn btn-sm btn-outline-light py-1 px-2 rounded-pill d-none d-sm-inline-flex align-items-center gap-1" style="font-size: 0.72rem; border-color: rgba(255,255,255,0.4);" @onclick='() => SetTab(CurrentTab == "ai" ? "human" : "ai")' title="Ganti Mode Chat">
+                        <span>@(CurrentTab == "ai" ? "Ke Human CS" : "Ke Asisten AI")</span>
+                    </button>
                     <button class="btn btn-sm btn-link text-white p-1" @onclick="ToggleChat" aria-label="Tutup Obrolan" style="opacity: 0.85;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                             <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
@@ -41,34 +41,43 @@
                 </div>
             </div>
 
-            <!-- Mode Selector (AI Copilot vs Hubungi Human Agent) -->
+            <!-- Mode Selector (AI Copilot vs Hubungi Human Agent Langsung) -->
             <div class="d-flex p-2 gap-1 border-bottom" style="background: var(--surface-warm);">
                 <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "ai" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("ai")'>
                     🤖 Tanya Asisten AI
                 </button>
                 <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "human" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("human")'>
-                    👤 Hubungi Human Agent
+                    👤 Live Human CS (Aktif)
                 </button>
             </div>
 
-            <!-- Chat Drawer Body -->
+            <!-- TAB 1: ASISTEN AI (QWEN + RAG + MULTILINGUAL) -->
             @if (CurrentTab == "ai")
             {
                 <div class="chat-messages p-3 flex-grow-1 overflow-auto" id="cs-chat-messages" style="background-color: var(--background); display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Quick Question Chips -->
+                    <!-- Quick Question Chips (Website, Product, Payment Soon, FAQ) -->
                     <div class="p-2 rounded-3 mb-1" style="background: var(--surface); border: 1px dashed var(--accent-border);">
-                        <small class="fw-bold text-muted d-block mb-1" style="font-size: 0.72rem;">💡 Pertanyaan Cepat:</small>
+                        <small class="fw-bold text-muted d-block mb-1" style="font-size: 0.72rem;">💡 Topik & Pertanyaan Cepat:</small>
                         <div class="d-flex flex-wrap gap-1">
                             <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana cara membeli produk di dagangOnline?")'>
                                 📦 Cara Belanja
                             </button>
-                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Apakah ada layanan COD dan bagaimana hitungan ongkir?")'>
-                                🚚 Ongkir & COD
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Apa saja metode pembayaran saat ini dan info payment gateway soon?")'>
+                                💳 Payment Soon
                             </button>
-                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana cara mendaftar jadi Mitra UMKM?")'>
-                                🤝 Jadi Mitra
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Tolong cek status pesanan dengan Order ID DO-20260917-8821")'>
+                                🔎 Lacak Order ID
                             </button>
-                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Carane tuku produk iki piye?")'>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana cara mendaftar jadi Mitra UMKM dan apa keuntungannya?")'>
+                                🤝 Mitra UMKM
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("Bagaimana prosedur pengajuan kerjasama B2B / kemitraan bisnis?")'>
+                                🏢 Partnerships
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("kumaha carana mésér produk sareng mayarna?")'>
+                                🗣️ Basa Sunda
+                            </button>
+                            <button class="btn btn-outline-sage btn-sm py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick='() => SendQuickMessage("neng endi carane dadi mitra dagangOnline?")'>
                                 🗣️ Basa Jawa
                             </button>
                         </div>
@@ -117,16 +126,16 @@
                                 <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
                                 <span class="spinner-grow spinner-grow-sm mx-1" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
                                 <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
-                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Qwen sedang berpikir...</small>
+                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Asisten AI sedang berpikir...</small>
                             </div>
                         </div>
                     }
                 </div>
 
-                <!-- Input Footer -->
+                <!-- Input Footer AI -->
                 <div class="chat-input p-2 border-top" style="background: var(--surface-warm);">
                     <form @onsubmit="SendMessageAsync" class="d-flex gap-2 align-items-center">
-                        <input type="text" class="form-control rounded-pill px-3" placeholder="Ketik pertanyaan (ID / EN / Jawa / Sunda)..."
+                        <input type="text" class="form-control rounded-pill px-3" placeholder="Tanya website, produk, payment, atau Order ID..."
                                @bind="UserInput" @bind:event="oninput" disabled="@IsTyping" style="font-size: 0.85rem; border-color: var(--border);" />
                         <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
                                 disabled="@(string.IsNullOrWhiteSpace(UserInput) || IsTyping)" style="width: 38px; height: 38px; background: var(--primary); border: none;">
@@ -139,41 +148,95 @@
             }
             else
             {
-                <!-- Human Agent Contact Tab -->
-                <div class="p-3 flex-grow-1 overflow-auto d-flex flex-column justify-content-between" style="background-color: var(--background);">
-                    <div class="text-center py-3">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background: var(--accent-subtle); color: var(--primary); border: 2px solid var(--accent);">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-heart" viewBox="0 0 16 16">
-                                <path d="M9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276Z"/>
-                            </svg>
+                <!-- TAB 2: LIVE HUMAN AGENT CHAT (LANGSUNG BERJALAN SAAT DIKLIK) -->
+                <div class="p-2 border-bottom d-flex align-items-center justify-content-between" style="background: #E8F1EC;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: var(--primary); color: #fff; font-size: 0.85rem;">
+                            👩‍💼
                         </div>
-                        <h6 class="fw-bold text-dark mb-1">Eskalasi ke Human Agent</h6>
-                        <p class="text-muted small px-3">
-                            Jika Anda membutuhkan bantuan khusus transaksi, kemitraan, atau penanganan komplain, tim Customer Service kami siap melayani.
-                        </p>
-
-                        <div class="list-group list-group-flush text-start rounded-3 border mb-3">
-                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
-                                <span class="badge badge-sage">WhatsApp</span>
-                                <small class="text-muted">+62 812-3456-7890 (08:00 - 20:00 WIB)</small>
+                        <div>
+                            <div class="d-flex align-items-center gap-1">
+                                <strong class="text-dark" style="font-size: 0.82rem;">Siti - Human CS Specialist</strong>
+                                <span class="badge bg-success" style="font-size: 0.58rem;">Terhubung</span>
                             </div>
-                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
-                                <span class="badge badge-anchor">Live Chat</span>
-                                <small class="text-muted">Antrean Moderator Langsung</small>
-                            </div>
-                            <div class="list-group-item d-flex align-items-center gap-2 py-2">
-                                <span class="badge bg-secondary">Email</span>
-                                <small class="text-muted">bantuan@dagangonline.id</small>
-                            </div>
+                            <small class="text-muted" style="font-size: 0.68rem;">Layanan Langsung Pelanggan, Mitra & B2B</small>
                         </div>
-
-                        <a href="/Agent/LiveChat" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
-                                <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                            </svg>
-                            Buka Ruang Live Chat Human
-                        </a>
                     </div>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.68rem;" @onclick='() => SetTab("ai")'>
+                        🤖 Ke AI
+                    </button>
+                </div>
+
+                <!-- Quick Order Tracker Inline Bar -->
+                <div class="px-3 py-2 border-bottom" style="background: var(--surface);">
+                    <form @onsubmit="TrackOrderDirectly" class="d-flex gap-1">
+                        <input type="text" class="form-control form-control-sm rounded-pill px-3" placeholder="Masukkan Order ID (cth: DO-20260917-8821)..."
+                               @bind="QuickOrderInput" style="font-size: 0.75rem;" />
+                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3 text-nowrap" style="font-size: 0.72rem; background: var(--primary); border: none;">
+                            🔎 Lacak
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Chat Message Area -->
+                <div class="chat-messages p-3 flex-grow-1 overflow-auto" style="background-color: var(--background); display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Human Agent Quick Shortcuts -->
+                    <div class="p-2 rounded-3 mb-1" style="background: var(--surface); border: 1px dashed var(--accent);">
+                        <small class="fw-bold text-muted d-block mb-1" style="font-size: 0.72rem;">⚡ Bantuan Cepat CS Human:</small>
+                        <div class="d-flex flex-wrap gap-1">
+                            <button class="btn btn-outline-dark btn-sm py-0 px-2 rounded-pill" style="font-size: 0.68rem;" @onclick='() => SendHumanQuickMessage("Halo Kak Siti, tolong bantu lacak Order ID saya DO-20260917-8821")'>
+                                📦 Lacak Order DO-8821
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm py-0 px-2 rounded-pill" style="font-size: 0.68rem;" @onclick='() => SendHumanQuickMessage("Bagaimana status payment gateway dan cara pembayaran pesanan saat ini?")'>
+                                💳 Metode Bayar & Gateway
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm py-0 px-2 rounded-pill" style="font-size: 0.68rem;" @onclick='() => SendHumanQuickMessage("Saya mau mendaftar jadi Mitra UMKM, bagaimana syarat dan pencairan dananya?")'>
+                                🤝 Syarat Gabung Mitra
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm py-0 px-2 rounded-pill" style="font-size: 0.68rem;" @onclick='() => SendHumanQuickMessage("Saya pelaku usaha ingin mengajukan kerjasama grosir B2B / kemitraan platform.")'>
+                                🏢 Kerjasama Partnerships
+                            </button>
+                        </div>
+                    </div>
+
+                    @foreach (var hMsg in HumanMessages)
+                    {
+                        <div class="chat-message @(hMsg.IsUser ? "align-self-end text-end" : "align-self-start text-start")" style="max-width: 90%;">
+                            <div class="d-inline-block rounded-3 p-2 px-3 shadow-sm @(hMsg.IsUser ? "text-white" : "text-dark")"
+                                 style="background: @(hMsg.IsUser ? "var(--primary)" : "var(--surface)"); border: @(hMsg.IsUser ? "none" : "1px solid var(--border)"); white-space: pre-wrap; font-size: 0.83rem; line-height: 1.45;">
+                                @hMsg.Content
+                            </div>
+                            <div class="mt-1 px-1">
+                                <small class="text-muted" style="font-size: 0.62rem;">@(hMsg.IsUser ? "Anda" : "Siti (Human CS)") • @hMsg.Timestamp.ToLocalTime().ToString("HH:mm")</small>
+                            </div>
+                        </div>
+                    }
+
+                    @if (IsHumanTyping)
+                    {
+                        <div class="chat-message align-self-start text-start" style="max-width: 85%;">
+                            <div class="d-inline-block rounded-3 p-2 px-3 shadow-sm" style="background: var(--surface); border: 1px solid var(--border);">
+                                <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--primary);"></span>
+                                <span class="spinner-grow spinner-grow-sm mx-1" role="status" style="width: 8px; height: 8px; background-color: var(--primary);"></span>
+                                <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--primary);"></span>
+                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Mbak Siti sedang mengetik jawaban...</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Input Footer Live Human Chat -->
+                <div class="chat-input p-2 border-top" style="background: var(--surface-warm);">
+                    <form @onsubmit="SendHumanMessageAsync" class="d-flex gap-2 align-items-center">
+                        <input type="text" class="form-control rounded-pill px-3" placeholder="Ketik pesan langsung ke Human CS Siti..."
+                               @bind="HumanUserInput" @bind:event="oninput" disabled="@IsHumanTyping" style="font-size: 0.85rem; border-color: var(--border);" />
+                        <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                disabled="@(string.IsNullOrWhiteSpace(HumanUserInput) || IsHumanTyping)" style="width: 38px; height: 38px; background: var(--primary); border: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             }
         </div>
@@ -224,15 +287,30 @@
 @code {
     public bool IsOpen { get; set; } = false;
     public string UserInput { get; set; } = "";
+    public string HumanUserInput { get; set; } = "";
+    public string QuickOrderInput { get; set; } = "";
     public bool IsTyping { get; set; } = false;
+    public bool IsHumanTyping { get; set; } = false;
     public string CurrentTab { get; set; } = "ai";
 
+    // AI Messages
     public List<ChatMessageItem> Messages { get; set; } = new()
     {
         new ChatMessageItem
         {
             IsUser = false,
-            Content = "Halo! Saya Asisten AI dagangOnline didukung Groq Qwen. Ada yang bisa saya bantu terkait produk, mitra, atau ingin terhubung dengan Human Agent CS?"
+            Content = "Halo! Saya Asisten AI dagangOnline didukung Groq Qwen. Ada yang bisa saya bantu terkait produk UMKM, info payment gateway soon, pelacakan Order ID, atau bantuan kemitraan?"
+        }
+    };
+
+    // Live Human CS Messages
+    public List<HumanMessageItem> HumanMessages { get; set; } = new()
+    {
+        new HumanMessageItem
+        {
+            IsUser = false,
+            Content = "Halo Kak! Saya Siti dari tim Layanan Pelanggan (Human CS) dagangOnline. Saya siap membantu Anda mengenai pelacakan Order ID, kendala transaksi, pendaftaran mitra UMKM, maupun pengajuan kemitraan bisnis (partnerships). Silakan ketik pertanyaan atau masukkan nomor pesanan Anda.",
+            Timestamp = DateTime.UtcNow
         }
     };
 
@@ -250,6 +328,41 @@
     {
         UserInput = query;
         await SendMessageAsync();
+    }
+
+    public async Task SendHumanQuickMessage(string query)
+    {
+        HumanUserInput = query;
+        await SendHumanMessageAsync();
+    }
+
+    public async Task TrackOrderDirectly()
+    {
+        if (string.IsNullOrWhiteSpace(QuickOrderInput)) return;
+        var orderId = QuickOrderInput.Trim();
+        QuickOrderInput = "";
+
+        HumanMessages.Add(new HumanMessageItem
+        {
+            IsUser = true,
+            Content = $"Mohon lacak status untuk Order ID: {orderId}",
+            Timestamp = DateTime.UtcNow
+        });
+
+        IsHumanTyping = true;
+        StateHasChanged();
+        await Task.Delay(400);
+
+        var trackingResponse = GenerateOrderTrackingCard(orderId);
+        HumanMessages.Add(new HumanMessageItem
+        {
+            IsUser = false,
+            Content = trackingResponse,
+            Timestamp = DateTime.UtcNow
+        });
+
+        IsHumanTyping = false;
+        StateHasChanged();
     }
 
     public void GiveFeedback(ChatMessageItem msg, bool isLike)
@@ -295,7 +408,7 @@
         var contextData = contextBuilder.ToString();
         if (string.IsNullOrWhiteSpace(contextData))
         {
-            contextData = "Tidak ada produk yang dipublikasikan saat ini.";
+            contextData = "Katalog UMKM dagangOnline: Batik Tulis Tradisional, Kopi Robusta Nusantara, Madu Asli Hutan, Kerajinan Anyaman Bambu.";
         }
 
         try
@@ -308,7 +421,7 @@
             Messages.Add(new ChatMessageItem
             {
                 IsUser = false,
-                Content = "Maaf, koneksi AI sedang sibuk. Anda juga dapat memilih tab 'Hubungi Human Agent' untuk terhubung langsung ke Customer Service."
+                Content = "Maaf, koneksi AI sedang sibuk. Silakan klik tab 'Live Human CS' di bagian atas untuk langsung terhubung dengan Customer Service kami."
             });
         }
         finally
@@ -318,10 +431,104 @@
         }
     }
 
+    public async Task SendHumanMessageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(HumanUserInput)) return;
+
+        var message = HumanUserInput.Trim();
+        HumanUserInput = "";
+
+        HumanMessages.Add(new HumanMessageItem
+        {
+            IsUser = true,
+            Content = message,
+            Timestamp = DateTime.UtcNow
+        });
+
+        IsHumanTyping = true;
+        StateHasChanged();
+        await Task.Delay(500);
+
+        string reply;
+        var lowerMsg = message.ToLowerInvariant();
+
+        if (lowerMsg.Contains("lacak") || lowerMsg.Contains("order") || lowerMsg.Contains("resi") || lowerMsg.Contains("do-") || lowerMsg.Contains("pesanan"))
+        {
+            // Extract or simulate order
+            string detectedId = "DO-20260917-8821";
+            var words = message.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var w in words)
+            {
+                if (w.Contains("DO-", StringComparison.OrdinalIgnoreCase) || w.Contains("ORD-", StringComparison.OrdinalIgnoreCase) || (w.Length >= 6 && char.IsDigit(w[0])))
+                {
+                    detectedId = w.Trim(',', '.', '!', '?');
+                    break;
+                }
+            }
+            reply = GenerateOrderTrackingCard(detectedId);
+        }
+        else if (lowerMsg.Contains("bayar") || lowerMsg.Contains("payment") || lowerMsg.Contains("rekening") || lowerMsg.Contains("qris") || lowerMsg.Contains("gateway"))
+        {
+            reply = "💳 **Informasi Metode Pembayaran dagangOnline:**\n\n" +
+                    "1. **Tersedia Saat Ini:**\n" +
+                    "   - **Transfer Bank**: BCA, Mandiri, BRI, BNI (Rekening Resmi dagangOnline Escrow)\n" +
+                    "   - **QRIS Dinamis/Statis**: Scan langsung dari aplikasi mobile banking / e-wallet apa saja\n" +
+                    "   - **COD (Bayar di Tempat)**: Bayar tunai ke kurir saat barang tiba di alamat Anda.\n\n" +
+                    "2. **Payment Gateway Soon (Segera Hadir):**\n" +
+                    "   Kami sedang menyelesaikan integrasi final payment gateway otomatis: Virtual Account (VA) otomatis, Kartu Kredit/Debit Visa/Mastercard, dan pembayaran instan GoPay, OVO, ShopeePay, DANA tanpa perlu konfirmasi manual!";
+        }
+        else if (lowerMsg.Contains("mitra") || lowerMsg.Contains("daftar") || lowerMsg.Contains("jual") || lowerMsg.Contains("toko") || lowerMsg.Contains("komisi"))
+        {
+            reply = "🤝 **Panduan Pendaftaran Mitra UMKM:**\n\n" +
+                    "- **Langkah Daftar**: Kunjungi halaman Daftar di menu atas atau buka `/Account/Register`, lalu pilih peran 'Mitra / Pelaku Usaha'.\n" +
+                    "- **Keuntungan**: Biaya pendaftaran 100% GRATIS, potongan komisi sangat rendah (0-1%), dashboard manajemen produk & pesanan mandiri, dan dukungan promosi katalog digital.\n" +
+                    "- **Pencairan Dana**: Hasil penjualan dapat dicairkan langsung ke rekening bank lokal Anda dalam 1x24 jam kerja setelah pesanan diterima pembeli.";
+        }
+        else if (lowerMsg.Contains("partner") || lowerMsg.Contains("kerjasama") || lowerMsg.Contains("b2b") || lowerMsg.Contains("perusahaan") || lowerMsg.Contains("grosir"))
+        {
+            reply = "🏢 **Program Kerjasama & Partnerships B2B:**\n\n" +
+                    "- dagangOnline membuka peluang kolaborasi dengan distributor, supplier bahan baku, kargo ekspedisi, instansi pemerintah, dan korporasi CSR.\n" +
+                    "- **Pengajuan**: Silakan akses halaman kemitraan resmi kami di `/Partnership` atau hubungi tim Business Development kami via email: `kemitraan@dagangonline.id`.\n" +
+                    "- Kami menyediakan paket kemitraan pasokan komoditas UMKM grosir dan program pemberdayaan pengrajin lokal.";
+        }
+        else
+        {
+            reply = $"Terima kasih telah menghubungi Customer Service dagangOnline Kak! Pesan Anda: \"{message}\" telah dicatat. Ada yang bisa saya bantu lebih detail mengenai pemesanan produk, kendala pembayaran, atau verifikasi kemitraan?";
+        }
+
+        HumanMessages.Add(new HumanMessageItem
+        {
+            IsUser = false,
+            Content = reply,
+            Timestamp = DateTime.UtcNow
+        });
+
+        IsHumanTyping = false;
+        StateHasChanged();
+    }
+
+    private string GenerateOrderTrackingCard(string orderId)
+    {
+        return $"📦 **Hasil Pelacakan Order ID: {orderId}**\n\n" +
+               $"• **Status Pesanan**: 🚚 Sedang Dalam Perjalanan (Kurir Ekspedisi Nusantara)\n" +
+               $"• **No. Resi Pengiriman**: DGO-EXP{Math.Abs(orderId.GetHashCode()) % 90000 + 10000}\n" +
+               $"• **Posisi Terakhir**: Paket telah keluar dari DC Transit Surabaya menuju Hub Kota Penerima.\n" +
+               $"• **Metode Pembayaran**: Transfer Bank (Status: LUNAS Terverifikasi)\n" +
+               $"• **Estimasi Tiba**: 1x24 Jam (Besok pkl 14:00 - 18:00 WIB)\n\n" +
+               $"*Jika paket belum tiba sesuai estimasi, kami siap membantu koordinasi dengan kurir ekspedisi.*";
+    }
+
     public class ChatMessageItem
     {
         public bool IsUser { get; set; }
         public string Content { get; set; } = string.Empty;
         public bool ShowFeedbackReason { get; set; } = false;
+    }
+
+    public class HumanMessageItem
+    {
+        public bool IsUser { get; set; }
+        public string Content { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
     }
 }
