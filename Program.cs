@@ -195,6 +195,7 @@ using (var scope = app.Services.CreateScope())
     await SeedRolesAsync(roleManager);
     await SeedAdminUserAsync(userManager, roleManager);
     await SeedAgentUserAsync(userManager, roleManager);
+    await SeedGuestUserAsync(userManager, roleManager);
 }
 
 if (!app.Environment.IsDevelopment())
@@ -309,5 +310,31 @@ static async Task SeedAgentUserAsync(UserManager<ApplicationUser> userManager, R
     if (!await userManager.IsInRoleAsync(agent, RoleConstants.Agent))
     {
         await userManager.AddToRoleAsync(agent, RoleConstants.Agent);
+    }
+}
+
+static async Task SeedGuestUserAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+{
+    var email = "guest@dagangonline.local";
+    var guest = await userManager.FindByEmailAsync(email);
+
+    if (guest == null)
+    {
+        guest = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            DisplayName = "Tamu / Public Visitor",
+            EmailConfirmed = true,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var result = await userManager.CreateAsync(guest, "Guest@123");
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
     }
 }

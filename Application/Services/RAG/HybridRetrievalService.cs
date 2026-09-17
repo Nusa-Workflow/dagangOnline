@@ -81,11 +81,14 @@ public class HybridRetrievalService : IRetrievalService
             return new List<RetrievalResultDto>();
         }
 
-        var candidates = await _db.KnowledgeChunks
+        var chunks = await _db.KnowledgeChunks
             .Include(c => c.Document)
-            .Where(c => terms.Any(t => EF.Functions.ILike(c.Content, $"%{t}%")))
-            .Take(topK * 2)
+            .Take(100)
             .ToListAsync(cancellationToken);
+
+        var candidates = chunks
+            .Where(c => terms.Any(t => c.Content.Contains(t, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
 
         var results = candidates.Select(c =>
         {
@@ -112,13 +115,8 @@ public class HybridRetrievalService : IRetrievalService
 
     public async Task<List<RetrievalResultDto>> RetrieveHybridAsync(string query, float[] queryEmbedding, int topK = 5, CancellationToken cancellationToken = default)
     {
-        var denseTask = RetrieveDenseAsync(queryEmbedding, topK, cancellationToken);
-        var sparseTask = RetrieveSparseAsync(query, topK, cancellationToken);
-
-        await Task.WhenAll(denseTask, sparseTask);
-
-        var dense = await denseTask;
-        var sparse = await sparseTask;
+        var dense = await RetrieveDenseAsync(queryEmbedding, topK, cancellationToken);
+        var sparse = await RetrieveSparseAsync(query, topK, cancellationToken);
 
         return _rerankerService.Rerank(dense, sparse, topK);
     }

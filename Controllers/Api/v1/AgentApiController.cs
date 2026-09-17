@@ -10,6 +10,7 @@ using dagangOnline.Application.DTOs;
 using dagangOnline.Application.Services;
 using dagangOnline.Data;
 using dagangOnline.Domain.Chat;
+using dagangOnline.Models;
 
 namespace dagangOnline.Controllers.Api.v1;
 
@@ -42,13 +43,46 @@ public class AgentApiController : ControllerBase
             return BadRequest(ApiResponse<AiSuggestionDto>.Fail("Pesan tidak boleh kosong."));
         }
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "guest-user";
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            var guestUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == "guest@dagangonline.local", cancellationToken)
+                         ?? await _db.Users.FirstOrDefaultAsync(cancellationToken);
+            if (guestUser == null)
+            {
+                guestUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = "guest@dagangonline.local",
+                    NormalizedUserName = "GUEST@DAGANGONLINE.LOCAL",
+                    Email = "guest@dagangonline.local",
+                    NormalizedEmail = "GUEST@DAGANGONLINE.LOCAL",
+                    DisplayName = "Tamu / Guest Visitor",
+                    EmailConfirmed = true,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _db.Users.Add(guestUser);
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            userId = guestUser.Id;
+        }
 
         Conversation session;
         if (request.SessionId.HasValue && request.SessionId.Value != Guid.Empty)
         {
-            session = await _db.Conversations.FirstOrDefaultAsync(c => c.Id == request.SessionId.Value, cancellationToken)
-                      ?? new Conversation { Id = request.SessionId.Value, CustomerId = userId, Status = ConversationStatus.Open };
+            var existing = await _db.Conversations.FirstOrDefaultAsync(c => c.Id == request.SessionId.Value, cancellationToken);
+            if (existing != null)
+            {
+                session = existing;
+            }
+            else
+            {
+                session = new Conversation { Id = request.SessionId.Value, CustomerId = userId, Status = ConversationStatus.Open };
+                _db.Conversations.Add(session);
+                await _db.SaveChangesAsync(cancellationToken);
+            }
         }
         else
         {
