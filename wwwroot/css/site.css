@@ -105,6 +105,171 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ==========================================================================
+   GLOBAL DESIGN SYSTEM UNIFICATION & BOOTSTRAP OVERRIDES (ANTI-SLOP AUDIT)
+   Ensures 100% color, typography, button, input, and card consistency across ALL routes
+   ========================================================================== */
+
+/* Typography & Headings across all routes */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-primary);
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+p, span, label, small, li {
+  font-family: var(--font-primary);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* Core Color Utility Overrides */
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+}
+
+.bg-primary-subtle {
+  background-color: var(--primary-subtle) !important;
+  color: var(--primary) !important;
+}
+
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
+.text-secondary {
+  color: var(--secondary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--secondary) !important;
+}
+
+.bg-secondary-subtle {
+  background-color: var(--secondary-subtle) !important;
+  color: var(--secondary) !important;
+}
+
+/* Button Component Unification */
+.btn-primary {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(15, 76, 58, 0.18);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  color: var(--primary-contrast) !important;
+  box-shadow: 0 6px 20px rgba(15, 76, 58, 0.28);
+  transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background-color: transparent !important;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 76, 58, 0.15);
+}
+
+.btn-outline-secondary {
+  color: var(--muted-text) !important;
+  border-color: var(--border) !important;
+  background-color: var(--surface) !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--surface-warm) !important;
+  border-color: var(--secondary) !important;
+  color: var(--text) !important;
+}
+
+/* Card & Container Polish across all routes */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 76, 58, 0.05);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px -4px rgba(15, 76, 58, 0.1);
+}
+
+/* Form Controls & Inputs Polish */
+.form-control,
+.form-select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background-color: var(--surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: var(--focus-ring) !important;
+  outline: none;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Badges across all routes */
+.badge.bg-primary-subtle {
+  background-color: var(--primary-subtle) !important;
+  color: var(--primary) !important;
+  border: 1px solid rgba(15, 76, 58, 0.16);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge.bg-warning {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+  border: 1px solid #FCD34D;
+  font-weight: 600;
+}
+
 /* Fluid responsive table & typography refinements (Task 2.1) */
 .table-responsive {
   border-radius: 8px;

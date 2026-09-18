@@ -132,34 +132,34 @@
             <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
             <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active" style="background-color: #f8f9fa; min-height: 250px;">
+        <div class="carousel-inner" style="border: 1px solid var(--border);">
+            <div class="carousel-item active" style="background-color: var(--surface-warm); min-height: 240px;">
                 <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
                     <div>
-                        <span class="badge bg-danger mb-2">HOT EVENT</span>
-                        <h3 class="fw-bold">Webinar: Strategi Jualan Laris Manis 2026</h3>
-                        <p class="text-muted">Ikuti sesi gratis bersama ahli digital marketing khusus untuk UMKM lokal.</p>
-                        <a href="#" class="btn btn-primary rounded-pill">Daftar Sekarang</a>
+                        <span class="badge bg-danger mb-2 px-3 py-1 rounded-pill">HOT EVENT</span>
+                        <h3 class="fw-bold text-dark">Webinar: Strategi Jualan Laris Manis 2026</h3>
+                        <p class="text-muted mb-3">Ikuti sesi gratis bersama ahli digital marketing khusus untuk UMKM lokal.</p>
+                        <a asp-page="/Services" class="btn btn-primary rounded-pill px-4">Daftar Sekarang</a>
                     </div>
                 </div>
             </div>
-            <div class="carousel-item" style="background-color: #e9ecef; min-height: 250px;">
+            <div class="carousel-item" style="background-color: var(--accent-subtle); min-height: 240px;">
                 <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
                     <div>
-                        <span class="badge bg-success mb-2">PROMO MITRA</span>
-                        <h3 class="fw-bold">Diskon Ongkir Seluruh Nusantara</h3>
-                        <p class="text-muted">Nikmati potongan ongkir hingga 50% untuk setiap pengiriman minggu ini.</p>
-                        <a href="#" class="btn btn-success rounded-pill">Cek Syarat & Ketentuan</a>
+                        <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-1 rounded-pill">PROMO MITRA</span>
+                        <h3 class="fw-bold text-dark">Diskon Ongkir Seluruh Nusantara</h3>
+                        <p class="text-muted mb-3">Nikmati potongan ongkir hingga 50% untuk setiap pengiriman minggu ini.</p>
+                        <a asp-page="/Partnership" class="btn btn-primary rounded-pill px-4">Cek Syarat & Ketentuan</a>
                     </div>
                 </div>
             </div>
-            <div class="carousel-item" style="background-color: #e2e3e5; min-height: 250px;">
+            <div class="carousel-item" style="background-color: var(--surface); min-height: 240px;">
                 <div class="d-flex justify-content-center align-items-center h-100 p-5 text-center">
                     <div>
-                        <span class="badge bg-info text-dark mb-2">INFO BARU</span>
-                        <h3 class="fw-bold">Fitur "Bincang Bisnis" Kini Tersedia</h3>
-                        <p class="text-muted">Hubungi langsung mitra kami melalui WhatsApp & Email untuk kolaborasi.</p>
-                        <a asp-page="/Services" class="btn btn-outline-dark rounded-pill">Pelajari Lebih Lanjut</a>
+                        <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-1 rounded-pill">FITUR BARU</span>
+                        <h3 class="fw-bold text-dark">Fitur "Bincang Bisnis" Kini Tersedia</h3>
+                        <p class="text-muted mb-3">Hubungi langsung mitra kami melalui WhatsApp & Email untuk kolaborasi.</p>
+                        <a asp-page="/Contact" class="btn btn-outline-primary rounded-pill px-4">Pelajari Lebih Lanjut</a>
                     </div>
                 </div>
             </div>
