@@ -11,7 +11,7 @@ namespace dagangOnline.Components;
 public partial class HeroCarousel : ComponentBase, IDisposable
 {
     [Parameter]
-    public int AutoplayIntervalMs { get; set; } = 7500;
+    public int AutoplayIntervalMs { get; set; } = 6000;
 
     [Parameter]
     public bool EnableAutoplay { get; set; } = true;
@@ -49,115 +49,91 @@ public partial class HeroCarousel : ComponentBase, IDisposable
         {
             new HeroSlide
             {
-                Id = "sovereign-ai",
+                Id = "umkm-growth",
                 Index = 0,
-                Eyebrow = "SOVEREIGN AI ENGINE",
-                Title = "Sovereign AI Systems\nfor Every Decision",
-                Description = "Infrastruktur kecerdasan artifisial terdesentralisasi untuk membantu rantai pasok, intelijen harga pasar, dan pertumbuhan mandiri bagi UMKM Indonesia.",
+                Eyebrow = "🤝 Sahabat Usaha Lokal",
+                Title = "Solusi Jualan Online Praktis untuk UMKM Indonesia",
+                Description = "Buka toko langsung aktif, kelola produk tanpa ribet, dan jangkau jutaan pembeli di seluruh Nusantara dengan biaya terjangkau dan ekosistem terpercaya.",
                 PrimaryAction = new HeroAction
                 {
-                    Text = "Jelajahi Ekosistem AI",
-                    Href = "/Services",
-                    AriaLabel = "Pelajari infrastruktur kecerdasan artifisial dagangOnline"
-                },
-                SecondaryAction = new HeroAction
-                {
-                    Text = "Konsultasi Sistem",
-                    Href = "/Contact",
-                    AriaLabel = "Hubungi tim spesialis untuk konsultasi teknologi"
-                },
-                VisualType = HeroVisualType.SovereignAi,
-                SystemStatus = "OPERATIONAL",
-                Metadata = new List<HeroMetadataItem>
-                {
-                    new() { Label = "SYSTEM", Value = "OPERATIONAL", Status = "active" },
-                    new() { Label = "NETWORK", Value = "ACTIVE", Status = "live" },
-                    new() { Label = "AI LAYER", Value = "ONLINE", Status = "active" }
-                }
-            },
-            new HeroSlide
-            {
-                Id = "market-intelligence",
-                Index = 1,
-                Eyebrow = "MARKET INTELLIGENCE",
-                Title = "Turn Local Signals\ninto Market Intelligence",
-                Description = "Gabungkan sinyal transaksi, permintaan, harga, dan aktivitas pasar menjadi insight yang dapat digunakan UMKM secara real-time.",
-                PrimaryAction = new HeroAction
-                {
-                    Text = "Pantau Sinyal Pasar",
-                    Href = "/Portfolio",
-                    AriaLabel = "Buka data pergerakan komoditas dan aktivitas pasar"
-                },
-                SecondaryAction = new HeroAction
-                {
-                    Text = "Katalog Komoditas",
-                    Href = "/Services",
-                    AriaLabel = "Lihat katalog pasokan produk UMKM nusantara"
-                },
-                VisualType = HeroVisualType.MarketIntelligence,
-                SystemStatus = "LIVE STREAM",
-                Metadata = new List<HeroMetadataItem>
-                {
-                    new() { Label = "MARKET", Value = "LIVE", Status = "live" },
-                    new() { Label = "SIGNALS", Value = "ACTIVE", Status = "active" },
-                    new() { Label = "DATA STREAM", Value = "ONLINE", Status = "active" }
-                }
-            },
-            new HeroSlide
-            {
-                Id = "umkm-operations",
-                Index = 2,
-                Eyebrow = "UMKM OPERATIONS",
-                Title = "One Operational Layer\nfor Every UMKM",
-                Description = "Satukan operasional, inventory, customer interaction, partnership, dan intelligence dalam satu platform berdaulat.",
-                PrimaryAction = new HeroAction
-                {
-                    Text = "Buka Panel Operasi",
+                    Text = "Buka Toko Gratis",
                     Href = "/Account/Register",
-                    AriaLabel = "Mulai pendaftaran akun toko atau mitra dagangOnline"
+                    AriaLabel = "Mulai pendaftaran toko UMKM gratis"
                 },
                 SecondaryAction = new HeroAction
                 {
-                    Text = "Daftar Mitra UMKM",
-                    Href = "/Partnership",
-                    AriaLabel = "Pelajari program kerjasama pelaku usaha dan mitra"
+                    Text = "Jelajahi Produk",
+                    Href = "/Products",
+                    AriaLabel = "Lihat katalog produk UMKM lokal"
                 },
-                VisualType = HeroVisualType.UmkmOperations,
-                SystemStatus = "SYNCED",
-                Metadata = new List<HeroMetadataItem>
-                {
-                    new() { Label = "ORDERS", Value = "ACTIVE", Status = "live" },
-                    new() { Label = "INVENTORY", Value = "SYNCED", Status = "active" },
-                    new() { Label = "PARTNERS", Value = "ONLINE", Status = "active" }
-                }
+                SystemStatus = "Gratis Daftar",
+                VisualType = HeroVisualType.UmkmOperations
             },
             new HeroSlide
             {
-                Id = "human-ai",
-                Index = 3,
-                Eyebrow = "AI + HUMAN SUPPORT",
-                Title = "AI When You Need It.\nHumans When It Matters.",
-                Description = "Pisahkan AI assistance dan human support dalam workflow yang jelas, aman, dan mudah digunakan untuk pendampingan wirausaha.",
+                Id = "nationwide-delivery",
+                Index = 1,
+                Eyebrow = "🚚 Diskon Ongkir & Ekspedisi Nusantara",
+                Title = "Jangkauan Pengiriman Cepat ke Seluruh Nusantara",
+                Description = "Nikmati kemudahan kirim produk kerajinan, pangan, dan komoditas lokal langsung ke pelanggan di berbagai kota dengan potongan ongkir hingga 50% dan pelacakan resi real-time.",
                 PrimaryAction = new HeroAction
                 {
-                    Text = "Buka CS Live & AI",
-                    Href = "javascript:document.querySelector('.cs-bot-circle-btn')?.click();",
-                    AriaLabel = "Buka drawer obrolan Asisten AI dan CS Human langsung"
+                    Text = "Cek Ekspedisi & Ongkir",
+                    Href = "/Partnership",
+                    AriaLabel = "Pelajari kemitraan ekspedisi dan pengiriman"
                 },
                 SecondaryAction = new HeroAction
                 {
-                    Text = "Alur Pendampingan",
-                    Href = "/About",
-                    AriaLabel = "Pelajari nilai pendampingan ramah dagangOnline"
+                    Text = "Lacak Kiriman Paket",
+                    Href = "javascript:document.querySelector('.cs-bot-circle-btn')?.click();",
+                    AriaLabel = "Lacak status kiriman paket Anda"
                 },
-                VisualType = HeroVisualType.HumanAiSupport,
-                SystemStatus = "READY",
-                Metadata = new List<HeroMetadataItem>
+                SystemStatus = "Kirim Tiap Hari",
+                VisualType = HeroVisualType.MarketIntelligence
+            },
+            new HeroSlide
+            {
+                Id = "safe-escrow",
+                Index = 2,
+                Eyebrow = "💳 Rekening Bersama Bebas Cemas",
+                Title = "Transaksi Aman & Pasti dengan Rekening Escrow",
+                Description = "Jual beli tenang tanpa takut ditipu. Pembeli transfer dengan aman, penjual mendapat kepastian pembayaran dan pencairan dana langsung ke rekening bank lokal dalam 1x24 jam kerja.",
+                PrimaryAction = new HeroAction
                 {
-                    new() { Label = "AI", Value = "ONLINE", Status = "active" },
-                    new() { Label = "HUMAN AGENT", Value = "AVAILABLE", Status = "live" },
-                    new() { Label = "ROUTING", Value = "ACTIVE", Status = "active" }
-                }
+                    Text = "Daftar Akun Mitra Gratis",
+                    Href = "/Account/Register",
+                    AriaLabel = "Mulai pendaftaran akun toko gratis"
+                },
+                SecondaryAction = new HeroAction
+                {
+                    Text = "Pelajari Sistem Escrow",
+                    Href = "/Services",
+                    AriaLabel = "Pelajari cara kerja rekening bersama terpercaya"
+                },
+                SystemStatus = "100% Terlindungi",
+                VisualType = HeroVisualType.SovereignAi
+            },
+            new HeroSlide
+            {
+                Id = "friendly-support",
+                Index = 3,
+                Eyebrow = "💬 Pendampingan Ramah 24 Jam",
+                Title = "Didampingi Asisten AI Cerdas & Tim CS Siaga",
+                Description = "Ada kendala jualan, ingin rekomendasi harga pasar, atau butuh bantuan pelacakan pesanan? Mbak Siti dari Customer Service dan Asisten AI siap membantu Anda dengan ramah setiap saat.",
+                PrimaryAction = new HeroAction
+                {
+                    Text = "Ngobrol dengan CS & AI",
+                    Href = "javascript:document.querySelector('.cs-bot-circle-btn')?.click();",
+                    AriaLabel = "Buka obrolan Customer Service dan Asisten AI"
+                },
+                SecondaryAction = new HeroAction
+                {
+                    Text = "Mengenal Kami",
+                    Href = "/About",
+                    AriaLabel = "Pelajari cerita tentang dagangOnline"
+                },
+                SystemStatus = "Siap Melayani",
+                VisualType = HeroVisualType.HumanAiSupport
             }
         };
     }

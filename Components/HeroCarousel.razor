@@ -1,11 +1,11 @@
 @using dagangOnline.Models
 @namespace dagangOnline.Components
 
-<section class="hero-ops-section" aria-label="Beranda Utama dagangOnline">
-    <div class="hero-ops-viewport" 
+<section class="umkm-hero-section" aria-label="Banner Pilihan dagangOnline">
+    <div class="umkm-carousel-wrapper" 
          role="region" 
          aria-roledescription="carousel" 
-         aria-label="Sistem Operasional AI dagangOnline" 
+         aria-label="Carousel Utama Informasi UMKM" 
          tabindex="0"
          @onkeydown="OnKeyDown"
          @ontouchstart="OnTouchStart"
@@ -13,396 +13,328 @@
          @onmouseenter="OnMouseEnter"
          @onmouseleave="OnMouseLeave">
 
-        <!-- Subtle Technical Grid & Ambient Scanning Lines -->
-        <div class="hero-tech-grid" aria-hidden="true"></div>
-        <div class="hero-scanline-fx" aria-hidden="true"></div>
-        <div class="hero-ambient-glow" aria-hidden="true"></div>
-
-        <!-- Top Operational Header Bar -->
-        <header class="hero-ops-header">
-            <div class="ops-header-brand">
-                <div class="ops-brand-symbol" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
-                        <line x1="12" y1="22" x2="12" y2="15.5"></line>
-                        <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
-                    </svg>
-                </div>
-                <div class="ops-brand-text">
-                    <span class="ops-title-main">dagangOnline</span>
-                    <span class="ops-title-sub">// OPERATIONAL OS</span>
-                </div>
-                <div class="ops-cluster-badge d-none d-md-inline-flex">
-                    <span class="status-pulse-dot" aria-hidden="true"></span>
-                    <span>JKT-ID // CLUSTER 01</span>
-                </div>
-            </div>
-
-            <div class="ops-header-actions">
-                <div class="ops-system-health d-none d-sm-inline-flex">
-                    <span class="font-tech-mono small text-white-50">LATENCY: <strong>14ms</strong></span>
-                    <span class="health-divider">|</span>
-                    <span class="font-tech-mono small text-emerald">STATUS: 99.98%</span>
-                </div>
-                <a href="/Account/Register" class="btn-ops-start">
-                    <span>Mulai Berjualan</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </a>
-            </div>
-        </header>
-
-        <!-- Main Hero Stage: Staggered Content & Interactive Visualization -->
-        <div class="hero-stage-container">
+        <!-- Horizontal Sliding Track ("ada geser-geser nya") -->
+        <div class="carousel-sliding-track" style="transform: translateX(-@(CurrentIndex * 100)%);">
             @for (int i = 0; i < Slides.Count; i++)
             {
                 var slide = Slides[i];
                 var isActive = (i == CurrentIndex);
-                var isPrev = (i == (CurrentIndex - 1 + Slides.Count) % Slides.Count);
+                var slideNum = i + 1;
 
-                <div class="hero-slide-panel @(isActive ? "active" : "") @(isPrev ? "prev" : "")"
-                     role="group"
-                     aria-roledescription="slide"
-                     aria-label="@($"Slide {i + 1} dari {Slides.Count}: {slide.Title.Replace("\n", " ")}")"
+                <div class="carousel-slide-item slide-theme-@(i)" 
+                     role="group" 
+                     aria-roledescription="slide" 
+                     aria-label="@($"Slide {slideNum} dari {Slides.Count}: {slide.Title}")"
                      aria-hidden="@(isActive ? "false" : "true")">
-
-                    <div class="hero-content-grid">
-                        <!-- LEFT COLUMN: Operational Narrative & Action -->
-                        <div class="hero-narrative-col">
-                            <div class="slide-eyebrow-wrap">
-                                <span class="eyebrow-dot" aria-hidden="true"></span>
-                                <span class="eyebrow-text font-tech-mono">@slide.Eyebrow</span>
-                                <span class="eyebrow-status-pill font-tech-mono">@slide.SystemStatus</span>
+                    
+                    <div class="slide-content-container">
+                        <!-- LEFT COLUMN: Informative Text & CTAs -->
+                        <div class="slide-text-col">
+                            <div class="slide-badge-row">
+                                <span class="slide-eyebrow-badge">@slide.Eyebrow</span>
+                                <span class="slide-status-chip">
+                                    <span class="status-live-dot" aria-hidden="true"></span>
+                                    @slide.SystemStatus
+                                </span>
                             </div>
 
-                            <h1 class="hero-main-title">
-                                @((MarkupString)slide.Title.Replace("\n", "<br class='d-none d-md-block' />"))
+                            <h1 class="slide-title">
+                                @((MarkupString)slide.Title.Replace("\n", "<br class='d-none d-lg-block' />"))
                             </h1>
 
-                            <p class="hero-description-text">
+                            <p class="slide-description">
                                 @slide.Description
                             </p>
 
                             <!-- CTAs -->
-                            <div class="hero-action-cluster">
+                            <div class="slide-buttons-cluster">
                                 <a href="@slide.PrimaryAction.Href" 
-                                   class="btn-hero-primary" 
+                                   class="btn-slide-primary" 
                                    aria-label="@slide.PrimaryAction.AriaLabel">
                                     <span>@slide.PrimaryAction.Text</span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
                                         <polyline points="12 5 19 12 12 19"></polyline>
                                     </svg>
                                 </a>
 
                                 <a href="@slide.SecondaryAction.Href" 
-                                   class="btn-hero-secondary" 
+                                   class="btn-slide-secondary" 
                                    aria-label="@slide.SecondaryAction.AriaLabel">
                                     <span>@slide.SecondaryAction.Text</span>
                                 </a>
                             </div>
 
-                            <!-- Slide Telemetry Chips -->
-                            <div class="hero-metadata-strip font-tech-mono" aria-label="Status Telemetri Slide">
-                                @foreach (var meta in slide.Metadata)
+                            <!-- Trust & Value Perks -->
+                            <div class="slide-perks-row">
+                                @if (i == 0)
                                 {
-                                    <div class="metadata-chip @meta.Status">
-                                        <span class="chip-label">@meta.Label:</span>
-                                        <span class="chip-value">@meta.Value</span>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">🏷️</span>
+                                        <span>Daftar 100% Gratis</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">⚡</span>
+                                        <span>Toko Langsung Buka</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">🤝</span>
+                                        <span>Bina Mitra Lokal</span>
+                                    </div>
+                                }
+                                else if (i == 1)
+                                {
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">📦</span>
+                                        <span>Diskon Ongkir s/d 50%</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">🛵</span>
+                                        <span>Jemput Paket di Rumah</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">📍</span>
+                                        <span>Jangkauan Sabang-Merauke</span>
+                                    </div>
+                                }
+                                else if (i == 2)
+                                {
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">🛡️</span>
+                                        <span>Proteksi Rekening Escrow</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">💳</span>
+                                        <span>QRIS & Bank Terlengkap</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">⏱️</span>
+                                        <span>Cair Dalam 1x24 Jam</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">👩‍💼</span>
+                                        <span>Mbak Siti Siaga 24 Jam</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">🤖</span>
+                                        <span>Panduan AI Praktis</span>
+                                    </div>
+                                    <div class="perk-pill">
+                                        <span class="perk-icon">⭐</span>
+                                        <span>Kepuasan Pedagang 99%</span>
                                     </div>
                                 }
                             </div>
                         </div>
 
-                        <!-- RIGHT COLUMN: Integrated Operational Visualization -->
-                        <div class="hero-visual-col" aria-hidden="true">
-                            <div class="ops-canvas-wrapper">
-                                @if (slide.VisualType == HeroVisualType.SovereignAi)
-                                {
-                                    <!-- Visual 1: Sovereign AI Regional Mesh -->
-                                    <div class="vis-container vis-sovereign">
-                                        <div class="vis-hud-top">
-                                            <span>AI ROUTING ENGINE // REGIONAL MESH</span>
-                                            <span class="vis-tag">QWEN-RAG</span>
-                                        </div>
-                                        <svg class="vis-svg-stage" viewBox="0 0 540 360" fill="none">
-                                            <!-- Regional Grid Lines -->
-                                            <circle cx="270" cy="180" r="140" stroke="rgba(16, 185, 129, 0.12)" stroke-dasharray="4 4" />
-                                            <circle cx="270" cy="180" r="80" stroke="rgba(16, 185, 129, 0.18)" />
-                                            
-                                            <!-- Inter-Island Telemetry Vectors -->
-                                            <line x1="120" y1="140" x2="270" y2="180" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" stroke-dasharray="3 3" />
-                                            <line x1="270" y1="180" x2="420" y2="130" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" stroke-dasharray="3 3" />
-                                            <line x1="270" y1="180" x2="350" y2="280" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" stroke-dasharray="3 3" />
-                                            <line x1="120" y1="140" x2="200" y2="260" stroke="rgba(2, 132, 199, 0.35)" stroke-width="1.2" />
-                                            <line x1="200" y1="260" x2="350" y2="280" stroke="rgba(2, 132, 199, 0.35)" stroke-width="1.2" />
-
-                                            <!-- Core Nodes with Pulse Rings -->
-                                            <!-- Node Jakarta (Hub) -->
-                                            <g class="vis-node" transform="translate(270, 180)">
-                                                <circle r="22" fill="rgba(16, 185, 129, 0.15)" class="node-ring-pulse" />
-                                                <circle r="7" fill="#10B981" />
-                                                <text x="12" y="4" fill="#ffffff" font-size="11" font-family="monospace">HUB-JKT [MAIN]</text>
-                                            </g>
-
-                                            <!-- Node Surabaya -->
-                                            <g class="vis-node" transform="translate(350, 280)">
-                                                <circle r="5" fill="#38BDF8" />
-                                                <text x="10" y="4" fill="#94A3B8" font-size="10" font-family="monospace">NODE-SUB // 18ms</text>
-                                            </g>
-
-                                            <!-- Node Medan -->
-                                            <g class="vis-node" transform="translate(120, 140)">
-                                                <circle r="5" fill="#38BDF8" />
-                                                <text x="-90" y="4" fill="#94A3B8" font-size="10" font-family="monospace">NODE-KNO // 22ms</text>
-                                            </g>
-
-                                            <!-- Node Makassar -->
-                                            <g class="vis-node" transform="translate(420, 130)">
-                                                <circle r="5" fill="#38BDF8" />
-                                                <text x="10" y="4" fill="#94A3B8" font-size="10" font-family="monospace">NODE-UPG // 28ms</text>
-                                            </g>
-
-                                            <!-- Signal Packets Animating along vectors -->
-                                            <circle r="3" fill="#ffffff" class="signal-packet-1" />
-                                            <circle r="3" fill="#10B981" class="signal-packet-2" />
-                                        </svg>
-                                        <div class="vis-telemetry-legend">
-                                            <span>● 2,840 UMKM NODES ONLINE</span>
-                                            <span>▲ 99.4% DECISION CONFIDENCE</span>
+                        <!-- RIGHT COLUMN: Friendly Visual Display Cards -->
+                        <div class="slide-visual-col" aria-hidden="true">
+                            @if (i == 0)
+                            {
+                                <!-- Visual: Toko UMKM & Produk Unggulan -->
+                                <div class="friendly-card store-card">
+                                    <div class="card-top-tag">
+                                        <span class="tag-badge">🏪 Mitra Toko Binaan</span>
+                                        <span class="tag-verified">✔ Terverifikasi</span>
+                                    </div>
+                                    <div class="store-identity">
+                                        <div class="store-emoji-badge">🌾</div>
+                                        <div class="store-info">
+                                            <div class="store-name">Sentra Pangan Alami Nusantara</div>
+                                            <div class="store-rating">⭐ 4.9 • 2.800+ Pembeli Puas</div>
                                         </div>
                                     </div>
-                                }
-                                else if (slide.VisualType == HeroVisualType.MarketIntelligence)
-                                {
-                                    <!-- Visual 2: Live Market Signals & Price Movement -->
-                                    <div class="vis-container vis-market">
-                                        <div class="vis-hud-top">
-                                            <span>COMMODITY SIGNALS // REAL-TIME INGEST</span>
-                                            <span class="vis-tag text-emerald">LIVE FEED</span>
+                                    <div class="store-stats-duo">
+                                        <div class="stat-cell">
+                                            <span class="stat-number">+45%</span>
+                                            <span class="stat-desc">Kenaikan Omzet</span>
                                         </div>
-                                        <div class="market-chart-stage">
-                                            <svg class="vis-svg-stage" viewBox="0 0 540 280" fill="none">
-                                                <!-- Grid Background -->
-                                                <line x1="0" y1="70" x2="540" y2="70" stroke="rgba(255,255,255,0.05)" />
-                                                <line x1="0" y1="140" x2="540" y2="140" stroke="rgba(255,255,255,0.05)" />
-                                                <line x1="0" y1="210" x2="540" y2="210" stroke="rgba(255,255,255,0.05)" />
-
-                                                <!-- Trend Line 1: Kopi Robusta Nusantara -->
-                                                <path d="M 40,190 Q 120,130 180,150 T 320,90 T 480,60" fill="none" stroke="#10B981" stroke-width="2.5" class="chart-line-draw" />
-                                                <circle cx="480" cy="60" r="4" fill="#10B981" class="chart-point-pulse" />
-
-                                                <!-- Trend Line 2: Batik & Kerajinan -->
-                                                <path d="M 40,220 Q 150,210 240,160 T 380,140 T 480,110" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-dasharray="4 2" />
-                                                <circle cx="480" cy="110" r="4" fill="#38BDF8" />
-                                            </svg>
-
-                                            <!-- Live Signal Cards -->
-                                            <div class="market-signals-cards">
-                                                <div class="signal-card">
-                                                    <span class="signal-name">Kopi Robusta Lampung</span>
-                                                    <span class="signal-val text-emerald">Rp 48.500 / kg <span class="arrow-up">▲ 6.4%</span></span>
-                                                    <span class="signal-sub">Permintaan Ekspor Naik</span>
-                                                </div>
-                                                <div class="signal-card">
-                                                    <span class="signal-name">Batik Tulis Lasem</span>
-                                                    <span class="signal-val text-cyan">Index 142.8 <span class="arrow-up">▲ 2.1%</span></span>
-                                                    <span class="signal-sub">Volume Grosir Stabil</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="vis-telemetry-legend">
-                                            <span>VOL: 142.8 TON TRADED</span>
-                                            <span>UPDATE: TIAP 3 DETIK</span>
+                                        <div class="stat-cell">
+                                            <span class="stat-number">4.250</span>
+                                            <span class="stat-desc">Pesanan Selesai</span>
                                         </div>
                                     </div>
-                                }
-                                else if (slide.VisualType == HeroVisualType.UmkmOperations)
-                                {
-                                    <!-- Visual 3: Operational Layer & Order Activity -->
-                                    <div class="vis-container vis-ops">
-                                        <div class="vis-hud-top">
-                                            <span>OPERATIONAL CORE // INVENTORY & ESCROW</span>
-                                            <span class="vis-tag">MULTI-TENANT</span>
+                                    <div class="store-live-notify">
+                                        <span class="pulse-green"></span>
+                                        <span>Pesanan baru dikirim: Beras Organik & Madu Hutan</span>
+                                    </div>
+                                </div>
+                            }
+                            else if (i == 1)
+                            {
+                                <!-- Visual: Pengiriman Ekspedisi & Tracking -->
+                                <div class="friendly-card delivery-card">
+                                    <div class="card-top-tag">
+                                        <span class="tag-badge">🚚 Pengiriman Super Cepat</span>
+                                        <span class="tag-live">Sedang Berjalan</span>
+                                    </div>
+                                    <div class="delivery-track-box">
+                                        <div class="track-code-row">
+                                            <span class="track-code">Resi: DGO-EXP-772910</span>
+                                            <span class="track-est">Estimasi: Tiba Besok</span>
                                         </div>
-                                        <div class="ops-pipeline-flow">
-                                            <div class="pipeline-block">
-                                                <div class="block-header">
-                                                    <span class="block-num">01</span>
-                                                    <span class="block-title">PESANAN MASUK</span>
-                                                </div>
-                                                <div class="block-data font-tech-mono">
-                                                    <strong>1,248 / hari</strong>
-                                                    <small class="text-emerald">● Sinkron Otomatis</small>
-                                                </div>
+                                        <div class="delivery-steps">
+                                            <div class="step-point done">
+                                                <div class="dot-marker"></div>
+                                                <span>Yogyakarta (Toko)</span>
                                             </div>
-
-                                            <div class="pipeline-connector">
-                                                <span class="connector-arrow">➔</span>
+                                            <div class="step-connector done"></div>
+                                            <div class="step-point current">
+                                                <div class="dot-marker"></div>
+                                                <span>Jakarta Hub (Transit)</span>
                                             </div>
-
-                                            <div class="pipeline-block highlight">
-                                                <div class="block-header">
-                                                    <span class="block-num">02</span>
-                                                    <span class="block-title">ESCROW LOCK</span>
-                                                </div>
-                                                <div class="block-data font-tech-mono">
-                                                    <strong>100% TERLINDUNGI</strong>
-                                                    <small class="text-cyan">Zero-Risk Settlement</small>
-                                                </div>
+                                            <div class="step-connector"></div>
+                                            <div class="step-point">
+                                                <div class="dot-marker"></div>
+                                                <span>Bandung (Pelanggan)</span>
                                             </div>
-
-                                            <div class="pipeline-connector">
-                                                <span class="connector-arrow">➔</span>
-                                            </div>
-
-                                            <div class="pipeline-block">
-                                                <div class="block-header">
-                                                    <span class="block-num">03</span>
-                                                    <span class="block-title">LOGISTIK DISPATCH</span>
-                                                </div>
-                                                <div class="block-data font-tech-mono">
-                                                    <strong>Ekspedisi Terintegrasi</strong>
-                                                    <small class="text-white-50">Resi Real-time</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="vis-telemetry-legend">
-                                            <span>SINKRONISASI: 100% MULTI-GUDANG</span>
-                                            <span>ESCROW SETTLEMENT: 1X24 JAM</span>
                                         </div>
                                     </div>
-                                }
-                                else
-                                {
-                                    <!-- Visual 4: AI & Human CS Orchestration -->
-                                    <div class="vis-container vis-human">
-                                        <div class="vis-hud-top">
-                                            <span>COLLABORATIVE INTELLIGENCE // AI + HUMAN</span>
-                                            <span class="vis-tag text-emerald">LIVE AGENT READY</span>
-                                        </div>
-                                        <div class="support-orchestration-view">
-                                            <div class="orch-lane ai-lane">
-                                                <div class="lane-tag font-tech-mono">🤖 TIER 1: ASISTEN AI (QWEN)</div>
-                                                <div class="lane-bubble">
-                                                    <span class="bubble-sender">AI Copilot</span>
-                                                    <p>Menjawab FAQ katalog, verifikasi resi DO-8821 dalam 0.4 detik.</p>
-                                                </div>
-                                            </div>
-                                            <div class="orch-bridge font-tech-mono">
-                                                <span>ESKALASI CERDAS</span>
-                                                <div class="bridge-flow-line"></div>
-                                            </div>
-                                            <div class="orch-lane human-lane">
-                                                <div class="lane-tag font-tech-mono">👩‍💼 TIER 2: HUMAN SPECIALIST</div>
-                                                <div class="lane-bubble">
-                                                    <span class="bubble-sender">Siti (Customer Specialist)</span>
-                                                    <p>Pendampingan mitra UMKM, negosiasi kemitraan B2B & pengajuan modal.</p>
-                                                </div>
+                                    <div class="delivery-bottom-promo">
+                                        <span class="promo-icon">🎁</span>
+                                        <span>Kupon Potongan Ongkir 50% Aktif</span>
+                                    </div>
+                                </div>
+                            }
+                            else if (i == 2)
+                            {
+                                <!-- Visual: Rekening Bersama & Jaminan Escrow -->
+                                <div class="friendly-card escrow-card">
+                                    <div class="card-top-tag">
+                                        <span class="tag-badge">🛡️ Keamanan Berlapis</span>
+                                        <span class="tag-guarantee">Garansi 100%</span>
+                                    </div>
+                                    <div class="escrow-process-list">
+                                        <div class="escrow-item">
+                                            <div class="escrow-num">1</div>
+                                            <div class="escrow-text">
+                                                <strong>Pembeli Membayar</strong>
+                                                <span>Dana disimpan aman di rekening bersama</span>
                                             </div>
                                         </div>
-                                        <div class="vis-telemetry-legend">
-                                            <span>AVG AI RESPONSE: 0.38s</span>
-                                            <span>HUMAN CS CSAT: 98.6%</span>
+                                        <div class="escrow-item">
+                                            <div class="escrow-num">2</div>
+                                            <div class="escrow-text">
+                                                <strong>Penjual Mengirim</strong>
+                                                <span>Barang dipacking dan dikirim ke alamat</span>
+                                            </div>
+                                        </div>
+                                        <div class="escrow-item">
+                                            <div class="escrow-num">3</div>
+                                            <div class="escrow-text">
+                                                <strong>Barang Tiba & Dana Cair</strong>
+                                                <span>Pencairan otomatis ke rekening penjual</span>
+                                            </div>
                                         </div>
                                     </div>
-                                }
-                            </div>
+                                    <div class="payment-badges-row">
+                                        <span class="badge-pay">QRIS</span>
+                                        <span class="badge-pay">BCA</span>
+                                        <span class="badge-pay">BRI</span>
+                                        <span class="badge-pay">Mandiri</span>
+                                        <span class="badge-pay">BNI</span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <!-- Visual: Mbak Siti CS & Asisten AI -->
+                                <div class="friendly-card support-card">
+                                    <div class="card-top-tag">
+                                        <span class="tag-badge">💬 Tim Layanan Ramah</span>
+                                        <span class="tag-online">● Siaga 24 Jam</span>
+                                    </div>
+                                    <div class="support-profile">
+                                        <div class="support-icons">
+                                            <div class="avatar-box cs-face">👩‍💼</div>
+                                            <div class="avatar-box ai-face">🤖</div>
+                                        </div>
+                                        <div>
+                                            <div class="support-name">Mbak Siti & Asisten Toko AI</div>
+                                            <div class="support-stats">Respon kilat • Siap bantu jualan</div>
+                                        </div>
+                                    </div>
+                                    <div class="dialogue-preview">
+                                        <div class="msg-seller">
+                                            "Mbak Siti, bagaimana cara ikut bazar promo UMKM akhir pekan?"
+                                        </div>
+                                        <div class="msg-bot">
+                                            "Bisa banget Pak! Tinggal klik menu Kemitraan lalu pilih 'Daftar Promo'. Kami bantu dampingi sampai tokonya tayang ya! 😊"
+                                        </div>
+                                    </div>
+                                    <div class="support-footer-metric">
+                                        <span>⭐⭐⭐⭐⭐ Skor Kepuasan Mitra: 99.4%</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
             }
         </div>
 
-        <!-- Bottom Controls & System Status Rail -->
-        <footer class="hero-ops-footer">
-            <!-- Left: Technical Telemetry Status Rail -->
-            <div class="footer-telemetry-rail font-tech-mono" aria-label="Status Sistem Real-Time">
-                <div class="telemetry-pill">
-                    <span class="status-pulse-dot" aria-hidden="true"></span>
-                    <span>SYSTEM: <strong>OPERATIONAL</strong></span>
-                </div>
-                <div class="telemetry-pill d-none d-md-inline-flex">
-                    <span>GRID: <strong>-6.2088° S, 106.8456° E</strong></span>
-                </div>
-                <div class="telemetry-pill d-none d-lg-inline-flex">
-                    <span>NETWORK: <strong>ACTIVE (2,840 NODES)</strong></span>
-                </div>
-                <div class="telemetry-pill d-none d-xl-inline-flex">
-                    <span>REGION: <strong>INDONESIA</strong></span>
-                </div>
+        <!-- Previous Floating Button (Geser Kiri) -->
+        <button type="button" 
+                class="carousel-arrow-btn arrow-prev" 
+                aria-label="Geser ke slide sebelumnya" 
+                @onclick="PrevSlide">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <!-- Next Floating Button (Geser Kanan) -->
+        <button type="button" 
+                class="carousel-arrow-btn arrow-next" 
+                aria-label="Geser ke slide berikutnya" 
+                @onclick="NextSlide">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+
+        <!-- Bottom Controls: Indicators + Pause/Play -->
+        <div class="carousel-footer-bar">
+            <!-- Dot / Pill Indicators -->
+            <div class="carousel-pills-wrap" role="tablist" aria-label="Navigasi Banner">
+                @for (int i = 0; i < Slides.Count; i++)
+                {
+                    var idx = i;
+                    var isCurrent = (idx == CurrentIndex);
+                    <button type="button" 
+                            class="carousel-pill-btn @(isCurrent ? "active" : "")" 
+                            role="tab" 
+                            aria-selected="@(isCurrent ? "true" : "false")" 
+                            aria-label="@($"Buka slide {idx + 1}")" 
+                            @onclick="() => GoToSlide(idx)">
+                        <span class="pill-dot"></span>
+                    </button>
+                }
             </div>
 
-            <!-- Right: Real Carousel Controls & Progress Bars -->
-            <div class="footer-carousel-controls">
-                <nav class="carousel-indicators-track" role="tablist" aria-label="Pilihan Slide Carousel">
-                    @for (int i = 0; i < Slides.Count; i++)
-                    {
-                        var slideIndex = i;
-                        var isCurrent = (slideIndex == CurrentIndex);
-                        var slideNum = (slideIndex + 1).ToString("D2");
-
-                        <button type="button" 
-                                class="indicator-track-btn @(isCurrent ? "active" : "")" 
-                                role="tab" 
-                                aria-selected="@(isCurrent ? "true" : "false")" 
-                                aria-label="@($"Buka slide {slideNum}: {Slides[slideIndex].Eyebrow}")"
-                                @onclick="() => GoToSlide(slideIndex)">
-                            <span class="indicator-num font-tech-mono">@slideNum</span>
-                            <span class="indicator-bar">
-                                <span class="indicator-progress @(isCurrent ? "animating" : "") @(IsPaused || IsUserHovered ? "paused" : "")"
-                                      style="animation-duration: @(AutoplayIntervalMs)ms;"></span>
-                            </span>
-                        </button>
-                    }
-                </nav>
-
-                <!-- Navigation Arrow & Play/Pause Buttons -->
-                <div class="carousel-action-btns">
-                    <button type="button" 
-                            class="ctrl-icon-btn" 
-                            aria-label="Slide sebelumnya (Panah Kiri)" 
-                            @onclick="PrevSlide">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                    </button>
-
-                    <button type="button" 
-                            class="ctrl-icon-btn" 
-                            aria-label="@(IsPaused ? "Lanjutkan putar otomatis" : "Jeda putar otomatis")" 
-                            @onclick="TogglePlayPause">
-                        @if (IsPaused)
-                        {
-                            <!-- Play Icon -->
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                            </svg>
-                        }
-                        else
-                        {
-                            <!-- Pause Icon -->
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <rect x="6" y="4" width="4" height="16"></rect>
-                                <rect x="14" y="4" width="4" height="16"></rect>
-                            </svg>
-                        }
-                    </button>
-
-                    <button type="button" 
-                            class="ctrl-icon-btn" 
-                            aria-label="Slide berikutnya (Panah Kanan)" 
-                            @onclick="NextSlide">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </footer>
+            <!-- Play / Pause Toggle Button -->
+            <button type="button" 
+                    class="carousel-toggle-play-btn" 
+                    aria-label="@(IsPaused ? "Mulai putar otomatis" : "Jeda putar otomatis")" 
+                    @onclick="TogglePlayPause"
+                    title="@(IsPaused ? "Mulai putar otomatis" : "Jeda putar otomatis")">
+                @if (IsPaused)
+                {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                }
+                else
+                {
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                }
+            </button>
+        </div>
     </div>
 </section>
