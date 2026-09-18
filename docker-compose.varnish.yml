@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  dagangonline-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dagangonline_web
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+    expose:
+      - "5000"
+
+  varnish:
+    image: varnish:7.4-alpine
+    container_name: dagangonline_varnish
+    depends_on:
+      - dagangonline-app
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl:ro
+    ports:
+      - "80:80"
+    tmpfs:
+      - /var/lib/varnish:exec
+    environment:
+      - VARNISH_SIZE=256M
+    restart: unless-stopped

@@ -13,18 +13,67 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - dagangOnline</title>
-    <!-- OpenGraph Meta Tags -->
-    <meta property="og:title" content="@ViewData["Title"] - dagangOnline" />
-    <meta property="og:description" content="Platform gotong royong digital UMKM lokal" />
+    <!-- OpenGraph & Social Media Meta Tags -->
+    <meta property="og:site_name" content="dagangOnline" />
+    <meta property="og:title" content="@(ViewData["Title"] ?? "dagangOnline - Ekosistem Digital & Sahabat UMKM")" />
+    <meta property="og:description" content="@(ViewData["Description"] ?? "Platform gotong royong digital, pasar sovereign AI, dan katalog produk lokal UMKM Indonesia.")" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://dagangonline.local/" />
+    <meta property="og:url" content="https://dagangonline.local@Context.Request.Path" />
+    <meta property="og:image" content="https://dagangonline.local/images/og-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="dagangOnline - Solusi Cerdas Jualan & Kemitraan UMKM" />
+    <meta property="og:locale" content="id_ID" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@@dagangonline_id" />
+    <meta name="twitter:title" content="@(ViewData["Title"] ?? "dagangOnline")" />
+    <meta name="twitter:description" content="@(ViewData["Description"] ?? "Wadah gotong royong digital dan sovereign AI untuk pemberdayaan UMKM lokal.")" />
+    <meta name="twitter:image" content="https://dagangonline.local/images/og-preview.jpg" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "WebSite",
+      "name": "dagangOnline",
+      "url": "https://dagangonline.local",
+      "description": "Platform gotong royong digital dan sovereign AI untuk pemberdayaan UMKM lokal",
+      "potentialAction": {
+        "@@type": "SearchAction",
+        "target": "https://dagangonline.local/Search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- RSS Feed -->
-    <link rel="alternate" type="application/rss+xml" title="dagangOnline Blog & News" href="/rss.xml" />
-    <!-- Cloudflare Turnstile -->
+    <!-- Cloudflare CDN & Bot Management -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <meta name="cloudflare-bot-protection" content="enabled" />
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <!-- Performance: Request Metrics Real-User Performance Monitoring (RUM) -->
+    <script>
+        window.RM = window.RM || {};
+        window.RM.token = "RM-DAGANGONLINE-LOCAL";
+    </script>
+    <script src="https://cdn.requestmetrics.com/agent/current/rm.js" async></script>
+    
+    <!-- Google Fonts API (Plus Jakarta Sans, Syne for High-Tech Bold Titles, Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- MyFonts Webfont Support (Kit Loader Link / Placeholder) -->
+    <link rel="stylesheet" href="~/css/myfonts.css" asp-append-version="true" />
+
+    <!-- Mobile UI: Onsen UI Components -->
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+
     <meta name="theme-color" content="#0F4C3A" />
     <link rel="manifest" href="~/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="~/icons/icon-192.png" />
@@ -268,6 +317,28 @@
         </div>
     </div>
 
+    <!-- Mobile UI: Onsen UI Mobile Bottom Navigation Bar (Visible only on mobile d-lg-none) -->
+    <div class="ons-bottom-bar-wrapper d-lg-none position-fixed bottom-0 start-0 w-100 shadow-lg" style="z-index: 1040; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border-top: 1px solid rgba(0,0,0,0.08);">
+        <ons-bottom-toolbar class="d-flex justify-content-around align-items-center py-2 m-0 border-0" style="background: transparent;">
+            <a asp-page="/Index" class="tab-bar__item @IsActive("/Index") text-decoration-none text-center text-dark px-2">
+                <ons-icon icon="md-home" size="20px" class="d-block mb-1 text-primary"></ons-icon>
+                <span class="tab-bar__label" style="font-size: 0.68rem; font-weight: 600;">Beranda</span>
+            </a>
+            <a asp-page="/Services" class="tab-bar__item @IsActive("/Services") text-decoration-none text-center text-dark px-2">
+                <ons-icon icon="md-store" size="20px" class="d-block mb-1 text-primary"></ons-icon>
+                <span class="tab-bar__label" style="font-size: 0.68rem; font-weight: 600;">Katalog</span>
+            </a>
+            <a asp-page="/Partnership" class="tab-bar__item @IsActive("/Partnership") text-decoration-none text-center text-dark px-2">
+                <ons-icon icon="md-accounts" size="20px" class="d-block mb-1 text-primary"></ons-icon>
+                <span class="tab-bar__label" style="font-size: 0.68rem; font-weight: 600;">Kemitraan</span>
+            </a>
+            <a asp-page="/Account/Profile" class="tab-bar__item @IsActive("/Account/Profile") text-decoration-none text-center text-dark px-2">
+                <ons-icon icon="md-account-circle" size="20px" class="d-block mb-1 text-primary"></ons-icon>
+                <span class="tab-bar__label" style="font-size: 0.68rem; font-weight: 600;">Akun</span>
+            </a>
+        </ons-bottom-toolbar>
+    </div>
+
     <!-- Blazor AI Chat Widget (Groq Qwen + RAG) -->
     <component type="typeof(dagangOnline.Components.AiChatWidget)" render-mode="ServerPrerendered" />
 
@@ -298,6 +369,38 @@
         });
         braze.display.automaticallyShowNewInAppMessages();
         braze.openSession();
+    </script>
+
+    <!-- A/B Testing & Push Messaging: OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "ONESIGNAL-APP-ID-PLACEHOLDER",
+                safari_web_id: "web.onesignal.auto.placeholder",
+                notifyButton: {
+                    enable: false,
+                },
+                allowLocalhostAsSecureOrigin: true,
+            });
+        });
+    </script>
+
+    <!-- Customer Data Platform: Wootric In-App NPS & Customer Intelligence -->
+    <script type="text/javascript" src="https://cdn.wootric.com/wootric-sdk.js"></script>
+    <script type="text/javascript">
+        window.wootricSettings = {
+            email: '@(User.Identity?.Name ?? "pengunjung@dagangonline.local")',
+            created_at: 1773800000,
+            account_token: 'NPS-DAGANGONLINE-DEMO'
+        };
+        window.wootric_survey_immediately = false;
+        window.runWootricSurvey = function() {
+            if (window.wootric) {
+                window.wootric.run();
+            }
+        };
     </script>
 </body>
 </html>

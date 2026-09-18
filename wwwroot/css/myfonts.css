@@ -1,0 +1,44 @@
+/*
+ * MyFonts Webfont Integration Kit
+ * 
+ * Instructions:
+ * 1. Place your purchased webfont files (.woff2, .woff) into wwwroot/fonts/myfonts/
+ * 2. Configure font-family and source paths below
+ */
+
+@font-face {
+    font-family: 'PalantirModernTech';
+    src: local('Syne-Bold'),
+         url('/fonts/myfonts/PalantirModernTech-Bold.woff2') format('woff2'),
+         url('/fonts/myfonts/PalantirModernTech-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'PalantirModernTech';
+    src: local('Syne-ExtraBold'),
+         url('/fonts/myfonts/PalantirModernTech-Black.woff2') format('woff2'),
+         url('/fonts/myfonts/PalantirModernTech-Black.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* MyFonts Utility Classes */
+.font-myfonts-display {
+    font-family: 'PalantirModernTech', 'Syne', sans-serif !important;
+    letter-spacing: -0.03em;
+}
+
+.font-tech-header {
+    font-family: 'Syne', 'PalantirModernTech', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+}
+
+.font-tech-mono {
+    font-family: 'SF Mono', 'Roboto Mono', 'Fira Code', Consolas, monospace;
+    letter-spacing: 0.04em;
+}

@@ -397,31 +397,36 @@
         IsTyping = true;
         StateHasChanged();
 
-        // RAG Context Generation
-        var products = await CatalogService.Products.GetPublishedProductsAsync(null, 1, 20);
-        var contextBuilder = new StringBuilder();
-        foreach (var p in products.Items)
-        {
-            contextBuilder.AppendLine($"- {p.Name} (Rp {p.Price:N0}): {p.Description}");
-        }
-
-        var contextData = contextBuilder.ToString();
-        if (string.IsNullOrWhiteSpace(contextData))
-        {
-            contextData = "Katalog UMKM dagangOnline: Batik Tulis Tradisional, Kopi Robusta Nusantara, Madu Asli Hutan, Kerajinan Anyaman Bambu.";
-        }
-
         try
         {
+            // RAG Context Generation
+            var products = await CatalogService.Products.GetPublishedProductsAsync(null, 1, 20);
+            var contextBuilder = new StringBuilder();
+            
+            if (products != null && products.Items != null)
+            {
+                foreach (var p in products.Items)
+                {
+                    contextBuilder.AppendLine($"- {p.Name} (Rp {p.Price:N0}): {p.Description}");
+                }
+            }
+
+            var contextData = contextBuilder.ToString();
+            if (string.IsNullOrWhiteSpace(contextData))
+            {
+                contextData = "Katalog UMKM dagangOnline: Batik Tulis Tradisional, Kopi Robusta Nusantara, Madu Asli Hutan, Kerajinan Anyaman Bambu.";
+            }
+
             var response = await AiChatService.GetChatResponseAsync(message, contextData);
             Messages.Add(new ChatMessageItem { IsUser = false, Content = response.SuggestedResponse });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine($"[AiChat Error]: {ex.Message}");
             Messages.Add(new ChatMessageItem
             {
                 IsUser = false,
-                Content = "Maaf, koneksi AI sedang sibuk. Silakan klik tab 'Live Human CS' di bagian atas untuk langsung terhubung dengan Customer Service kami."
+                Content = "Maaf, koneksi server saat ini sedang bermasalah/sibuk. Silakan klik tab 'Live Human CS' di bagian atas untuk langsung terhubung dengan Customer Service kami."
             });
         }
         finally

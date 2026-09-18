@@ -209,13 +209,49 @@ app.UseMiddleware<dagangOnline.Infrastructure.Logging.ObservabilityMiddleware>()
 app.UseHttpsRedirection();
 app.UseSecurityHeaders();
 
+// Cloudflare CDN & Bot Management Headers Support
+app.Use(async (context, next) =>
+{
+    // Capture Cloudflare CDN True Client IP
+    if (context.Request.Headers.TryGetValue("CF-Connecting-IP", out var cfIp))
+    {
+        if (System.Net.IPAddress.TryParse(cfIp.ToString(), out var parsedIp))
+        {
+            context.Connection.RemoteIpAddress = parsedIp;
+        }
+    }
+
+    // Cloudflare Bot Management Inspection (0-1: Automated Bot, 30+: Likely Human)
+    if (context.Request.Headers.TryGetValue("cf-bot-score", out var botScoreVal) && int.TryParse(botScoreVal, out var botScore))
+    {
+        if (botScore < 5 && !context.Request.Path.StartsWithSegments("/robots.txt"))
+        {
+            context.Response.Headers.Append("X-Cloudflare-Bot", "Challenge-Active");
+        }
+    }
+
+    // Echo CF-Ray ID for observability and debugging
+    if (context.Request.Headers.TryGetValue("CF-RAY", out var rayId))
+    {
+        context.Response.Headers.Append("X-CF-Ray", rayId.ToString());
+    }
+
+    await next();
+});
+
 var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 contentTypeProvider.Mappings[".webmanifest"] = "application/manifest+json";
 
 app.UseWebOptimizer();
 app.UseStaticFiles(new StaticFileOptions
 {
-    ContentTypeProvider = contentTypeProvider
+    ContentTypeProvider = contentTypeProvider,
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static assets for Varnish & Browser
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
+        ctx.Context.Response.Headers.Append("Surrogate-Control", "max-age=604800");
+    }
 });
 
 app.UseRouting();

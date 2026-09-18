@@ -4,27 +4,121 @@
     ViewData["Title"] = "Teman Jualan & Sahabat Tumbuh UMKM";
 }
 
-<!-- Hero Section -->
-<section class="py-5">
-    <div class="hero-gradient p-5 shadow-lg position-relative overflow-hidden mb-5 rounded-4">
-        <div class="row align-items-center py-4">
-            <div class="col-lg-8">
-                <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
-                    🤝 Sahabat Usaha & Komunitas UMKM
-                </span>
-                <h1 class="display-4 fw-bold mb-3">Mudahnya Jualan Online & Kembangkan Usaha Bersama</h1>
-                <p class="lead mb-4 text-white-50">
-                    Wadah gotong royong digital yang ramah dan bersahabat untuk membantu warung, pelaku UMKM, dan perintis usaha kecil jualan lebih laris, mengelola toko lebih gampang, dan terhubung langsung dengan pelanggan.
+<!-- Palantir-Style Sovereign AI Video & Telemetry Hero Carousel -->
+<section class="mb-5">
+    <div class="palantir-hero-container position-relative" id="palantirHero">
+        <!-- Canvas & Video High-Tech Topographic Background -->
+        <div class="palantir-video-wrapper">
+            <canvas id="palantirTopoCanvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1;"></canvas>
+            <video class="palantir-video d-none" id="palantirBgVideo" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-topographic-map-contour-lines-animation-43093-large.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- High-Tech Matrix Grid & Scanline Overlays -->
+        <div class="palantir-grid-overlay"></div>
+        <div class="palantir-scanline"></div>
+
+        <!-- Palantir Top HUD Header Bar -->
+        <div class="palantir-hud-header">
+            <a asp-page="/Index" class="palantir-logo-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 3v18"></path>
+                    <path d="M3 12h18"></path>
+                </svg>
+                <span>PALANTIR <span style="color: #7A9E7E; font-size: 0.85rem; font-weight: 500;">/ DAGANGONLINE</span></span>
+            </a>
+
+            <div class="palantir-nav-right">
+                <a asp-page="/Account/Register" class="palantir-btn-start">Get Started</a>
+                <a asp-page="/Search" class="palantir-icon-btn" title="Search Intelligence & Catalog">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </a>
+                <button class="palantir-icon-btn d-none d-sm-flex" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-label="Menu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Carousel Slide Content Area -->
+        <div class="palantir-content-body">
+            <!-- Slide 1: Sovereign AI Decision Systems -->
+            <div class="palantir-slide-item active" id="palantirSlide0">
+                <div class="d-inline-flex align-items-center gap-2 px-2 py-1 mb-3 rounded-1 font-tech-mono" style="background: rgba(122, 158, 126, 0.15); border: 1px solid rgba(122, 158, 126, 0.35); color: #7A9E7E; font-size: 0.75rem;">
+                    <span class="palantir-pulse-dot"></span>
+                    <span>SOVEREIGN AI ENGINE • QWEN + GROQ RAG LAYER</span>
+                </div>
+                <h1 class="palantir-headline">Sovereign AI Systems<br class="d-none d-md-block" />for Every Decision</h1>
+                <p class="palantir-subhead">
+                    Infrastruktur kecerdasan artifisial terdesentralisasi untuk memandu rantai pasok pangan, intelijen penetapan harga pasar, dan akselerasi pertumbuhan mandiri bagi 65+ juta UMKM Indonesia.
                 </p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a asp-page="/Services" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow-sm">Lihat Bantuan Usaha</a>
-                    <a asp-page="/Contact" class="btn btn-outline-light btn-lg px-4 fw-semibold">Tanya & Konsultasi Santai</a>
+                <div class="palantir-cta-group">
+                    <a asp-page="/Services" class="palantir-btn-start">Lihat Bantuan Usaha</a>
+                    <a asp-page="/Contact" class="palantir-btn-ghost">Konsultasi Sistem AI</a>
                 </div>
             </div>
-            <div class="col-lg-4 d-none d-lg-block text-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" fill="currentColor" class="bi bi-shop text-white opacity-25" viewBox="0 0 16 16">
-                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h1a.5.5 0 0 1 0 1H0a.5.5 0 0 1 0-1h1V9a.5.5 0 0 1 .5-.5zm2 .5a.5.5 0 0 1 .5.5V13h8V9.5a.5.5 0 0 1 1 0V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a.5.5 0 0 1 .5-.5z"/>
-                </svg>
+
+            <!-- Slide 2: Decentralized Supply Chain Grid -->
+            <div class="palantir-slide-item d-none" id="palantirSlide1">
+                <div class="d-inline-flex align-items-center gap-2 px-2 py-1 mb-3 rounded-1 font-tech-mono" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #10B981; font-size: 0.75rem;">
+                    <span class="palantir-pulse-dot"></span>
+                    <span>LOGISTICS TELEMETRY & MULTI-TENANT ESCROW</span>
+                </div>
+                <h1 class="palantir-headline">Decentralized Logistics<br class="d-none d-md-block" />& Supply Chain Grid</h1>
+                <p class="palantir-subhead">
+                    Integrasi sensor rute pengiriman antarpulau, pelacakan armada kurir real-time, dan otomasi pesanan grosir B2B langsung dari sentra pengrajin nusantara tanpa perantara spekulatif.
+                </p>
+                <div class="palantir-cta-group">
+                    <a asp-page="/Partnership" class="palantir-btn-start">Buka Kemitraan B2B</a>
+                    <a asp-page="/Portfolio" class="palantir-btn-ghost">Pantau Jaringan Mitra</a>
+                </div>
+            </div>
+
+            <!-- Slide 3: Autonomous Escrow & Economic Empowerment -->
+            <div class="palantir-slide-item d-none" id="palantirSlide2">
+                <div class="d-inline-flex align-items-center gap-2 px-2 py-1 mb-3 rounded-1 font-tech-mono" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #F59E0B; font-size: 0.75rem;">
+                    <span class="palantir-pulse-dot"></span>
+                    <span>FINANCIAL SETTLEMENT & ZERO-COUNTERPARTY RISK</span>
+                </div>
+                <h1 class="palantir-headline">Autonomous Commerce<br class="d-none d-md-block" />with Total Security</h1>
+                <p class="palantir-subhead">
+                    Rekening bersama escrow terenkripsi dan integrasi gerbang pembayaran multi-kanal: QRIS dinamis, transfer instan 24/7, serta pencairan dana cepat 1x24 jam untuk para pelaku usaha kecil.
+                </p>
+                <div class="palantir-cta-group">
+                    <a asp-page="/Account/Register" class="palantir-btn-start">Daftar Akun Toko</a>
+                    <a asp-page="/Services" class="palantir-btn-ghost">Pelajari Ekosistem</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palantir Bottom HUD Telemetry Bar & Carousel Pills -->
+        <div class="palantir-hud-footer">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <div class="palantir-telemetry-item">
+                    <span class="palantir-pulse-dot"></span>
+                    <span>SYSTEM: OPERATIONAL</span>
+                </div>
+                <div class="palantir-telemetry-item d-none d-md-inline-flex">
+                    <span>GRID: LAT -6.2088 / LON 106.8456 [ID-JKT]</span>
+                </div>
+                <div class="palantir-telemetry-item d-none d-lg-inline-flex">
+                    <span>ACTIVE NODES: 2,840</span>
+                </div>
+            </div>
+
+            <!-- Carousel Slide Controllers -->
+            <div class="palantir-carousel-pills" id="palantirPillControls">
+                <div class="palantir-pill-indicator active" onclick="switchPalantirSlide(0)" title="Slide 1: Sovereign AI"></div>
+                <div class="palantir-pill-indicator" onclick="switchPalantirSlide(1)" title="Slide 2: Supply Chain"></div>
+                <div class="palantir-pill-indicator" onclick="switchPalantirSlide(2)" title="Slide 3: Autonomous Commerce"></div>
             </div>
         </div>
     </div>
@@ -259,3 +353,124 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+<script>
+    // Palantir Video Carousel Slide Switcher
+    let currentSlide = 0;
+    const totalSlides = 3;
+    let autoSlideInterval = null;
+
+    function switchPalantirSlide(index) {
+        for (let i = 0; i < totalSlides; i++) {
+            const slideEl = document.getElementById('palantirSlide' + i);
+            if (slideEl) {
+                if (i === index) {
+                    slideEl.classList.remove('d-none');
+                    slideEl.classList.add('active');
+                } else {
+                    slideEl.classList.add('d-none');
+                    slideEl.classList.remove('active');
+                }
+            }
+        }
+
+        const pills = document.querySelectorAll('#palantirPillControls .palantir-pill-indicator');
+        pills.forEach((p, idx) => {
+            if (idx === index) {
+                p.classList.add('active');
+            } else {
+                p.classList.remove('active');
+            }
+        });
+
+        currentSlide = index;
+    }
+
+    function startAutoSlide() {
+        if (autoSlideInterval) clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(() => {
+            const next = (currentSlide + 1) % totalSlides;
+            switchPalantirSlide(next);
+        }, 6500);
+    }
+
+    // Interactive Topographic Terrain & Radar Canvas (Palantir Visual Engine)
+    (function initPalantirTopoEngine() {
+        const canvas = document.getElementById('palantirTopoCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let time = 0;
+
+        function resize() {
+            width = canvas.width = canvas.parentElement.offsetWidth;
+            height = canvas.height = canvas.parentElement.offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Dark ambient background gradient
+            const bgGrad = ctx.createRadialGradient(width * 0.55, height * 0.45, 20, width * 0.5, height * 0.5, width * 0.7);
+            bgGrad.addColorStop(0, '#0c1618');
+            bgGrad.addColorStop(0.5, '#081014');
+            bgGrad.addColorStop(1, '#05070a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, width, height);
+
+            // 2. Animated Topographic Contour Waves (Palantir amber & teal lines)
+            const numLines = 14;
+            for (let i = 0; i < numLines; i++) {
+                ctx.beginPath();
+                const yBase = (height / numLines) * i;
+                const waveFreq = 0.003 + (i * 0.0003);
+                const waveAmp = 35 + (i * 4);
+                
+                // Colors mimicking the yellow/orange terrain river in Palantir's interface
+                if (i % 3 === 0) {
+                    ctx.strokeStyle = `rgba(245, 158, 11, ${0.18 + Math.sin(time + i) * 0.08})`; // Amber / Gold
+                    ctx.lineWidth = 1.8;
+                } else if (i % 3 === 1) {
+                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.12 + Math.cos(time + i) * 0.05})`; // Teal / Sage
+                    ctx.lineWidth = 1.2;
+                } else {
+                    ctx.strokeStyle = `rgba(59, 130, 246, 0.08)`; // Blue
+                    ctx.lineWidth = 1;
+                }
+
+                for (let x = 0; x < width; x += 16) {
+                    const noise = Math.sin(x * waveFreq + time + (i * 0.6)) * Math.cos(x * 0.0015 - time * 0.4);
+                    const y = yBase + noise * waveAmp;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            // 3. Central Telemetry River / Grid Hub (Gold glowing point-clouds)
+            const hubX = width * 0.68;
+            const hubY = height * 0.5;
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.45)';
+            for (let j = 0; j < 35; j++) {
+                const angle = (j / 35) * Math.PI * 2 + time * 0.2;
+                const radius = 60 + Math.sin(time * 2 + j) * 45;
+                const px = hubX + Math.cos(angle) * radius * 1.5;
+                const py = hubY + Math.sin(angle) * radius;
+                ctx.beginPath();
+                ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            time += 0.012;
+            requestAnimationFrame(render);
+        }
+
+        render();
+        startAutoSlide();
+    })();
+</script>
+}
+
