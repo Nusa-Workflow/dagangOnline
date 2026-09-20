@@ -33,4 +33,16 @@ public class AiSuggestionDto
 
     [JsonPropertyName("evidence_count")]
     public int EvidenceCount { get; set; } = 0;
+
+    [JsonPropertyName("spoken_response")]
+    public string SpokenResponse { get; set; } = string.Empty;
+
+    [JsonPropertyName("acoustic_tone")]
+    public string AcousticTone { get; set; } = "Calm";
+
+    [JsonPropertyName("turn_taking_latency_ms")]
+    public double TurnTakingLatencyMs { get; set; } = 240.0;
+
+    [JsonPropertyName("voice_audio_base64")]
+    public string? VoiceAudioBase64 { get; set; }
 }

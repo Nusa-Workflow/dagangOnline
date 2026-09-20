@@ -207,8 +207,220 @@
             </div>
         </div>
 
-        <!-- Right: Economic Intelligence & Graph Model Copilot -->
+        <!-- Right: Voice & Economic Intelligence Copilots -->
         <div class="col-lg-4 col-xl-4">
+            <!-- Nemotron VoiceChat-11B & Acoustic Telemetry Copilot Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header py-3 text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #102A1E 0%, #1B4D3E 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark fw-bold">NVIDIA Nemotron + Qwen</span>
+                        <h6 class="mb-0 fw-bold">Voice &amp; Acoustic Copilot</h6>
+                    </div>
+                    <span class="badge bg-success" id="nemotronStatusBadge">Stream Ready</span>
+                </div>
+                <div class="card-body p-3">
+                    <!-- Customer Acoustic Telemetry Status -->
+                    <div class="p-2 mb-3 rounded bg-light border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-bold text-muted">Acoustic Tone &amp; Latensi Bicara:</span>
+                            <span class="badge bg-primary" id="customerToneBadge">Netral / Tenang</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between small text-muted">
+                            <span>Turn-Taking Latency:</span>
+                            <strong class="text-success" id="turnTakingLatencyText">120 ms (Target &lt; 180ms)</strong>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between small text-muted mt-1">
+                            <span>Speech Prosody Cadence:</span>
+                            <span id="speechProsodyText">Percakapan Normal • Stabil</span>
+                        </div>
+                    </div>
+
+                    <!-- Dual Draft Suggestions (Qwen Reasoning vs Nemotron Spoken Script) -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold text-muted mb-0">Dual-Draft Copilot Suggestion:</label>
+                            <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" id="btnRefreshDualDraft">
+                                🔄 Refresh Draft
+                            </button>
+                        </div>
+
+                        <!-- Tab Draft Selector -->
+                        <ul class="nav nav-pills nav-fill mb-2" id="dualDraftTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active py-1 small" id="qwen-draft-tab" data-bs-toggle="pill" data-bs-target="#qwen-draft" type="button">
+                                    🧠 Qwen Reasoning
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link py-1 small" id="nemotron-draft-tab" data-bs-toggle="pill" data-bs-target="#nemotron-draft" type="button">
+                                    🎙️ Nemotron Voice
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content border rounded p-2 bg-white" style="min-height: 90px; max-height: 180px; overflow-y: auto;">
+                            <div class="tab-pane fade show active small" id="qwen-draft">
+                                <p class="mb-0 text-muted" id="qwenDraftText">
+                                    Halo Kak, pesanan Anda dengan nomor DO-20260917-8821 saat ini telah kami verifikasi dan berada dalam tahap pengiriman kurir ekspedisi. Ada informasi spesifik yang ingin kami bantu cek lebih lanjut?
+                                </p>
+                            </div>
+                            <div class="tab-pane fade small" id="nemotron-draft">
+                                <p class="mb-0 text-muted" id="nemotronDraftText">
+                                    Halo Kak! Pesanan Anda saat ini sudah kami verifikasi dan sedang dalam perjalanan kurir ekspedisi. Ada hal lain yang bisa kami bantu jelaskan?
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" id="btnApplyQwenDraft">
+                                📋 Gunakan Draft Qwen
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success flex-fill" id="btnApplyNemotronDraft">
+                                🗣️ Gunakan Naskah Nemotron
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success w-100 mt-1 d-flex align-items-center justify-content-center gap-1" id="btnSendVoiceNote">
+                                <span>🎙️ Kirim sebagai Voice Note (Nemotron TTS)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Voice Dictation for Agent -->
+                    <div class="d-flex gap-2 pt-2 border-top">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-1" id="btnAgentDictation">
+                            <span>🎤 Dikte Suara Agen (Nemotron ASR)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nemotron Strategic Long-Horizon (2026-2036) Live Voice Intelligence Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header py-3 text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark fw-bold">2026–2036 Horizon</span>
+                        <h6 class="mb-0 fw-bold">Nemotron Strategic Voice Agent</h6>
+                    </div>
+                    <span class="badge bg-info text-dark" id="horizonBadge">Live AI Voice</span>
+                </div>
+                <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                        Prediksi live real-time kebutuhan masa depan 5–10 tahun ke depan berbasis <strong>NVIDIA Nemotron</strong>, Synthetic Data ODE $x(t)=[G,O,W,Q]$, dan konteks IKN &amp; Nusantara.
+                    </p>
+
+                    <!-- Dataset Fine-Tuning Status & Train Button -->
+                    <div class="p-2 mb-3 rounded bg-white border shadow-sm d-flex justify-content-between align-items-center">
+                        <div style="font-size: 0.74rem;">
+                            <span class="d-block fw-bold text-success">🧠 Kalibrasi Model Dataset Terimpor:</span>
+                            <span class="text-muted" id="modelTrainingStatusText">Siap dilatih dari 10.000+ UMKM &amp; 100+ instruksi riset</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-success py-1 px-2 rounded-pill fw-semibold" id="btnTrainFromDataset" style="font-size: 0.72rem;">
+                            ⚡ Latih dari Dataset
+                        </button>
+                    </div>
+
+                    <!-- Selector Controls -->
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted mb-0">Sektor:</label>
+                            <select id="forecastSectorSelect" class="form-select form-select-sm">
+                                <option value="Retail" selected>Retail &amp; E-Commerce</option>
+                                <option value="Agri">Pertanian &amp; Pangan</option>
+                                <option value="Logistics">Logistik &amp; Transport</option>
+                                <option value="Tech">Teknologi &amp; AI</option>
+                                <option value="F&B">F&amp;B Nusantara</option>
+                                <option value="Energy">Energi &amp; Komoditas</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted mb-0">Horizon (Mulai 2026):</label>
+                            <select id="forecastHorizonSelect" class="form-select form-select-sm">
+                                <option value="5" selected>5 Tahun (2026–2031)</option>
+                                <option value="10">10 Tahun (2026–2036)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted mb-0">Bahasa Suara:</label>
+                            <select id="forecastLangSelect" class="form-select form-select-sm">
+                                <option value="id" selected>Bahasa Indonesia</option>
+                                <option value="jv">Basa Jawa</option>
+                                <option value="su">Basa Sunda</option>
+                                <option value="min">Baso Minangkabau</option>
+                                <option value="mad">Basa Madhurâ</option>
+                                <option value="ban">Basa Bali</option>
+                                <option value="bug">Basa Bugis</option>
+                                <option value="bjn">Bahasa Banjar (IKN Corridor)</option>
+                                <option value="btk">Bahasa / Hata Batak</option>
+                                <option value="en">English (Global)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted mb-0">Kawasan Indonesia:</label>
+                            <select id="forecastRegionSelect" class="form-select form-select-sm">
+                                <option value="Nasional" selected>Nasional RI</option>
+                                <option value="IKN_Kalimantan">IKN &amp; Kalimantan</option>
+                                <option value="Jawa_Bali">Jawa &amp; Bali</option>
+                                <option value="Sumatera">Sumatera</option>
+                                <option value="Indonesia_Timur">Kawasan Timur</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-sm btn-primary flex-fill fw-bold" id="btnRunHorizonForecast">
+                            ⚡ Analisis Prediksi 2026–2036
+                        </button>
+                    </div>
+
+                    <!-- Forecast Output Container -->
+                    <div id="horizonForecastResultBox" style="display:none;" class="p-2 rounded border bg-light">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-primary" id="forecastTitleBadge">Retail 2026–2031</span>
+                            <span class="small text-muted" id="forecastLatencyText">⚡ 45ms</span>
+                        </div>
+                        
+                        <!-- Spoken Script with Play Voice Button -->
+                        <div class="p-2 rounded bg-white border mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="small text-primary">🎙️ Naskah Briefing Nemotron:</strong>
+                                <button type="button" class="btn btn-sm btn-outline-success py-0 px-2 rounded-pill" id="btnPlayForecastAudio">
+                                    ▶️ Dengarkan Suara
+                                </button>
+                            </div>
+                            <p class="small text-muted mb-0 fst-italic" id="forecastSpokenScriptText"></p>
+                            <audio id="forecastAudioPlayer" style="display:none;"></audio>
+                        </div>
+
+                        <!-- Strategic Needs List -->
+                        <div class="mb-2">
+                            <strong class="small text-dark d-block mb-1">🎯 Kebutuhan Masa Depan (Strategic Needs):</strong>
+                            <ul class="small text-muted ps-3 mb-0" id="forecastNeedsList"></ul>
+                        </div>
+
+                        <!-- Trajectory Mini Table -->
+                        <div>
+                            <strong class="small text-dark d-block mb-1">📈 Lintasan Proyeksi Tahunan:</strong>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered text-center small mb-0" style="font-size: 0.72rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Tahun</th>
+                                            <th>Kebutuhan</th>
+                                            <th>AI Agent %</th>
+                                            <th>Logistik Hijau %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="forecastTrajectoryTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Economic Intelligence & Graph Model Copilot -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
@@ -544,6 +756,338 @@
         // Listen for real-time economic insights from hub
         chatConnection.on("ReceiveEconomicInsight", function(sessionId, report) {
             console.log("Menerima Economic Insight dari server:", report);
+        });
+
+        // ==========================================
+        // Nemotron Voice & Acoustic Copilot Handlers
+        // ==========================================
+        var currentSessionId = "@(Model.ActiveSessionId?.ToString() ?? "")";
+        var isDictating = false;
+
+        document.getElementById("btnApplyQwenDraft")?.addEventListener("click", function() {
+            var text = document.getElementById("qwenDraftText")?.innerText.trim();
+            if (text) {
+                var input = document.getElementById("chatMessageInput");
+                if (input) {
+                    input.value = text;
+                    input.focus();
+                }
+            }
+        });
+
+        document.getElementById("btnApplyNemotronDraft")?.addEventListener("click", function() {
+            var text = document.getElementById("nemotronDraftText")?.innerText.trim();
+            if (text) {
+                var input = document.getElementById("chatMessageInput");
+                if (input) {
+                    input.value = text;
+                    input.focus();
+                }
+            }
+        });
+
+        document.getElementById("btnSendVoiceNote")?.addEventListener("click", async function() {
+            if (!currentSessionId) {
+                alert("Pilih sesi percakapan terlebih dahulu.");
+                return;
+            }
+
+            var spokenText = document.getElementById("nemotronDraftText")?.innerText.trim();
+            var inputVal = document.getElementById("chatMessageInput")?.value.trim();
+            var textToSend = inputVal || spokenText || "Terima kasih telah menghubungi Customer Service dagangOnline.";
+
+            var btn = this;
+            btn.disabled = true;
+            btn.innerHTML = "<span>Membuat Audio Nemotron...</span>";
+
+            try {
+                var res = await fetch("/api/v1/voice/synthesize", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        text: textToSend,
+                        targetLanguage: "id",
+                        returnAudioStream: true
+                    })
+                });
+
+                var json = await res.json();
+                if (json.success && json.data) {
+                    // Send voice note via SignalR hub
+                    await chatConnection.invoke("SendSpokenVoiceNote", currentSessionId, textToSend, "id");
+                    if (document.getElementById("chatMessageInput")) {
+                        document.getElementById("chatMessageInput").value = "";
+                    }
+                }
+            } catch (err) {
+                console.error("Gagal mengirim Voice Note:", err);
+                alert("Gagal mensintesis voice note Nemotron.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "<span>🎙️ Kirim sebagai Voice Note (Nemotron TTS)</span>";
+            }
+        });
+
+        document.getElementById("btnAgentDictation")?.addEventListener("click", async function() {
+            var btn = this;
+            if (!isDictating) {
+                isDictating = true;
+                btn.classList.remove("btn-outline-secondary");
+                btn.classList.add("btn-danger");
+                btn.innerHTML = "<span class='spinner-grow spinner-grow-sm me-1'></span><span>Mendengarkan Dikte Suara...</span>";
+
+                // Simulated dictation stream after short delay
+                setTimeout(function() {
+                    var input = document.getElementById("chatMessageInput");
+                    if (input && isDictating) {
+                        input.value = (input.value ? input.value + " " : "") + "Halo Kak, status resi pesanan sudah dicek dan dalam perjalanan kurir hari ini.";
+                    }
+                    isDictating = false;
+                    btn.classList.remove("btn-danger");
+                    btn.classList.add("btn-outline-secondary");
+                    btn.innerHTML = "<span>🎤 Dikte Suara Agen (Nemotron ASR)</span>";
+                }, 1800);
+            } else {
+                isDictating = false;
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-outline-secondary");
+                btn.innerHTML = "<span>🎤 Dikte Suara Agen (Nemotron ASR)</span>";
+            }
+        });
+
+        document.getElementById("btnRefreshDualDraft")?.addEventListener("click", async function() {
+            var btn = this;
+            btn.disabled = true;
+            btn.innerText = "⏳ Loading...";
+
+            try {
+                var res = await fetch("/api/v1/voice/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sessionId: currentSessionId || null,
+                        textPrompt: "Pelanggan menanyakan panduan status pesanan dan metode pembayaran",
+                        returnAudio: true
+                    })
+                });
+
+                var json = await res.json();
+                if (json.success && json.data) {
+                    var data = json.data;
+                    document.getElementById("qwenDraftText").innerText = data.groundedTextResponse || "Draft Qwen diperbarui.";
+                    document.getElementById("nemotronDraftText").innerText = data.spokenResponse || data.groundedTextResponse;
+
+                    if (data.acousticTelemetry) {
+                        document.getElementById("customerToneBadge").innerText = data.acousticTelemetry.emotionTone;
+                        document.getElementById("turnTakingLatencyText").innerText = data.acousticTelemetry.turnTakingLatencyMs + " ms (Target < 180ms)";
+                    }
+                }
+            } catch (err) {
+                console.error("Gagal refresh draft:", err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🔄 Refresh Draft";
+            }
+        });
+
+        // Real-time SignalR Telemetry from Customer Voice
+        chatConnection.on("ReceiveAcousticTelemetry", function(sessionId, telemetry) {
+            if (telemetry) {
+                var toneBadge = document.getElementById("customerToneBadge");
+                if (toneBadge) {
+                    toneBadge.innerText = telemetry.emotionTone;
+                    if (telemetry.emotionTone.includes("Cemas") || telemetry.emotionTone.includes("Marah")) {
+                        toneBadge.className = "badge bg-danger";
+                    } else if (telemetry.emotionTone.includes("Gembira") || telemetry.emotionTone.includes("Bersahabat")) {
+                        toneBadge.className = "badge bg-success";
+                    } else {
+                        toneBadge.className = "badge bg-primary";
+                    }
+                }
+
+                var latEl = document.getElementById("turnTakingLatencyText");
+                if (latEl) {
+                    latEl.innerText = telemetry.turnTakingLatencyMs + " ms (Target < 180ms)";
+                }
+
+                var prosodyEl = document.getElementById("speechProsodyText");
+                if (prosodyEl) {
+                    prosodyEl.innerText = `Tempo: ${telemetry.speechRateWpm} WPM • Pitch Var: ${telemetry.pitchVariability.toFixed(2)}`;
+                }
+            }
+        });
+
+        // Real-time Collaborative Voice Turn update
+        chatConnection.on("ReceiveCollaborativeVoice", function(sessionId, collabResult) {
+            if (collabResult) {
+                if (document.getElementById("qwenDraftText")) {
+                    document.getElementById("qwenDraftText").innerText = collabResult.groundedTextResponse;
+                }
+                if (document.getElementById("nemotronDraftText")) {
+                    document.getElementById("nemotronDraftText").innerText = collabResult.spokenResponse || collabResult.groundedTextResponse;
+                }
+            }
+        });
+
+        // Real-time Voice Note received
+        chatConnection.on("ReceiveVoiceNote", function(sessionId, audioBase64, spokenScript, senderType) {
+            console.log(`Voice note diterima (${senderType}):`, spokenScript);
+        });
+
+        // Barge-in interruption event
+        chatConnection.on("BargeInInterruption", function(sessionId) {
+            console.log("Barge-in terdeteksi pada sesi:", sessionId);
+        });
+
+        // Nemotron Strategic 2026-2036 Long-Horizon Forecast Handler
+        var currentForecastAudioBase64 = null;
+
+        function renderForecastResult(forecast) {
+            if (!forecast) return;
+            var box = document.getElementById("horizonForecastResultBox");
+            if (box) box.style.display = "block";
+
+            var badge = document.getElementById("forecastTitleBadge");
+            if (badge) badge.innerText = `${forecast.sector} ${forecast.startYear}–${forecast.endYear} (${forecast.language.toUpperCase()})`;
+
+            var lat = document.getElementById("forecastLatencyText");
+            if (lat && forecast.telemetry) lat.innerText = `⚡ ${Math.round(forecast.telemetry.latencyMs)}ms`;
+
+            var scriptEl = document.getElementById("forecastSpokenScriptText");
+            if (scriptEl) scriptEl.innerText = `"${forecast.spokenVoiceScript}"`;
+
+            currentForecastAudioBase64 = forecast.voiceAudioBase64;
+            var player = document.getElementById("forecastAudioPlayer");
+            if (player && currentForecastAudioBase64) {
+                player.src = "data:audio/wav;base64," + currentForecastAudioBase64;
+            }
+
+            // Needs list
+            var needsUl = document.getElementById("forecastNeedsList");
+            if (needsUl) {
+                needsUl.innerHTML = "";
+                if (forecast.strategicNeedsIdentified) {
+                    forecast.strategicNeedsIdentified.forEach(function(need) {
+                        var li = document.createElement("li");
+                        li.innerText = need;
+                        needsUl.appendChild(li);
+                    });
+                }
+            }
+
+            // Trajectory table
+            var tbody = document.getElementById("forecastTrajectoryTableBody");
+            if (tbody) {
+                tbody.innerHTML = "";
+                if (forecast.trajectory) {
+                    forecast.trajectory.forEach(function(pt) {
+                        var tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td><strong>${pt.year}</strong></td>
+                            <td><span class="badge bg-light text-dark border">${pt.marketNeedIndex}</span></td>
+                            <td><span class="badge bg-success bg-opacity-75">${pt.techAdoptionRate}%</span></td>
+                            <td><span class="badge bg-info text-dark bg-opacity-75">${pt.greenLogisticsShare}%</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            }
+        }
+
+        document.getElementById("btnTrainFromDataset")?.addEventListener("click", async function() {
+            var btn = this;
+            btn.disabled = true;
+            btn.innerHTML = "<span class='spinner-border spinner-border-sm me-1'></span><span>Melatih Model...</span>";
+            try {
+                var res = await fetch("/api/v1/voice/train-from-dataset", { method: "POST" });
+                var json = await res.json();
+                if (json.success && json.data) {
+                    var rep = json.data;
+                    var statusEl = document.getElementById("modelTrainingStatusText");
+                    if (statusEl) {
+                        statusEl.innerText = `Aktif: ${rep.totalRecordsAbsorbed.toLocaleString()} records (${rep.umkmProfilesLearned.toLocaleString()} UMKM, ${rep.researchInstructionsLearned} riset ODE)`;
+                    }
+                    alert(`Pelatihan Selesai!\n${rep.summaryMessage}`);
+                } else {
+                    alert(json.message || "Gagal melatih model dari dataset.");
+                }
+            } catch (err) {
+                console.error("Gagal melatih model:", err);
+                alert("Terjadi kesalahan saat melatih model dari dataset.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "⚡ Latih dari Dataset";
+            }
+        });
+
+        document.getElementById("btnRunHorizonForecast")?.addEventListener("click", async function() {
+            var btn = this;
+            var sector = document.getElementById("forecastSectorSelect")?.value || "Retail";
+            var horizon = parseInt(document.getElementById("forecastHorizonSelect")?.value || "5");
+            var lang = document.getElementById("forecastLangSelect")?.value || "id";
+            var region = document.getElementById("forecastRegionSelect")?.value || "Nasional";
+
+            btn.disabled = true;
+            btn.innerHTML = "<span class='spinner-border spinner-border-sm me-1'></span><span>Memproses Proyeksi Nemotron...</span>";
+
+            try {
+                var response = await fetch("/api/v1/voice/forecast/long-horizon", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sector: sector,
+                        horizonYears: horizon,
+                        language: lang,
+                        regionalFocus: region,
+                        scenarioType: "Baseline",
+                        returnVoiceAudio: true
+                    })
+                });
+
+                var json = await response.json();
+                if (json && json.success && json.data) {
+                    renderForecastResult(json.data);
+                    // Also invoke over SignalR if connected
+                    if (chatConnection.state === signalR.HubConnectionState.Connected && currentSessionId) {
+                        chatConnection.invoke("RequestLongHorizonForecast", currentSessionId, {
+                            sector: sector,
+                            horizonYears: horizon,
+                            language: lang,
+                            regionalFocus: region,
+                            returnVoiceAudio: false
+                        }).catch(function(e) { console.log("SignalR forecast notify:", e); });
+                    }
+                } else {
+                    alert(json.message || "Gagal memproses prediksi masa depan.");
+                }
+            } catch (err) {
+                console.error("Horizon forecast error:", err);
+                alert("Terjadi kesalahan memproses prediksi 5-10 tahun.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "⚡ Analisis Prediksi 2026–2036";
+            }
+        });
+
+        document.getElementById("btnPlayForecastAudio")?.addEventListener("click", function() {
+            var script = document.getElementById("forecastSpokenScriptText")?.innerText.replace(/^"|"$/g, "").trim();
+            var lang = document.getElementById("forecastLangSelect")?.value || "id";
+            if (script || currentForecastAudioBase64) {
+                if (window.playNemotronVoice) {
+                    window.playNemotronVoice(currentForecastAudioBase64, script, lang);
+                } else {
+                    var player = document.getElementById("forecastAudioPlayer");
+                    if (player && player.src) {
+                        player.play().catch(function(e) { console.warn("Audio play blocked:", e); });
+                    }
+                }
+            } else {
+                alert("Audio suara Nemotron belum tersedia.");
+            }
+        });
+
+        chatConnection.on("ReceiveLongHorizonForecast", function(sessionId, forecast) {
+            renderForecastResult(forecast);
         });
     </script>
 }

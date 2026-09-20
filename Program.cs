@@ -139,6 +139,7 @@ builder.Services.AddScoped<dagangOnline.Application.Services.Economic.EconomicFo
 builder.Services.AddScoped<dagangOnline.Application.Services.Economic.ExplainableAiService>();
 builder.Services.AddScoped<dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem>();
 builder.Services.AddScoped<dagangOnline.Application.Services.GraphContextBuilder>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.IDatasetImportService, dagangOnline.Application.Services.DataImport.DatasetImportService>();
 
 // RAG, Language, Grounding & Feedback services
 builder.Services.AddMemoryCache();
@@ -152,6 +153,13 @@ builder.Services.AddScoped<dagangOnline.Application.Interfaces.IGuardrailService
 builder.Services.AddScoped<dagangOnline.Application.Interfaces.IRetrievalEvaluationService, dagangOnline.Application.Services.RAG.RetrievalEvaluationService>();
 builder.Services.AddScoped<dagangOnline.Application.Interfaces.ICacheService, dagangOnline.Application.Services.Cache.MemoryCacheService>();
 builder.Services.AddScoped<dagangOnline.Application.Interfaces.IFeedbackService, dagangOnline.Application.Services.Feedback.FeedbackService>();
+
+// NVIDIA Nemotron VoiceChat-11B & Collaborative Agent Orchestrator
+builder.Services.AddHttpClient<dagangOnline.Application.Interfaces.INemotronVoiceAgentService, dagangOnline.Application.Services.Voice.NemotronVoiceAgentService>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.ICollaborativeAgentOrchestrator, dagangOnline.Application.Services.Voice.CollaborativeAgentOrchestrator>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.ILongHorizonSyntheticDataEngine, dagangOnline.Application.Services.Economic.LongHorizonSyntheticDataEngine>();
+builder.Services.AddScoped<dagangOnline.Application.Interfaces.INemotronStrategicVoiceAgent, dagangOnline.Application.Services.Voice.NemotronStrategicVoiceAgent>();
+builder.Services.AddSingleton<dagangOnline.Application.Interfaces.IDatasetFineTuningEngine, dagangOnline.Application.Services.Voice.DatasetFineTuningEngine>();
 
 builder.Services.AddScoped<AgentAssistService>();
 builder.Services.AddSingleton<ResourceAuthorizationService>();

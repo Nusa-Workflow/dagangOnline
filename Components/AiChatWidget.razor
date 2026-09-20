@@ -1,8 +1,13 @@
-@using dagangOnline.Application.Interfaces
-@inject IAiChatService AiChatService
-@inject ICatalogService CatalogService
 @using System.Text
 @using Microsoft.AspNetCore.Components.Web
+@using dagangOnline.Application.DTOs
+@using dagangOnline.Application.Interfaces
+@inject dagangOnline.Application.Interfaces.IAiChatService AiChatService
+@inject dagangOnline.Application.Interfaces.ICatalogService CatalogService
+@inject dagangOnline.Application.Interfaces.ICollaborativeAgentOrchestrator Orchestrator
+@inject dagangOnline.Application.Interfaces.INemotronVoiceAgentService NemotronService
+@inject dagangOnline.Application.Interfaces.INemotronStrategicVoiceAgent StrategicVoiceAgent
+@inject IJSRuntime JSRuntime
 
 <!-- Floating Agent Human / CS Bot Circle Button & Drawer -->
 <div class="cs-bot-floating-container">
@@ -25,7 +30,7 @@
                             <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">CS Bot & Live Human</h6>
                             <span class="badge badge-sage" style="font-size: 0.65rem; padding: 2px 6px;">Live 24/7</span>
                         </div>
-                        <small class="text-white-50" style="font-size: 0.72rem;">Online • Siap Melayani Pengunjung & Mitra</small>
+                        <small class="text-white-50" style="font-size: 0.72rem;">NVIDIA Nemotron VoiceChat-11B + Qwen Collaborative Engine</small>
                     </div>
                 </div>
 
@@ -44,14 +49,29 @@
             <!-- Mode Selector (AI Copilot vs Hubungi Human Agent Langsung) -->
             <div class="d-flex p-2 gap-1 border-bottom" style="background: var(--surface-warm);">
                 <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "ai" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("ai")'>
-                    🤖 Tanya Asisten AI
+                    🤖 Tanya Asisten AI (Voice & Text)
                 </button>
                 <button class="btn btn-sm flex-fill rounded-pill py-1 @(CurrentTab == "human" ? "btn-sage text-white fw-semibold" : "btn-light text-muted")" style="font-size: 0.75rem;" @onclick='() => SetTab("human")'>
                     👤 Live Human CS (Aktif)
                 </button>
             </div>
 
-            <!-- TAB 1: ASISTEN AI (QWEN + RAG + MULTILINGUAL) -->
+            <!-- Audio Playing Banner & Barge-In Interruption Bar -->
+            @if (!string.IsNullOrEmpty(CurrentPlayingAudioBase64))
+            {
+                <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between bg-primary bg-opacity-10 text-primary small">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="spinner-grow spinner-grow-sm text-primary" role="status"></span>
+                        <span style="font-size: 0.75rem;">🔊 <strong>Nemotron Spoken Voice:</strong> sedang bersuara...</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger py-0 px-2 rounded-pill fw-semibold" style="font-size: 0.7rem;" @onclick="TriggerBargeInInterruption" title="Interupsi suara AI sekarang">
+                        🛑 Barge-In (Interupsi)
+                    </button>
+                </div>
+                <audio id="nemotronVoiceAudio" src="data:audio/wav;base64,@CurrentPlayingAudioBase64" autoplay @onended="OnAudioFinished" style="display:none;"></audio>
+            }
+
+            <!-- TAB 1: ASISTEN AI (QWEN + NEMOTRON + RAG + MULTILINGUAL) -->
             @if (CurrentTab == "ai")
             {
                 <div class="chat-messages p-3 flex-grow-1 overflow-auto" id="cs-chat-messages" style="background-color: var(--background); display: flex; flex-direction: column; gap: 12px;">
@@ -89,6 +109,21 @@
                             <div class="d-inline-block rounded-3 p-2 px-3 shadow-sm @(msg.IsUser ? "text-white" : "text-dark")"
                                  style="background: @(msg.IsUser ? "var(--primary)" : "var(--surface)"); border: @(msg.IsUser ? "none" : "1px solid var(--border)"); white-space: pre-wrap; font-size: 0.85rem; line-height: 1.45;">
                                 @msg.Content
+
+                                @if (!msg.IsUser && (!string.IsNullOrEmpty(msg.AudioBase64) || !string.IsNullOrEmpty(msg.SpokenScript)))
+                                {
+                                    <div class="mt-2 pt-2 border-top border-light-subtle d-flex flex-wrap align-items-center justify-content-between gap-1">
+                                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill d-inline-flex align-items-center gap-1" style="font-size: 0.7rem;" @onclick="() => PlayMessageVoice(msg)">
+                                            <span>🔊 Putar Suara Nemotron</span>
+                                        </button>
+                                        @if (!string.IsNullOrEmpty(msg.EmotionTone) || msg.TurnTakingLatencyMs.HasValue)
+                                        {
+                                            <span class="badge bg-light text-muted border" style="font-size: 0.62rem;">
+                                                🎭 @(msg.EmotionTone ?? "Netral") • ⚡ @(msg.TurnTakingLatencyMs ?? 120)ms
+                                            </span>
+                                        }
+                                    </div>
+                                }
                             </div>
 
                             @if (!msg.IsUser)
@@ -125,19 +160,45 @@
                                 <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
                                 <span class="spinner-grow spinner-grow-sm mx-1" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
                                 <span class="spinner-grow spinner-grow-sm" role="status" style="width: 8px; height: 8px; background-color: var(--accent);"></span>
-                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Asisten AI sedang berpikir...</small>
+                                <small class="text-muted ms-2" style="font-size: 0.72rem;">Nemotron &amp; Qwen sedang berkolaborasi...</small>
                             </div>
                         </div>
                     }
                 </div>
 
+                <!-- Voice Recording Live Streaming Banner -->
+                @if (IsRecordingVoice)
+                {
+                    <div class="px-3 py-2 border-top bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-between small">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="spinner-grow spinner-grow-sm text-danger"></span>
+                            <span style="font-size: 0.75rem;">🎙️ <strong>Nemotron Streaming:</strong> Sedang mendengarkan ucapan Anda...</span>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-danger py-0 px-2 rounded-pill fw-semibold" style="font-size: 0.7rem;" @onclick='() => SendSimulatedVoiceTurn(null)'>
+                                Selesai Bicara
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-pill" style="font-size: 0.7rem;" @onclick="ToggleVoiceRecording">
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                }
+
                 <!-- Input Footer AI -->
                 <div class="chat-input p-2 border-top" style="background: var(--surface-warm);">
                     <form @onsubmit="SendMessageAsync" class="d-flex gap-2 align-items-center">
-                        <input type="text" class="form-control rounded-pill px-3" placeholder="Tanya website, produk, payment, atau Order ID..."
-                               @bind="UserInput" @bind:event="oninput" disabled="@IsTyping" style="font-size: 0.85rem; border-color: var(--border);" />
+                        <input type="text" class="form-control rounded-pill px-3" placeholder="Tanya website, produk, atau bicara via mic..."
+                               @bind="UserInput" @bind:event="oninput" disabled="@(IsTyping || IsRecordingVoice)" style="font-size: 0.85rem; border-color: var(--border);" />
+                        <button type="button" class="btn @(IsRecordingVoice ? "btn-danger" : "btn-outline-primary") rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                @onclick="ToggleVoiceRecording" title="@(IsRecordingVoice ? "Hentikan Suara" : "Bicara Suara (Nemotron Voice)")" style="width: 38px; height: 38px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+                                <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                                <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3.5 8V7a.5.5 0 0 1 .5-.5z"/>
+                            </svg>
+                        </button>
                         <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                disabled="@(string.IsNullOrWhiteSpace(UserInput) || IsTyping)" style="width: 38px; height: 38px; background: var(--primary); border: none;">
+                                disabled="@(string.IsNullOrWhiteSpace(UserInput) || IsTyping || IsRecordingVoice)" style="width: 38px; height: 38px; background: var(--primary); border: none;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                                 <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
                             </svg>
@@ -291,6 +352,107 @@
     public bool IsTyping { get; set; } = false;
     public bool IsHumanTyping { get; set; } = false;
     public string CurrentTab { get; set; } = "ai";
+    public string? CurrentPlayingAudioBase64 { get; set; }
+    public bool IsRecordingVoice { get; set; } = false;
+
+    public async Task TriggerBargeInInterruption()
+    {
+        CurrentPlayingAudioBase64 = null;
+        NemotronService.DetectBargeIn("", true);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("stopNemotronVoice");
+        }
+        catch { }
+        StateHasChanged();
+    }
+
+    public void OnAudioFinished()
+    {
+        CurrentPlayingAudioBase64 = null;
+        StateHasChanged();
+    }
+
+    public async Task PlayMessageVoice(ChatMessageItem msg)
+    {
+        CurrentPlayingAudioBase64 = msg.AudioBase64;
+        StateHasChanged();
+        try
+        {
+            var textToSpeak = !string.IsNullOrEmpty(msg.SpokenScript) ? msg.SpokenScript : msg.Content;
+            await JSRuntime.InvokeVoidAsync("playNemotronVoice", msg.AudioBase64, textToSpeak, "id");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Nemotron Voice JS Invoke Error]: {ex.Message}");
+        }
+    }
+
+    public void ToggleVoiceRecording()
+    {
+        if (!string.IsNullOrEmpty(CurrentPlayingAudioBase64))
+        {
+            CurrentPlayingAudioBase64 = null;
+        }
+
+        IsRecordingVoice = !IsRecordingVoice;
+        StateHasChanged();
+    }
+
+    public async Task SendSimulatedVoiceTurn(string? speechText = null)
+    {
+        IsRecordingVoice = false;
+        var textToUse = !string.IsNullOrWhiteSpace(speechText)
+            ? speechText
+            : "Halo, tolong jelaskan rekomendasi produk UMKM terbaik dan panduan belanja.";
+
+        Messages.Add(new ChatMessageItem
+        {
+            IsUser = true,
+            Content = $"🎤 {textToUse}"
+        });
+        IsTyping = true;
+        StateHasChanged();
+
+        try
+        {
+            var collab = await Orchestrator.ProcessCollaborativeTurnAsync(new dagangOnline.Application.DTOs.CollaborativeChatRequestDto
+            {
+                TextPrompt = textToUse,
+                ReturnAudio = true
+            });
+
+            var newAiMsg = new ChatMessageItem
+            {
+                IsUser = false,
+                Content = collab.GroundedTextResponse,
+                SpokenScript = collab.SpokenResponse,
+                AudioBase64 = collab.AudioBase64,
+                EmotionTone = collab.AcousticTelemetry.EmotionTone,
+                TurnTakingLatencyMs = collab.AcousticTelemetry.TurnTakingLatencyMs
+            };
+            Messages.Add(newAiMsg);
+
+            if (!string.IsNullOrEmpty(newAiMsg.AudioBase64))
+            {
+                CurrentPlayingAudioBase64 = newAiMsg.AudioBase64;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Voice Turn Error]: {ex.Message}");
+            Messages.Add(new ChatMessageItem
+            {
+                IsUser = false,
+                Content = "Maaf, sistem suara sedang bermasalah. Silakan gunakan chat teks atau hubungi Human CS."
+            });
+        }
+        finally
+        {
+            IsTyping = false;
+            StateHasChanged();
+        }
+    }
 
     // AI Messages
     public List<ChatMessageItem> Messages { get; set; } = new()
@@ -385,6 +547,97 @@
         StateHasChanged();
     }
 
+    public async Task SendStrategicForecastPrompt(string sector, int years, string lang, string region)
+    {
+        var promptText = lang switch
+        {
+            "su" => $"Kumaha analisis sareng prediksi kabutuhan sektor {sector} di {region} dina {years} taun kapayun (2026-{2026+years})?",
+            "jv" => $"Kados pundi analisis lan prediksi kabetahan sektor {sector} ing {region} salebetipun {years} taun (2026-{2026+years})?",
+            "min" => $"Ba'a analisis jo prediksi kabutuhan sektor {sector} di {region} dalam {years} tahun ka muko (2026-{2026+years})?",
+            "mad" => $"Kados ponapa analisis sareng prediksi kabhutowan sektor {sector} e {region} dalem {years} taon kaajang (2026-{2026+years})?",
+            "ban" => $"Sapunapi indik analisis miwah prediksi kabutuhan sektor {sector} ring {region} ring {years} warsa kapungkur (2026-{2026+years})?",
+            "bug" => $"Pekko analisis nennia akkatta pappasau ri sektor {sector} ri {region} laleng {years} taung madung (2026-{2026+years})?",
+            "bjn" => $"Kaya apa analisis wan prediksi kaporluan sektor {sector} di {region} salawas {years} tahun kena (2026-{2026+years})?",
+            "btk" => $"Songon dia do analisis dohot prediksi pardagangan sektor {sector} di {region} di bagasan {years} taon na ro (2026-{2026+years})?",
+            "en" => $"What are the strategic needs and live 5-10 year predictions for {sector} in {region} from 2026 to {2026+years}?",
+            _ => $"Bagaimana analisis kebutuhan dan prediksi live real-time {years} tahun ke depan (2026–{2026+years}) untuk sektor {sector} di kawasan {region}?"
+        };
+
+        Messages.Add(new ChatMessageItem { IsUser = true, Content = $"🔮 {promptText}" });
+        IsTyping = true;
+        StateHasChanged();
+
+        try
+        {
+            var forecast = await StrategicVoiceAgent.GenerateStrategicForecastWithVoiceAsync(new dagangOnline.Application.DTOs.LongHorizonForecastRequestDto
+            {
+                Sector = sector,
+                HorizonYears = years,
+                Language = lang,
+                RegionalFocus = region,
+                ReturnVoiceAudio = true
+            });
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"🔮 **NVIDIA Nemotron Strategic Live Forecast ({forecast.StartYear}–{forecast.EndYear})**");
+            sb.AppendLine($"📌 *Sektor: {forecast.Sector} | Wilayah: {forecast.RegionalFocus} | Bahasa: {forecast.Language.ToUpper()}*");
+            sb.AppendLine();
+            sb.AppendLine($"🎙️ **Naskah Suara Nemotron:**");
+            sb.AppendLine($"\"{forecast.SpokenVoiceScript}\"");
+            sb.AppendLine();
+            sb.AppendLine($"📊 **Ringkasan Eksekutif Dinamika Pasar:**");
+            sb.AppendLine(forecast.ExecutiveSummary);
+            sb.AppendLine();
+            sb.AppendLine($"🎯 **Kebutuhan Strategis Konsumen & UMKM:**");
+            foreach (var need in forecast.StrategicNeedsIdentified)
+            {
+                sb.AppendLine($"• {need}");
+            }
+            sb.AppendLine();
+            sb.AppendLine($"📈 **Lintasan Proyeksi 2026–{forecast.EndYear}:**");
+            foreach (var p in forecast.Trajectory)
+            {
+                sb.AppendLine($"• **{p.Year}**: Indeks Pasar {p.MarketNeedIndex}/100 | Adopsi AI {p.TechAdoptionRate}% | Logistik Hijau {p.GreenLogisticsShare}%");
+            }
+            sb.AppendLine();
+            sb.AppendLine($"💡 **Rekomendasi Aksi Taktis:**");
+            foreach (var rec in forecast.ActionableRecommendations)
+            {
+                sb.AppendLine($"• {rec}");
+            }
+
+            var aiMsg = new ChatMessageItem
+            {
+                IsUser = false,
+                Content = sb.ToString(),
+                SpokenScript = forecast.SpokenVoiceScript,
+                AudioBase64 = forecast.VoiceAudioBase64,
+                EmotionTone = "Visionary",
+                TurnTakingLatencyMs = forecast.Telemetry.LatencyMs
+            };
+
+            Messages.Add(aiMsg);
+
+            if (!string.IsNullOrEmpty(aiMsg.AudioBase64))
+            {
+                CurrentPlayingAudioBase64 = aiMsg.AudioBase64;
+            }
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessageItem
+            {
+                IsUser = false,
+                Content = $"Gagal menghasilkan prediksi strategis 5-10 tahun: {ex.Message}"
+            });
+        }
+        finally
+        {
+            IsTyping = false;
+            StateHasChanged();
+        }
+    }
+
     public async Task SendMessageAsync()
     {
         if (string.IsNullOrWhiteSpace(UserInput)) return;
@@ -392,32 +645,73 @@
         var message = UserInput.Trim();
         UserInput = "";
 
+        // Rute otomatis pertanyaan prediksi jangka panjang 5-10 tahun (2026-2036) ke Nemotron Strategic Voice Agent
+        if (message.Contains("prediksi", StringComparison.OrdinalIgnoreCase) &&
+            (message.Contains("2026") || message.Contains("5") || message.Contains("10") || message.Contains("tahun") || message.Contains("masa depan")))
+        {
+            var sector = "Retail";
+            if (message.Contains("agri", StringComparison.OrdinalIgnoreCase) || message.Contains("tani", StringComparison.OrdinalIgnoreCase)) sector = "Agri";
+            else if (message.Contains("logistik", StringComparison.OrdinalIgnoreCase)) sector = "Logistics";
+            else if (message.Contains("tech", StringComparison.OrdinalIgnoreCase) || message.Contains("teknologi", StringComparison.OrdinalIgnoreCase)) sector = "Tech";
+            else if (message.Contains("f&b", StringComparison.OrdinalIgnoreCase) || message.Contains("kuliner", StringComparison.OrdinalIgnoreCase)) sector = "F&B";
+            else if (message.Contains("energi", StringComparison.OrdinalIgnoreCase)) sector = "Energy";
+
+            var horizon = (message.Contains("10") || message.Contains("sepuluh") || message.Contains("2036")) ? 10 : 5;
+            var lang = "id";
+            if (message.Contains("sunda", StringComparison.OrdinalIgnoreCase) || message.Contains("kumaha", StringComparison.OrdinalIgnoreCase)) lang = "su";
+            else if (message.Contains("jawa", StringComparison.OrdinalIgnoreCase) || message.Contains("kados", StringComparison.OrdinalIgnoreCase) || message.Contains("pundi", StringComparison.OrdinalIgnoreCase)) lang = "jv";
+            else if (message.Contains("minang", StringComparison.OrdinalIgnoreCase) || message.Contains("padang", StringComparison.OrdinalIgnoreCase) || message.Contains("ba'a", StringComparison.OrdinalIgnoreCase) || message.Contains("dunsanak", StringComparison.OrdinalIgnoreCase)) lang = "min";
+            else if (message.Contains("madura", StringComparison.OrdinalIgnoreCase) || message.Contains("taretan", StringComparison.OrdinalIgnoreCase) || message.Contains("ponapa", StringComparison.OrdinalIgnoreCase)) lang = "mad";
+            else if (message.Contains("bali", StringComparison.OrdinalIgnoreCase) || message.Contains("semeton", StringComparison.OrdinalIgnoreCase) || message.Contains("sapunapi", StringComparison.OrdinalIgnoreCase)) lang = "ban";
+            else if (message.Contains("bugis", StringComparison.OrdinalIgnoreCase) || message.Contains("makassar", StringComparison.OrdinalIgnoreCase) || message.Contains("silessureng", StringComparison.OrdinalIgnoreCase)) lang = "bug";
+            else if (message.Contains("banjar", StringComparison.OrdinalIgnoreCase) || message.Contains("bubuhan", StringComparison.OrdinalIgnoreCase) || message.Contains("kayapa", StringComparison.OrdinalIgnoreCase)) lang = "bjn";
+            else if (message.Contains("batak", StringComparison.OrdinalIgnoreCase) || message.Contains("medan", StringComparison.OrdinalIgnoreCase) || message.Contains("horas", StringComparison.OrdinalIgnoreCase) || message.Contains("songon", StringComparison.OrdinalIgnoreCase)) lang = "btk";
+            else if (message.Contains("english", StringComparison.OrdinalIgnoreCase) || message.Contains("predict", StringComparison.OrdinalIgnoreCase)) lang = "en";
+
+            var region = "Nasional";
+            if (message.Contains("ikn", StringComparison.OrdinalIgnoreCase) || message.Contains("kalimantan", StringComparison.OrdinalIgnoreCase) || lang == "bjn") region = "IKN_Kalimantan";
+            else if (message.Contains("bali", StringComparison.OrdinalIgnoreCase) || lang == "ban") region = "Jawa_Bali";
+            else if (message.Contains("jawa", StringComparison.OrdinalIgnoreCase) || lang == "su" || lang == "jv" || lang == "mad") region = "Jawa_Bali";
+            else if (message.Contains("sumatera", StringComparison.OrdinalIgnoreCase) || lang == "min" || lang == "btk") region = "Sumatera";
+            else if (message.Contains("timur", StringComparison.OrdinalIgnoreCase) || message.Contains("sulawesi", StringComparison.OrdinalIgnoreCase) || lang == "bug") region = "Indonesia_Timur";
+
+            await SendStrategicForecastPrompt(sector, horizon, lang, region);
+            return;
+        }
+
         Messages.Add(new ChatMessageItem { IsUser = true, Content = message });
         IsTyping = true;
         StateHasChanged();
 
         try
         {
-            // RAG Context Generation
-            var products = await CatalogService.Products.GetPublishedProductsAsync(null, 1, 20);
-            var contextBuilder = new StringBuilder();
-            
-            if (products != null && products.Items != null)
+            var collab = await Orchestrator.ProcessCollaborativeTurnAsync(new dagangOnline.Application.DTOs.CollaborativeChatRequestDto
             {
-                foreach (var p in products.Items)
+                TextPrompt = message,
+                ReturnAudio = true
+            });
+
+            var newAiMsg = new ChatMessageItem
+            {
+                IsUser = false,
+                Content = collab.GroundedTextResponse,
+                SpokenScript = collab.SpokenResponse,
+                AudioBase64 = collab.AudioBase64,
+                EmotionTone = collab.AcousticTelemetry.EmotionTone,
+                TurnTakingLatencyMs = collab.AcousticTelemetry.TurnTakingLatencyMs
+            };
+            Messages.Add(newAiMsg);
+
+            if (!string.IsNullOrEmpty(newAiMsg.AudioBase64) || !string.IsNullOrEmpty(newAiMsg.SpokenScript))
+            {
+                CurrentPlayingAudioBase64 = newAiMsg.AudioBase64;
+                try
                 {
-                    contextBuilder.AppendLine($"- {p.Name} (Rp {p.Price:N0}): {p.Description}");
+                    var textToSpeak = !string.IsNullOrEmpty(newAiMsg.SpokenScript) ? newAiMsg.SpokenScript : newAiMsg.Content;
+                    await JSRuntime.InvokeVoidAsync("playNemotronVoice", newAiMsg.AudioBase64, textToSpeak, "id");
                 }
+                catch { }
             }
-
-            var contextData = contextBuilder.ToString();
-            if (string.IsNullOrWhiteSpace(contextData))
-            {
-                contextData = "Katalog UMKM dagangOnline: Batik Tulis Tradisional, Kopi Robusta Nusantara, Madu Asli Hutan, Kerajinan Anyaman Bambu.";
-            }
-
-            var response = await AiChatService.GetChatResponseAsync(message, contextData);
-            Messages.Add(new ChatMessageItem { IsUser = false, Content = response.SuggestedResponse });
         }
         catch (Exception ex)
         {
@@ -527,6 +821,10 @@
         public bool IsUser { get; set; }
         public string Content { get; set; } = string.Empty;
         public bool ShowFeedbackReason { get; set; } = false;
+        public string? SpokenScript { get; set; }
+        public string? AudioBase64 { get; set; }
+        public string? EmotionTone { get; set; }
+        public double? TurnTakingLatencyMs { get; set; }
     }
 
     public class HumanMessageItem

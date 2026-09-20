@@ -18,15 +18,24 @@ public class SupportChatHub : Hub
     private readonly ApplicationDbContext _db;
     private readonly AgentAssistService _agentAssistService;
     private readonly dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem _multiAgentSystem;
+    private readonly dagangOnline.Application.Interfaces.INemotronVoiceAgentService? _nemotronService;
+    private readonly dagangOnline.Application.Interfaces.ICollaborativeAgentOrchestrator? _orchestrator;
+    private readonly dagangOnline.Application.Interfaces.INemotronStrategicVoiceAgent? _strategicVoiceAgent;
 
     public SupportChatHub(
         ApplicationDbContext db,
         AgentAssistService agentAssistService,
-        dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem multiAgentSystem)
+        dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem multiAgentSystem,
+        dagangOnline.Application.Interfaces.INemotronVoiceAgentService? nemotronService = null,
+        dagangOnline.Application.Interfaces.ICollaborativeAgentOrchestrator? orchestrator = null,
+        dagangOnline.Application.Interfaces.INemotronStrategicVoiceAgent? strategicVoiceAgent = null)
     {
         _db = db;
         _agentAssistService = agentAssistService;
         _multiAgentSystem = multiAgentSystem;
+        _nemotronService = nemotronService;
+        _orchestrator = orchestrator;
+        _strategicVoiceAgent = strategicVoiceAgent;
     }
 
     public override async Task OnConnectedAsync()
@@ -238,6 +247,125 @@ public class SupportChatHub : Hub
         await Clients.Group($"User_{userId}").SendAsync("ReceiveEconomicInsight", sessionId, report);
         await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveEconomicInsight", sessionId, report);
         await Clients.Group("Agents").SendAsync("ReceiveEconomicInsight", sessionId, report);
+    }
+
+    /// <summary>
+    /// Receives real-time voice audio chunk from client (User or Agent),
+    /// performs Nemotron streaming ASR, acoustic telemetry calculation,
+    /// and triggers collaborative dual-agent turn when speech completes.
+    /// </summary>
+    public async Task SendVoiceChunk(Guid sessionId, string audioBase64, string mimeType = "audio/webm", bool isFinal = false)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(audioBase64)) return;
+
+        if (_nemotronService == null) return;
+
+        // Perform fast transcription
+        var transcription = await _nemotronService.TranscribeAudioBase64Async(audioBase64, mimeType);
+
+        // Analyze acoustic prosody and emotional telemetry
+        var telemetry = await _nemotronService.AnalyzeAcousticStreamAsync(audioBase64, transcription.Transcript);
+
+        // Broadcast live acoustic telemetry to Session and Agents room
+        await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveAcousticTelemetry", sessionId, telemetry);
+        await Clients.Group("Agents").SendAsync("ReceiveAcousticTelemetry", sessionId, telemetry);
+
+        // Broadcast partial transcript
+        await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveVoiceStream", sessionId, transcription.Transcript, isFinal);
+
+        // If turn has ended (silence detected / user finished speaking)
+        if (isFinal && !string.IsNullOrWhiteSpace(transcription.Transcript) && _orchestrator != null)
+        {
+            var collabResult = await _orchestrator.ProcessCollaborativeTurnAsync(new dagangOnline.Application.DTOs.CollaborativeChatRequestDto
+            {
+                SessionId = sessionId,
+                TextPrompt = transcription.Transcript,
+                AudioBase64 = audioBase64,
+                MimeType = mimeType,
+                ReturnAudio = true
+            });
+
+            // Save user message to database
+            var userMsg = new ConversationMessage
+            {
+                ConversationId = sessionId,
+                Content = $"🎤 {transcription.Transcript}",
+                SenderType = SenderType.Customer
+            };
+            _db.ConversationMessages.Add(userMsg);
+
+            // Save bot response to database
+            var botMsg = new ConversationMessage
+            {
+                ConversationId = sessionId,
+                Content = collabResult.SpokenResponse ?? collabResult.GroundedTextResponse,
+                SenderType = SenderType.AI
+            };
+            _db.ConversationMessages.Add(botMsg);
+            await _db.SaveChangesAsync();
+
+            // Broadcast back to customer and agent
+            await Clients.Group($"User_{userId}").SendAsync("ReceiveCollaborativeVoice", sessionId, collabResult);
+            await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveCollaborativeVoice", sessionId, collabResult);
+            await Clients.Group("Agents").SendAsync("ReceiveCollaborativeVoice", sessionId, collabResult);
+        }
+    }
+
+    /// <summary>
+    /// Triggers immediate audio cut-off when barge-in is detected or user interrupts AI.
+    /// </summary>
+    public async Task TriggerBargeIn(Guid sessionId)
+    {
+        await Clients.Group($"Session_{sessionId}").SendAsync("BargeInInterruption", sessionId);
+        await Clients.Group("Agents").SendAsync("BargeInInterruption", sessionId);
+    }
+
+    /// <summary>
+    /// Allows a human agent to send an AI-synthesized prosodic voice note to customer.
+    /// </summary>
+    public async Task SendSpokenVoiceNote(Guid sessionId, string text, string? targetLanguage = "id")
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(text) || _nemotronService == null) return;
+
+        var synth = await _nemotronService.SynthesizeSpokenVoiceAsync(new dagangOnline.Application.DTOs.VoiceSynthesisRequestDto
+        {
+            Text = text,
+            TargetLanguage = targetLanguage ?? "id-ID",
+            ReturnAudioStream = true
+        });
+
+        var session = await _db.Conversations.FirstOrDefaultAsync(s => s.Id == sessionId);
+        if (session == null) return;
+
+        var message = new ConversationMessage
+        {
+            ConversationId = sessionId,
+            Content = $"🗣️ [Voice Note]: {synth.SpokenScript}",
+            SenderType = SenderType.HumanAgent
+        };
+        _db.ConversationMessages.Add(message);
+        await _db.SaveChangesAsync();
+
+        await Clients.Group($"User_{session.CustomerId}").SendAsync("ReceiveVoiceNote", sessionId, synth.AudioBase64, synth.SpokenScript, "Agent");
+        await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveVoiceNote", sessionId, synth.AudioBase64, synth.SpokenScript, "Agent");
+    }
+
+    /// <summary>
+    /// Invokes NVIDIA Nemotron Strategic Voice Agent to produce 5-10 year (2026-2036) future prediction
+    /// and streams the result with voice briefing audio to agent & customer sessions.
+    /// </summary>
+    public async Task RequestLongHorizonForecast(Guid sessionId, dagangOnline.Application.DTOs.LongHorizonForecastRequestDto request)
+    {
+        if (_strategicVoiceAgent == null || request == null) return;
+
+        var forecast = await _strategicVoiceAgent.GenerateStrategicForecastWithVoiceAsync(request);
+
+        // Broadcast to both session group and agents group
+        await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveLongHorizonForecast", sessionId, forecast);
+        await Clients.Group("Agents").SendAsync("ReceiveLongHorizonForecast", sessionId, forecast);
+        await Clients.Caller.SendAsync("ReceiveLongHorizonForecast", sessionId, forecast);
     }
 }
 

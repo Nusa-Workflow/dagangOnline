@@ -1,0 +1,11 @@
+{
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "capabilities": {
+        "reasoning": 0.68,
+        "math": 0.62,
+        "indonesian_fluency": 0.75,
+        "umkm_domain_knowledge": 0.45,
+        "safety_compliance": 0.88
+    },
+    "timestamp": "2026-09-17 06:34:38.089832"
+}

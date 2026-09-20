@@ -1,0 +1,3 @@
+{"method":"Human-only","accuracy_score":0.72,"compute_efficiency":"High","data_efficiency_index":1.2}
+{"method":"Synthetic-only","accuracy_score":0.68,"compute_efficiency":"Medium","data_efficiency_index":0.9}
+{"method":"Mixed-Data","accuracy_score":0.85,"compute_efficiency":"Optimal","data_efficiency_index":1.5}

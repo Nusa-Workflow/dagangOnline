@@ -127,6 +127,11 @@
                 Kustomisasi About
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold" id="dataset-tab" data-bs-toggle="pill" data-bs-target="#dataset-pane" type="button" role="tab">
+                Import Dataset (@Model.ImportFiles.Count)
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="adminTabsContent">
@@ -434,6 +439,148 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 7: Dataset Import (.jsonl, .txt, .csv, .xlsx) -->
+        <div class="tab-pane fade" id="dataset-pane" role="tabpanel">
+            <div class="row g-4 mb-4">
+                <!-- Upload Panel -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="fw-bold mb-0">Unggah Dataset Baru</h5>
+                            <small class="text-muted">Dukungan format .jsonl, .txt, .csv, dan .xlsx</small>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" asp-page-handler="UploadDataset" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Pilih File Dataset</label>
+                                    <input type="file" name="datasetFile" class="form-control" accept=".jsonl,.txt,.csv,.xlsx,.xls" required />
+                                    <div class="form-text small">
+                                        Mendukung <strong>.jsonl</strong> (JSON Lines), <strong>.txt</strong> (Text Corpus), <strong>.csv</strong>, dan <strong>.xlsx</strong>.
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Target Ingest Dataset</label>
+                                    <select name="targetType" class="form-select">
+                                        <option value="AutoDetect">Deteksi Otomatis (Auto-Detect)</option>
+                                        <option value="KnowledgeRAG">Knowledge Base & Chunks (RAG AI)</option>
+                                        <option value="EconomicIndicator">Indikator Ekonometrika & Graph Model</option>
+                                        <option value="ProductCatalog">Katalog Produk & Komoditas UMKM</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Kategori Default</label>
+                                    <input type="text" name="defaultCategory" class="form-control" value="UMKM & Regulasi" />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                                    Unggah & Proses Ingest Dataset
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supported Formats Explainer -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">Format Dataset yang Didukung</h5>
+                            <span class="badge bg-success">Multi-Format Engine</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                @foreach (var fmt in Model.SupportedFormats)
+                                {
+                                    <div class="col-sm-6">
+                                        <div class="border rounded-3 p-3 h-100 bg-light">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-dark">@fmt.Extension.ToUpperInvariant()</span>
+                                                <h6 class="fw-bold mb-0 small">@fmt.Name</h6>
+                                            </div>
+                                            <p class="text-muted small mb-2">@fmt.Description</p>
+                                            <div class="bg-white p-2 rounded border small text-break font-monospace" style="font-size: 0.72rem;">
+                                                @fmt.SampleRecord
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Folder Data/Imports Local Files -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0">File Direktori Lokal (Data/Imports)</h5>
+                        <small class="text-muted">File yang diletakkan langsung pada folder Data/Imports dapat diproses sekaligus.</small>
+                    </div>
+                    <form method="post" asp-page-handler="ProcessLocalImports">
+                        <button type="submit" class="btn btn-outline-primary btn-sm fw-semibold">
+                            ⚡ Proses Seluruh File Lokal
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nama File</th>
+                                    <th>Format / Ekstensi</th>
+                                    <th>Ukuran</th>
+                                    <th>Terakhir Diubah</th>
+                                    <th>Status Format</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ImportFiles.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            Tidak ada file dataset tambahan pada folder <code>Data/Imports</code>.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var file in Model.ImportFiles)
+                                    {
+                                        <tr>
+                                            <td class="fw-medium">
+                                                <code>@file.FileName</code>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(file.Extension == ".jsonl" ? "bg-primary" : file.Extension == ".txt" ? "bg-info" : file.Extension == ".csv" ? "bg-success" : "bg-warning text-dark")">
+                                                    @file.Extension.ToUpperInvariant()
+                                                </span>
+                                            </td>
+                                            <td class="text-muted small">@((file.SizeBytes / 1024.0).ToString("F1")) KB</td>
+                                            <td class="text-muted small">@file.LastModified.ToString("dd MMM yyyy HH:mm") UTC</td>
+                                            <td>
+                                                @if (file.IsSupported)
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success">Siap Diimpor</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Format Lain</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

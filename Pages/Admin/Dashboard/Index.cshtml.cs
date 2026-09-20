@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using dagangOnline.Application.DTOs;
+using dagangOnline.Application.Interfaces;
 using dagangOnline.Application.Services;
 using dagangOnline.Authorization;
 using dagangOnline.Data;
@@ -18,15 +20,18 @@ public class IndexModel : PageModel
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
     private readonly AuditLogService _auditLogService;
+    private readonly IDatasetImportService _datasetImportService;
 
     public IndexModel(
         UserManager<ApplicationUser> userManager,
         ApplicationDbContext context,
-        AuditLogService auditLogService)
+        AuditLogService auditLogService,
+        IDatasetImportService datasetImportService)
     {
         _userManager = userManager;
         _context = context;
         _auditLogService = auditLogService;
+        _datasetImportService = datasetImportService;
     }
 
     public List<UserViewModel> Users { get; set; } = new();
@@ -34,6 +39,8 @@ public class IndexModel : PageModel
     public List<ContactInquiry> Inquiries { get; set; } = new();
     public List<ServiceRequest> ServiceRequests { get; set; } = new();
     public List<Announcement> Announcements { get; set; } = new();
+    public List<ImportFileInfo> ImportFiles { get; set; } = new();
+    public List<SupportedFormatInfoDto> SupportedFormats { get; set; } = new();
 
     public int TotalUsersCount { get; set; }
     public int TotalMitraCount { get; set; }
@@ -256,6 +263,9 @@ public class IndexModel : PageModel
             .Take(10)
             .ToListAsync();
 
+        ImportFiles = _datasetImportService.GetAvailableImportFiles();
+        SupportedFormats = _datasetImportService.GetSupportedFormats();
+
         var aboutPage = await _context.ContentPages.AsNoTracking().FirstOrDefaultAsync(x => x.Slug == "about");
         if (aboutPage != null)
         {
@@ -275,6 +285,46 @@ public class IndexModel : PageModel
                 Content = "<p>Selamat datang di platform dagangOnline. Kami hadir untuk memberdayakan bisnis dan UMKM di seluruh Indonesia melalui transformasi digital, infrastruktur cloud modern, dan kolaborasi mitra terpercaya.</p>"
             };
         }
+    }
+
+    public async Task<IActionResult> OnPostUploadDatasetAsync(
+        IFormFile? datasetFile,
+        DatasetTargetType targetType = DatasetTargetType.AutoDetect,
+        string defaultCategory = "General")
+    {
+        if (datasetFile == null || datasetFile.Length == 0)
+        {
+            StatusMessage = "Error: Silakan pilih file dataset terlebih dahulu (.jsonl, .txt, .csv, atau .xlsx).";
+            return RedirectToPage();
+        }
+
+        var options = new DatasetImportOptions
+        {
+            TargetType = targetType,
+            DefaultCategory = defaultCategory
+        };
+
+        await using var stream = datasetFile.OpenReadStream();
+        var result = await _datasetImportService.ImportStreamAsync(stream, datasetFile.FileName, options);
+
+        if (result.Success)
+        {
+            StatusMessage = $"Sukses mengimpor file '{datasetFile.FileName}' ({result.DetectedFormat.ToUpperInvariant()}). {result.ImportedCount} record berhasil diproses!";
+        }
+        else
+        {
+            StatusMessage = $"Peringatan impor '{datasetFile.FileName}': {string.Join(", ", result.Errors)}";
+        }
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostProcessLocalImportsAsync(string? fileName = null)
+    {
+        var results = await _datasetImportService.ScanAndImportDirectoryAsync();
+        int totalImported = results.Sum(r => r.ImportedCount);
+        StatusMessage = $"{results.Count} file dari Data/Imports berhasil diproses. Total {totalImported} data berhasil diimpor!";
+        return RedirectToPage();
     }
 
     public class UserViewModel

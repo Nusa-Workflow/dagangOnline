@@ -24,6 +24,7 @@ public class AgentAssistService
     private readonly IGroundingService _groundingService;
     private readonly IGuardrailService _guardrailService;
     private readonly EconomicMultiAgentSystem _multiAgentSystem;
+    private readonly INemotronVoiceAgentService? _nemotronService;
 
     public AgentAssistService(
         IAiChatService aiChatService,
@@ -34,7 +35,8 @@ public class AgentAssistService
         IRetrievalService retrievalService,
         IGroundingService groundingService,
         IGuardrailService guardrailService,
-        EconomicMultiAgentSystem multiAgentSystem)
+        EconomicMultiAgentSystem multiAgentSystem,
+        INemotronVoiceAgentService? nemotronService = null)
     {
         _aiChatService = aiChatService;
         _graphContextBuilder = graphContextBuilder;
@@ -45,6 +47,7 @@ public class AgentAssistService
         _groundingService = groundingService;
         _guardrailService = guardrailService;
         _multiAgentSystem = multiAgentSystem;
+        _nemotronService = nemotronService;
     }
 
     public async Task<AiSuggestionDto> ProcessCustomerMessageAsync(Conversation session, string message, CancellationToken cancellationToken = default)
@@ -184,6 +187,42 @@ public class AgentAssistService
         else
         {
             session.Intent = IntentType.unknown;
+        }
+
+        // 12. Nemotron VoiceChat & Acoustic Telemetry Collaboration
+        if (_nemotronService != null)
+        {
+            try
+            {
+                var telemetry = await _nemotronService.AnalyzeAcousticStreamAsync(null, message, 1.5, cancellationToken);
+                aiSuggestion.AcousticTone = telemetry.EmotionTone;
+                aiSuggestion.TurnTakingLatencyMs = telemetry.TurnTakingLatencyMs;
+
+                var voiceSynth = await _nemotronService.SynthesizeSpokenVoiceAsync(new VoiceSynthesisRequestDto
+                {
+                    Text = aiSuggestion.SuggestedResponse,
+                    TargetLanguage = aiSuggestion.Language,
+                    ReturnAudioStream = true
+                }, cancellationToken);
+
+                if (voiceSynth.Success)
+                {
+                    aiSuggestion.SpokenResponse = voiceSynth.SpokenScript;
+                    aiSuggestion.VoiceAudioBase64 = voiceSynth.AudioBase64;
+                }
+                else
+                {
+                    aiSuggestion.SpokenResponse = aiSuggestion.SuggestedResponse;
+                }
+            }
+            catch
+            {
+                aiSuggestion.SpokenResponse = aiSuggestion.SuggestedResponse;
+            }
+        }
+        else
+        {
+            aiSuggestion.SpokenResponse = aiSuggestion.SuggestedResponse;
         }
 
         return aiSuggestion;
