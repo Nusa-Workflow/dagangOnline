@@ -8,6 +8,8 @@ using dagangOnline.Application.DTOs;
 using dagangOnline.Application.Interfaces;
 using dagangOnline.Domain.Chat;
 using dagangOnline.Services;
+using global::dagangOnline.Application.Services.Economic;
+using global::dagangOnline.Domain.Economic;
 
 namespace dagangOnline.Application.Services;
 
@@ -21,6 +23,7 @@ public class AgentAssistService
     private readonly IRetrievalService _retrievalService;
     private readonly IGroundingService _groundingService;
     private readonly IGuardrailService _guardrailService;
+    private readonly EconomicMultiAgentSystem _multiAgentSystem;
 
     public AgentAssistService(
         IAiChatService aiChatService,
@@ -30,7 +33,8 @@ public class AgentAssistService
         IEmbeddingService embeddingService,
         IRetrievalService retrievalService,
         IGroundingService groundingService,
-        IGuardrailService guardrailService)
+        IGuardrailService guardrailService,
+        EconomicMultiAgentSystem multiAgentSystem)
     {
         _aiChatService = aiChatService;
         _graphContextBuilder = graphContextBuilder;
@@ -40,6 +44,7 @@ public class AgentAssistService
         _retrievalService = retrievalService;
         _groundingService = groundingService;
         _guardrailService = guardrailService;
+        _multiAgentSystem = multiAgentSystem;
     }
 
     public async Task<AiSuggestionDto> ProcessCustomerMessageAsync(Conversation session, string message, CancellationToken cancellationToken = default)
@@ -103,6 +108,37 @@ public class AgentAssistService
         contextBuilder.AppendLine(localContext);
         contextBuilder.AppendLine("=== GRAPH CONTEXT ===");
         contextBuilder.AppendLine(graphContext);
+
+        // 7b. Autonomous Economic Intelligence Agent Workflow (if applicable)
+        var lowerMsg = message.ToLowerInvariant();
+        if (lowerMsg.Contains("ekonomi") || lowerMsg.Contains("inflasi") || lowerMsg.Contains("harga") || 
+            lowerMsg.Contains("prediksi") || lowerMsg.Contains("pasar") || lowerMsg.Contains("komoditas") ||
+            lowerMsg.Contains("cpo") || lowerMsg.Contains("minyak") || lowerMsg.Contains("prospek"))
+        {
+            try
+            {
+                var econReport = await _multiAgentSystem.ExecuteAutonomousWorkflowAsync(new Domain.Economic.MultiAgentTaskRequestDto
+                {
+                    Query = message,
+                    HorizonMonths = 3
+                }, cancellationToken);
+
+                contextBuilder.AppendLine();
+                contextBuilder.AppendLine("=== ECONOMIC INTELLIGENCE & FORECASTING INSIGHTS ===");
+                contextBuilder.AppendLine($"[Target]: {econReport.Forecast.TargetEntityName} (Baseline: {econReport.Forecast.BaselineValue} {econReport.Forecast.Unit})");
+                contextBuilder.AppendLine($"[Proyeksi Tren]: {econReport.Forecast.OverallTrend} ({econReport.Forecast.ExpectedPercentageChange:+0.0;-0.0}% dalam 3 bulan)");
+                contextBuilder.AppendLine($"[Ringkasan Eksekutif]: {econReport.ExecutiveSummary}");
+                contextBuilder.AppendLine("[Rekomendasi Strategis]:");
+                foreach (var rec in econReport.RecommendedActions.Take(3))
+                {
+                    contextBuilder.AppendLine($"- {rec}");
+                }
+            }
+            catch
+            {
+                // Fallback gracefully without breaking chat pipeline
+            }
+        }
 
         // 8. Causal Language Model Generation (Groq Qwen CLM)
         var aiSuggestion = await _aiChatService.GetChatResponseAsync(message, contextBuilder.ToString(), cancellationToken);

@@ -115,6 +115,7 @@ Sistem mendukung pendaftaran mandiri (*Self-Registration*) untuk seluruh role pa
 | **Sprint 11** | Grounding Engine (Grounded/PartiallyGrounded/Ungrounded) & Security Guardrails | **DONE** |
 | **Sprint 12** | Human-in-the-Loop Feedback Loop (👍/👎 with 3 Standardized Reasons) & Analytics | **DONE** |
 | **Sprint 13** | Database Persistence: EF Core PostgreSQL Schema (`KnowledgeChunks`, `ConversationFeedbacks`) | **DONE** |
+| **Sprint 14** | Economic Intelligence: Graph Model Features API, ML/DL Forecasting, XAI & Multi-Agent System | **DONE** |
 
 ---
 
@@ -204,6 +205,14 @@ Sistem pengumpulan feedback terstandarisasi untuk evaluasi model dan dataset ali
   4. `Lainnya` (dengan alasan kustom)
 * **Feedback Analytics**: Endpoint `/api/v1/feedback/summary` menyajikan statistik Like Ratio, distribusi alasan penolakan, dan distribusi bahasa.
 
+### 6. Intelijen Ekonomi, Graph Model & Multi-Agent System
+* **Knowledge Graph Model**: Mengintegrasikan indikator makroekonomi (Inflasi IHK, BI-Rate, Kurs USD/IDR, PDB), harga komoditas (CPO, Minyak Mentah Brent, Beras, Batubara), dan sektor industri (Ritel E-Commerce UMKM, Logistik, Agribisnis, Margin Profit).
+* **Tarik Features API Endpoint (`POST /api/v1/economic/features`)**: Mengekstraksi vektor fitur topologi graf (in-degree/out-degree centrality, aggregate shock exposure, skor transmisi rambatan harga) untuk inferensi model ML/DL.
+* **Peramalan ML & Ekonometrika (`POST /api/v1/economic/forecast`)**: Menghasilkan prediksi multi-horizon (1, 3, 6, 12 bulan) dengan interval kepercayaan 90% dan 95% serta klasifikasi arah tren (*Bullish, Bearish, Neutral*).
+* **Explainable AI (XAI) & What-If (`POST /api/v1/economic/explain`, `/api/v1/economic/what-if`)**: Menghitung atribusi bobot fitur (SHAP-inspired), rekomendasi strategis, dan simulasi skenario counterfactual guncangan harga komoditas/kebijakan.
+* **Agentic AI & Multi-Agent System (`POST /api/v1/economic/agent/analyze`)**: Alur kerja otonom yang mengoordinasikan Orchestrator Agent, Graph & Feature Agent, Forecasting Agent, XAI & Policy Agent, serta Human Gatekeeper review.
+* **AI Copilot Human Agent Dashboard (`Pages/Agent/LiveChat`)**: Panel interaktif bagi human agent untuk memantau indikator live, mengekstrak fitur graf, menjalankan prediksi ML, dan menyisipkan rekomendasi intelijen ekonomi langsung ke chat pelanggan (*Human-in-the-Loop*).
+
 ---
 
 ## 🚀 Cara Menjalankan Aplikasi Secara Lokal
@@ -234,4 +243,5 @@ dotnet build -f net10.0-android  # atau platform target lainnya
 ```bash
 dotnet test dagangOnline.Tests/dagangOnline.Tests.csproj
 ```
-Hasil: **13/13 Passed (100%)**, mencakup repository testing, gRPC catalog contracts, management policies, and in-memory integration verification.
+Hasil: **17/17 Passed (100%)**, mencakup repository testing, gRPC contracts, Graph Engine feature extraction, ML multi-horizon forecasting, XAI feature attribution, dan Multi-Agent autonomous workflow execution.
+

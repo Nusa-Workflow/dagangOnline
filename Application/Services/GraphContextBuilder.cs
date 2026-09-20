@@ -10,17 +10,24 @@ using Microsoft.AspNetCore.Identity;
 
 using dagangOnline.Application.Interfaces;
 
+using dagangOnline.Application.Services.Economic;
+
 namespace dagangOnline.Application.Services;
 
 public class GraphContextBuilder
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICatalogService _catalogService;
+    private readonly EconomicGraphEngine _economicGraphEngine;
 
-    public GraphContextBuilder(UserManager<ApplicationUser> userManager, ICatalogService catalogService)
+    public GraphContextBuilder(
+        UserManager<ApplicationUser> userManager,
+        ICatalogService catalogService,
+        EconomicGraphEngine economicGraphEngine)
     {
         _userManager = userManager;
         _catalogService = catalogService;
+        _economicGraphEngine = economicGraphEngine;
     }
 
     public async Task<string> BuildGraphContextAsync(Conversation session, CancellationToken cancellationToken = default)
@@ -77,6 +84,33 @@ public class GraphContextBuilder
             var sId = $"S_{s.Id}";
             nodes.Add(new { id = sId, type = "Service", name = s.Name });
             edges.Add(new { source = "Platform", relation = "OFFERS", target = sId });
+        }
+
+        // 5. Macroeconomic Indicators & Commodity Shocks from EconomicGraphEngine
+        var econNodes = _economicGraphEngine.GetAllNodes();
+        foreach (var econNode in econNodes.Take(8))
+        {
+            nodes.Add(new
+            {
+                id = econNode.Id,
+                type = econNode.Category.ToString(),
+                name = econNode.Label,
+                value = $"{econNode.CurrentValue} {econNode.Unit}",
+                sentiment = econNode.SentimentScore
+            });
+        }
+
+        var econEdges = _economicGraphEngine.GetAllEdges();
+        foreach (var econEdge in econEdges.Take(10))
+        {
+            edges.Add(new
+            {
+                source = econEdge.SourceId,
+                relation = econEdge.RelationType,
+                target = econEdge.TargetId,
+                weight = econEdge.Weight,
+                lagMonths = econEdge.LeadLagMonths
+            });
         }
 
         var graph = new

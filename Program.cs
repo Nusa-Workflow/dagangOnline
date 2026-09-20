@@ -134,6 +134,10 @@ builder.Services.AddHttpClient<dagangOnline.Application.Interfaces.IAiChatServic
 builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<ContactInquiryService>();
 builder.Services.AddScoped<AgentReviewService>();
+builder.Services.AddSingleton<dagangOnline.Application.Services.Economic.EconomicGraphEngine>();
+builder.Services.AddScoped<dagangOnline.Application.Services.Economic.EconomicForecastingService>();
+builder.Services.AddScoped<dagangOnline.Application.Services.Economic.ExplainableAiService>();
+builder.Services.AddScoped<dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem>();
 builder.Services.AddScoped<dagangOnline.Application.Services.GraphContextBuilder>();
 
 // RAG, Language, Grounding & Feedback services

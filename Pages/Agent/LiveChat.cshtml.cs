@@ -18,14 +18,19 @@ namespace dagangOnline.Pages.Agent;
 public class LiveChatModel : PageModel
 {
     private readonly IConversationRepository _conversationRepository;
+    private readonly dagangOnline.Application.Services.Economic.EconomicGraphEngine _graphEngine;
 
-    public LiveChatModel(IConversationRepository conversationRepository)
+    public LiveChatModel(
+        IConversationRepository conversationRepository,
+        dagangOnline.Application.Services.Economic.EconomicGraphEngine graphEngine)
     {
         _conversationRepository = conversationRepository;
+        _graphEngine = graphEngine;
     }
 
     public List<Conversation> EscalatedSessions { get; set; } = new();
     public List<Conversation> MyActiveSessions { get; set; } = new();
+    public List<dagangOnline.Domain.Economic.EconomicGraphNode> EconomicIndicators { get; set; } = new();
     
     [BindProperty(SupportsGet = true)]
     public Guid? ActiveSessionId { get; set; }
@@ -52,6 +57,8 @@ public class LiveChatModel : PageModel
         {
             CurrentSession = await _conversationRepository.GetByIdAsync(ActiveSessionId.Value, trackChanges: false);
         }
+
+        EconomicIndicators = _graphEngine.GetAllNodes();
     }
 
     public async Task<IActionResult> OnPostAcceptEscalationAsync(Guid sessionId)

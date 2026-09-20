@@ -77,7 +77,7 @@
         </div>
 
         <!-- Chat Area -->
-        <div class="col-lg-8 col-xl-9">
+        <div class="col-lg-5 col-xl-5">
             <div class="card border-0 shadow-sm h-100 d-flex flex-column" style="min-height: 600px;">
                 @if (Model.CurrentSession != null)
                 {
@@ -206,6 +206,128 @@
                 }
             </div>
         </div>
+
+        <!-- Right: Economic Intelligence & Graph Model Copilot -->
+        <div class="col-lg-4 col-xl-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary">AI Copilot</span>
+                        <h6 class="mb-0 fw-bold">Intelijen Ekonomi & Graph Model</h6>
+                    </div>
+                    <span class="badge bg-success">Live Graph</span>
+                </div>
+                <div class="card-body p-3">
+                    <!-- Quick Macro Ribbon -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        @if (Model.EconomicIndicators.Any())
+                        {
+                            foreach (var ind in Model.EconomicIndicators.Take(6))
+                            {
+                                <div class="badge bg-light text-dark border p-2 text-start" style="font-size: 0.75rem;">
+                                    <div class="text-muted" style="font-size: 0.65rem;">@ind.Label</div>
+                                    <div class="fw-bold">@ind.CurrentValue @ind.Unit</div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <!-- Target Selector & Parameters -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted mb-1">Target Entitas / Sektor</label>
+                        <select id="copilotTargetSelect" class="form-select form-select-sm">
+                            <option value="RETAIL_ECOMMERCE">Sektor Ritel & E-Commerce UMKM</option>
+                            <option value="INFLATION_CPI">Indeks Inflasi IHK</option>
+                            <option value="BRENT_OIL">Minyak Mentah Brent (Energi)</option>
+                            <option value="CRUDE_PALM_OIL">Kelapa Sawit CPO</option>
+                            <option value="RICE_PRICE">Pangan Pokok (Beras)</option>
+                            <option value="LOGISTICS_TRANSPORT">Sektor Logistik & Transportasi</option>
+                            <option value="SME_PROFIT_MARGIN">Margin Keuntungan UMKM</option>
+                            <option value="USD_IDR">Kurs Rupiah (USD/IDR)</option>
+                            <option value="BI_RATE">Suku Bunga BI-Rate</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted mb-1">Horizon Proyeksi</label>
+                            <select id="copilotHorizonSelect" class="form-select form-select-sm">
+                                <option value="1">1 Bulan</option>
+                                <option value="3" selected>3 Bulan</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">12 Bulan</option>
+                            </select>
+                        </div>
+                        <div class="col-6 d-flex align-items-end">
+                            <button type="button" id="btnExtractFeatures" class="btn btn-sm btn-primary w-100 fw-semibold">
+                                <span>Tarik Features & Prediksi</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" id="btnRunMultiAgent" class="btn btn-sm btn-outline-dark w-100 fw-semibold">
+                            <span>Jalankan Multi-Agent Workflow</span>
+                        </button>
+                    </div>
+
+                    <!-- Copilot Output Display -->
+                    <div id="copilotOutputContainer" class="p-3 bg-light rounded border" style="max-height: 480px; overflow-y: auto;">
+                        <div id="copilotEmptyState" class="text-center py-4 text-muted small">
+                            <p class="mb-1">Pilih entitas dan klik <strong>Tarik Features & Prediksi</strong> untuk mengekstraksi graf, menjalankan model forecasting ML/DL, dan melihat XAI feature importance.</p>
+                        </div>
+
+                        <!-- Dynamic Content will be injected here -->
+                        <div id="copilotResults" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-primary" id="resTargetName">-</h6>
+                                <span class="badge" id="resTrendBadge">Neutral</span>
+                            </div>
+
+                            <div class="p-2 mb-3 bg-white rounded border">
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">Nilai Baseline:</span>
+                                    <strong id="resBaseVal">-</strong>
+                                </div>
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">Proyeksi Horizon:</span>
+                                    <strong id="resFinalPred" class="text-primary">-</strong>
+                                </div>
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">Ekspektasi Perubahan:</span>
+                                    <strong id="resPctChange">-</strong>
+                                </div>
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">Rentang Keyakinan 95%:</span>
+                                    <span id="resConfidenceBand" class="text-muted small">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Graph Key Drivers -->
+                            <div class="mb-3">
+                                <div class="small fw-bold text-dark mb-1">Pendorong Utama Graf (XAI Feature Attribution)</div>
+                                <div id="resDriversList" class="small">
+                                    <!-- Drivers list -->
+                                </div>
+                            </div>
+
+                            <!-- Strategic Insights -->
+                            <div class="mb-3">
+                                <div class="small fw-bold text-dark mb-1">Rekomendasi Strategis AI</div>
+                                <ul id="resInsightsList" class="small ps-3 mb-0 text-secondary">
+                                    <!-- Insights -->
+                                </ul>
+                            </div>
+
+                            <!-- Action: Insert into chat message input -->
+                            <button type="button" id="btnInsertReportToChat" class="btn btn-sm btn-success w-100 fw-semibold">
+                                <span>Sisipkan Ringkasan ke Pesan Chat</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -267,5 +389,162 @@
                 list.insertAdjacentHTML('afterbegin', html);
             }
         });
+
+        // Economic Copilot State
+        var lastEconReport = null;
+
+        document.getElementById("btnExtractFeatures")?.addEventListener("click", async function() {
+            var targetId = document.getElementById("copilotTargetSelect").value;
+            var horizon = parseInt(document.getElementById("copilotHorizonSelect").value);
+            var btn = this;
+            btn.disabled = true;
+            btn.innerText = "Memproses ML & Graf...";
+
+            try {
+                // 1. Forecast & Features Call
+                var resForecast = await fetch("/api/v1/economic/forecast", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ targetEntityId: targetId, forecastHorizonMonths: horizon })
+                });
+                var dataForecast = await resForecast.json();
+
+                // 2. XAI Attributions Call
+                var resXai = await fetch(`/api/v1/economic/explain?targetEntityId=${encodeURIComponent(targetId)}&horizonMonths=${horizon}`, {
+                    method: "POST"
+                });
+                var dataXai = await resXai.json();
+
+                if (dataForecast.success && dataForecast.data) {
+                    var f = dataForecast.data;
+                    var x = dataXai.data || { featureAttributions: [], strategicInsights: [] };
+                    lastEconReport = { forecast: f, xai: x };
+
+                    document.getElementById("copilotEmptyState").classList.add("d-none");
+                    document.getElementById("copilotResults").classList.remove("d-none");
+
+                    document.getElementById("resTargetName").innerText = f.targetEntityName;
+                    
+                    var badge = document.getElementById("resTrendBadge");
+                    badge.innerText = f.overallTrend;
+                    badge.className = "badge " + (f.overallTrend.includes("Bullish") ? "bg-success" : (f.overallTrend.includes("Bearish") ? "bg-danger" : "bg-secondary"));
+
+                    document.getElementById("resBaseVal").innerText = `${f.baselineValue} ${f.unit}`;
+                    var lastPred = f.predictions[f.predictions.length - 1];
+                    document.getElementById("resFinalPred").innerText = `${lastPred.predictedValue} ${f.unit}`;
+                    document.getElementById("resPctChange").innerText = `${f.expectedPercentageChange > 0 ? '+' : ''}${f.expectedPercentageChange}%`;
+                    document.getElementById("resConfidenceBand").innerText = `[${lastPred.confidenceLower95} - ${lastPred.confidenceUpper95}]`;
+
+                    // Render drivers
+                    var driversHtml = "";
+                    if (x.featureAttributions && x.featureAttributions.length > 0) {
+                        x.featureAttributions.slice(0, 4).forEach(function(d) {
+                            var pct = Math.round(d.importanceScore * 100);
+                            driversHtml += `
+                                <div class="mb-1">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
+                                        <span>${escapeHtml(d.featureName)}</span>
+                                        <span>${pct}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 4px;">
+                                        <div class="progress-bar ${d.directionalImpact > 0 ? 'bg-primary' : 'bg-warning'}" style="width: ${pct}%;"></div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    document.getElementById("resDriversList").innerHTML = driversHtml || "<span class='text-muted'>Tidak ada driver khusus.</span>";
+
+                    // Render insights
+                    var insightsHtml = "";
+                    if (x.strategicInsights && x.strategicInsights.length > 0) {
+                        x.strategicInsights.slice(0, 3).forEach(function(s) {
+                            insightsHtml += `<li>${escapeHtml(s)}</li>`;
+                        });
+                    }
+                    document.getElementById("resInsightsList").innerHTML = insightsHtml;
+                }
+            } catch (err) {
+                console.error("Gagal memuat forecast:", err);
+                alert("Gagal memuat proyeksi ekonomi.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Tarik Features & Prediksi";
+            }
+        });
+
+        document.getElementById("btnRunMultiAgent")?.addEventListener("click", async function() {
+            var targetId = document.getElementById("copilotTargetSelect").value;
+            var horizon = parseInt(document.getElementById("copilotHorizonSelect").value);
+            var btn = this;
+            btn.disabled = true;
+            btn.innerText = "Multi-Agent Berjalan...";
+
+            try {
+                var res = await fetch("/api/v1/economic/agent/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query: "Analisis prospek dan transmisi rantai pasok",
+                        targetSectorOrCommodity: targetId,
+                        horizonMonths: horizon,
+                        requiresHumanSignoff: true
+                    })
+                });
+                var data = await res.json();
+                if (data.success && data.data) {
+                    var rep = data.data;
+                    lastEconReport = { forecast: rep.forecast, xai: rep.explanation, executiveSummary: rep.executiveSummary };
+
+                    document.getElementById("copilotEmptyState").classList.add("d-none");
+                    document.getElementById("copilotResults").classList.remove("d-none");
+
+                    document.getElementById("resTargetName").innerText = rep.forecast.targetEntityName;
+                    var badge = document.getElementById("resTrendBadge");
+                    badge.innerText = rep.forecast.overallTrend;
+                    badge.className = "badge " + (rep.forecast.overallTrend.includes("Bullish") ? "bg-success" : (rep.forecast.overallTrend.includes("Bearish") ? "bg-danger" : "bg-secondary"));
+
+                    document.getElementById("resBaseVal").innerText = `${rep.forecast.baselineValue} ${rep.forecast.unit}`;
+                    var lastPred = rep.forecast.predictions[rep.forecast.predictions.length - 1];
+                    document.getElementById("resFinalPred").innerText = `${lastPred.predictedValue} ${rep.forecast.unit}`;
+                    document.getElementById("resPctChange").innerText = `${rep.forecast.expectedPercentageChange > 0 ? '+' : ''}${rep.forecast.expectedPercentageChange}%`;
+                    document.getElementById("resConfidenceBand").innerText = `[${lastPred.confidenceLower95} - ${lastPred.confidenceUpper95}]`;
+
+                    // Insights
+                    var insightsHtml = `<li><strong>Ringkasan Sistem Multi-Agent:</strong> ${escapeHtml(rep.executiveSummary)}</li>`;
+                    if (rep.recommendedActions && rep.recommendedActions.length > 0) {
+                        rep.recommendedActions.slice(0, 2).forEach(function(s) {
+                            insightsHtml += `<li>${escapeHtml(s)}</li>`;
+                        });
+                    }
+                    document.getElementById("resInsightsList").innerHTML = insightsHtml;
+                }
+            } catch (err) {
+                console.error("Gagal menjalankan multi-agent:", err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Jalankan Multi-Agent Workflow";
+            }
+        });
+
+        // Insert report to chat message input
+        document.getElementById("btnInsertReportToChat")?.addEventListener("click", function() {
+            if (!lastEconReport) return;
+            var f = lastEconReport.forecast;
+            var x = lastEconReport.xai;
+            var text = `📊 [Rekomendasi Intelijen Ekonomi DagangOnline]\nBerdasarkan model analitik graf dan ML kami untuk ${f.targetEntityName}:\n• Proyeksi Tren: ${f.overallTrend} (${f.expectedPercentageChange > 0 ? '+' : ''}${f.expectedPercentageChange}%)\n• Nilai Baseline: ${f.baselineValue} ${f.unit} ➔ Proyeksi: ${f.predictions[f.predictions.length-1].predictedValue} ${f.unit}\n• Saran Strategis: ${x.strategicInsights && x.strategicInsights.length > 0 ? x.strategicInsights[0] : 'Pantau stabilitas pasar.'}`;
+            
+            var chatInput = document.getElementById("chatMessageInput");
+            if (chatInput) {
+                chatInput.value = text;
+                chatInput.focus();
+            }
+        });
+
+        // Listen for real-time economic insights from hub
+        chatConnection.on("ReceiveEconomicInsight", function(sessionId, report) {
+            console.log("Menerima Economic Insight dari server:", report);
+        });
     </script>
 }
+

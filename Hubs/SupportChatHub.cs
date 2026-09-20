@@ -17,11 +17,16 @@ public class SupportChatHub : Hub
 {
     private readonly ApplicationDbContext _db;
     private readonly AgentAssistService _agentAssistService;
+    private readonly dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem _multiAgentSystem;
 
-    public SupportChatHub(ApplicationDbContext db, AgentAssistService agentAssistService)
+    public SupportChatHub(
+        ApplicationDbContext db,
+        AgentAssistService agentAssistService,
+        dagangOnline.Application.Services.Economic.EconomicMultiAgentSystem multiAgentSystem)
     {
         _db = db;
         _agentAssistService = agentAssistService;
+        _multiAgentSystem = multiAgentSystem;
     }
 
     public override async Task OnConnectedAsync()
@@ -214,4 +219,25 @@ public class SupportChatHub : Hub
             await Clients.Group($"Session_{session.Id}").SendAsync("SessionEnded", session.Id);
         }
     }
+
+    public async Task RequestEconomicIntelligence(Guid sessionId, string targetTopic, int horizonMonths = 3)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return;
+
+        var report = await _multiAgentSystem.ExecuteAutonomousWorkflowAsync(new dagangOnline.Domain.Economic.MultiAgentTaskRequestDto
+        {
+            Query = targetTopic,
+            TargetSectorOrCommodity = targetTopic,
+            HorizonMonths = horizonMonths
+        });
+
+        // Broadcast to session and agents
+        var insightMessage = $"📊 [Economic Intelligence]: Proyeksi {report.Forecast.TargetEntityName} berarah {report.Forecast.OverallTrend} ({report.Forecast.ExpectedPercentageChange:+0.0;-0.0}%). Pendorong utama: {report.GraphFeatures.KeyDrivers.FirstOrDefault()?.SourceNodeName ?? "Makroekonomi"}. Rekomendasi: {report.RecommendedActions.FirstOrDefault()}";
+
+        await Clients.Group($"User_{userId}").SendAsync("ReceiveEconomicInsight", sessionId, report);
+        await Clients.Group($"Session_{sessionId}").SendAsync("ReceiveEconomicInsight", sessionId, report);
+        await Clients.Group("Agents").SendAsync("ReceiveEconomicInsight", sessionId, report);
+    }
 }
+
