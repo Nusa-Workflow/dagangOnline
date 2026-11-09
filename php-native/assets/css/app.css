@@ -1,0 +1,48 @@
+/* dagangOnline — light theme only */
+:root {
+  --bs-body-bg: #f5f7fb;
+  --bs-primary: #0d6efd;
+  --sidebar-w: 240px;
+  color-scheme: light;
+}
+body { background: var(--bs-body-bg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.auth-bg { background: linear-gradient(135deg, #e8f0ff 0%, #f5f7fb 60%); }
+
+.sidebar { width: var(--sidebar-w); }
+@media (min-width: 992px) {
+  .sidebar { position: sticky; top: 57px; height: calc(100vh - 57px); flex-shrink: 0; }
+  .sidebar .offcanvas-body { display: flex; height: 100%; }
+}
+.sidebar .nav-link { color: #495057; border-radius: .5rem; }
+.sidebar .nav-link:hover { background: #eef3ff; }
+.sidebar .nav-link.active { background: var(--bs-primary); color: #fff; }
+.main-content { min-width: 0; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+
+.stat-card { border-radius: 1rem; transition: transform .15s, box-shadow .15s; }
+.stat-card.clickable { cursor: pointer; }
+.stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(13,110,253,.12) !important; }
+.stat-icon { width: 48px; height: 48px; border-radius: .75rem; display: grid; place-items: center; font-size: 1.4rem; }
+
+.card { border-radius: 1rem; }
+.table > :not(caption) > * > * { padding: .75rem 1rem; }
+
+.notif-menu { width: min(360px, 92vw); }
+.notif-menu #notifList { max-height: 360px; overflow-y: auto; }
+.notif-menu .unread { background: #f0f6ff; }
+
+.status-pending { background: #ffc107; color: #000; }
+.status-paid { background: #0dcaf0; color: #000; }
+.status-shipped { background: #6f42c1; }
+.status-completed { background: #198754; }
+.status-cancelled { background: #dc3545; }
+
+/* Mobile: turn tables into stacked cards */
+@media (max-width: 575.98px) {
+  .table-stack thead { display: none; }
+  .table-stack tr { display: block; border-bottom: 1px solid #dee2e6; padding: .5rem 0; }
+  .table-stack td { display: flex; justify-content: space-between; gap: 1rem; border: 0; padding: .3rem 1rem !important; text-align: right; }
+  .table-stack td::before { content: attr(data-label); font-weight: 600; color: #6c757d; text-align: left; }
+  .table-stack td.text-end::before { content: ""; }
+  #pageActions { width: 100%; }
+  #pageActions #searchBox { max-width: none !important; flex: 1; }
+}
